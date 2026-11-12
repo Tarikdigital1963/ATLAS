@@ -238,7 +238,18 @@
   function closeAtlasMenu(){sideMenu.classList.remove('open');menuBackdrop.classList.remove('show');menuToggle.setAttribute('aria-expanded','false');}
   menuToggle.addEventListener('click',()=>{const opening=!sideMenu.classList.contains('open');sideMenu.classList.toggle('open',opening);menuBackdrop.classList.toggle('show',opening);menuToggle.setAttribute('aria-expanded',String(opening));});
   menuBackdrop.addEventListener('click',closeAtlasMenu);
-  sideMenu.querySelectorAll('a').forEach(link=>{if(link.getAttribute('href').startsWith('#'))link.addEventListener('click',closeAtlasMenu);});
+  sideMenu.querySelectorAll('a').forEach(link=>{
+    link.addEventListener('click',event=>{
+      const href=link.getAttribute('href');
+      if(!href)return;
+      closeAtlasMenu();
+      if(href.startsWith('./') && href.endsWith('.html')){
+        event.preventDefault();
+        const destination=new URL(href,document.baseURI);
+        window.location.assign(destination.href);
+      }
+    });
+  });
   document.addEventListener('keydown',event=>{if(event.key==='Escape')closeAtlasMenu();});
   const map = L.map('map', {worldCopyJump:true}).setView([20, 0], 2);
   const roads = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
