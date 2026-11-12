@@ -77,7 +77,7 @@
     @media(max-width:540px){.category-grid,.module-list{grid-template-columns:1fr}.map-panel{padding:9px}#map{min-height:350px;height:55vh}.map-top{align-items:stretch}.search{width:100%}.search button{padding:11px 12px}.category{min-height:0}}
     @media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}*{transition:none!important}}
   </style>
-</head>
+<link rel="manifest" href="./manifest.webmanifest"><link rel="icon" href="./icon-192.svg" type="image/svg+xml"><link rel="apple-touch-icon" href="./icon-192.svg"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="ATLAS MONDE"></head>
 <body>
 <header>
   <div class="wrap">
@@ -95,7 +95,7 @@
       <a href="#google-earth">Google Earth</a>
       <a href="#explorer">Carte interactive</a>
       <a href="#cartes">Toutes les cartes</a>
-      <a href="#continents">Continents</a>
+      <a href="#continents">Continents</a><button id="installAppButton" type="button" style="font-size:1rem;color:#fff;padding:10px 16px;border:1px solid #69c8ff;border-radius:30px;background:#087fca;font-weight:800">＋ Installer ATLAS</button>
     </nav>
   </div>
 </header>
@@ -124,9 +124,9 @@
     </div>
     <div class="earth-copy">
       <h2 id="earth-title">Explorez la Terre avec Google Earth</h2>
-      <p>Parcourez le globe, observez les paysages en imagerie satellite et découvrez des lieux du monde entier grâce au service officiel Google Earth.</p>
+      <p>Sur ordinateur, ouvrez le globe officiel Google Earth dans votre navigateur. Attention : Google Earth Web ne prend pas en charge Chrome sur Android et peut rediriger vers la page de téléchargement. Sur téléphone, utilisez le bouton satellite ATLAS juste en dessous.</p>
       <a class="earth-button" href="https://earth.google.com/web/" target="_blank" rel="noopener noreferrer">🌍 Ouvrir Google Earth</a>
-      <span class="small-note">Ce bouton ouvre Google Earth dans un nouvel onglet. La carte ci-dessous reste l’espace cartographique interactif d’ATLAS.</span>
+      <button class="earth-button" type="button" style="margin:10px 0 0 8px" onclick="showMapLayer(&quot;satellite&quot;)">🛰️ Voir la vue satellite sur ce téléphone</button><span class="small-note">Google Earth Web s’adresse aux navigateurs d’ordinateur. La vue satellite ATLAS fonctionne directement sur mobile.</span>
     </div>
   </section>
 
@@ -218,6 +218,14 @@
     }
     goToMap(map.getCenter(), map.getZoom());
   }
+  let installPromptEvent = null;
+  const installButton = document.getElementById("installAppButton");
+  window.addEventListener("beforeinstallprompt", (event) => { event.preventDefault(); installPromptEvent = event; });
+  installButton.addEventListener("click", async () => {
+    if (installPromptEvent) { installPromptEvent.prompt(); await installPromptEvent.userChoice; installPromptEvent = null; return; }
+    alert("Pour installer ATLAS sur Android : ouvrez le menu ⋮ de Chrome, puis choisissez Installer l’application ou Ajouter à l’écran d’accueil. Sur iPhone : bouton Partager, puis Sur l’écran d’accueil.");
+  });
+  window.addEventListener("appinstalled", () => { installButton.textContent = "✓ ATLAS installé"; installButton.disabled = true; });
   document.getElementById('searchForm').addEventListener('submit', async (event) => {
     event.preventDefault();
     const input = document.getElementById('placeSearch');
