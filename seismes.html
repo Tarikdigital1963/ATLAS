@@ -107,7 +107,7 @@ async function loadQuakes(){
    strongest=Math.max(strongest,mag);
    const marker=L.circleMarker([lat,lon],{radius:Math.max(5,Math.min(13,5+mag*1.2)),color:colorFor(mag),fillColor:colorFor(mag),fillOpacity:.85,weight:2}).bindPopup('<strong>'+safeText(p.title||p.place||'Séisme')+'</strong><br>Magnitude : '+mag.toFixed(1)+'<br>Profondeur : '+(Number.isFinite(depth)?depth+' km':'inconnue')+'<br>'+safeText(formatTime(p.time))+'<br><a href="'+safeText(p.url||'https://earthquake.usgs.gov/')+'" target="_blank" rel="noopener noreferrer">Détails USGS</a>');
    marker.addTo(markers);
-   if(!firstLoad&&!knownIds.has(feature.id)&&mag>=4.5)newEvents.push({title:p.title||p.place||'Séisme',mag});
+   if(!firstLoad&&!knownIds.has(feature.id)&&mag>=2.5)newEvents.push({title:p.title||p.place||'Séisme',mag});
    const card=document.createElement('article');card.className='event';
    const heading=document.createElement('div');const badge=document.createElement('span');badge.className='mag';badge.textContent='M '+mag.toFixed(1);
    const strong=document.createElement('strong');strong.textContent=p.place||p.title||'Localisation non précisée';heading.append(badge,strong);
