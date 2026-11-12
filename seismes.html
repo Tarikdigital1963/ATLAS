@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#071426">
+<meta name="description" content="ATLAS MONDE : carte mondiale des séismes récents, données USGS actualisées automatiquement.">
+<title>Séismes en direct | ATLAS MONDE</title>
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
+<style>
+:root{color-scheme:dark;--bg:#071426;--panel:#0d2038;--line:#294866;--text:#f4f8ff;--muted:#bfd0e2;--blue:#36a9ff}
+*{box-sizing:border-box}body{margin:0;background:radial-gradient(ellipse at 50% -20%,#173b62 0,#071426 52%);color:var(--text);font:17px/1.55 Arial,Helvetica,sans-serif}
+.wrap{width:min(1180px,94%);margin:auto}header{padding:20px 0;border-bottom:1px solid #294866}
+h1{font-size:clamp(2rem,6vw,3.5rem);margin:0;color:#61c2ff;text-align:center}header p{text-align:center;color:var(--muted);margin:5px 0 12px}
+a{color:#8bd1ff}.back{display:inline-block;padding:10px 15px;border:1px solid var(--line);border-radius:12px;text-decoration:none;background:var(--panel)}
+main{padding:22px 0 40px}.intro{text-align:center;max-width:850px;margin:0 auto 18px}.intro h2{font-size:1.5rem;margin:0 0 5px}.intro p{color:var(--muted);margin:0}
+.toolbar{display:flex;gap:10px;flex-wrap:wrap;align-items:center;background:var(--panel);border:1px solid var(--line);padding:14px;border-radius:16px;margin:18px 0}
+button,select{background:#087fca;color:white;border:1px solid #69c8ff;border-radius:10px;padding:12px 15px;font-size:1rem;font-weight:700;min-height:48px}
+select{background:#102944;flex:1;min-width:180px}button:focus,a:focus,select:focus{outline:3px solid #a5ddff;outline-offset:3px}
+.status{color:var(--muted);font-size:.95rem;flex-basis:100%}
+.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin:14px 0}
+.stat{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:13px;text-align:center}
+.stat strong{display:block;font-size:1.65rem;color:#8bd1ff}.stat span{color:var(--muted);font-size:.9rem}
+#quakeMap{height:min(62vh,590px);min-height:360px;border:1px solid var(--line);border-radius:16px;overflow:hidden;background:#102944}
+.events{margin-top:22px}.events h2{font-size:1.4rem}.event-list{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+.event{background:var(--panel);border:1px solid var(--line);border-radius:13px;padding:13px}.event strong{font-size:1.1rem}.event p{margin:5px 0;color:var(--muted)}
+.mag{display:inline-block;color:#fff;background:#a33b31;border-radius:7px;padding:3px 8px;margin-right:7px;font-weight:800}
+.note{color:var(--muted);font-size:.92rem;margin-top:18px}
+footer{text-align:center;color:var(--muted);border-top:1px solid var(--line);padding:20px}
+.leaflet-popup-content-wrapper,.leaflet-popup-tip{background:#0d2038;color:#fff}.leaflet-control-layers,.leaflet-bar a{background:#0d2038!important;color:#fff!important;border-color:#45617c!important}
+@media(max-width:650px){.stats{grid-template-columns:1fr 1fr}.event-list{grid-template-columns:1fr}#quakeMap{height:52vh;min-height:340px}}
+</style>
+</head>
+<body>
+<header><div class="wrap"><h1>🌍 Séismes en direct</h1><p>Surveillance sismique mondiale · ATLAS MONDE</p><a class="back" href="./index.html">← Retour à ATLAS MONDE</a></div></header>
+<main class="wrap">
+<section class="intro"><h2>Activité sismique mondiale récente</h2><p>Les événements affichés proviennent du flux public de l’USGS. Les données sont actualisées automatiquement environ chaque minute.</p></section>
+<div class="toolbar">
+<label for="feedSelect">Événements à afficher :</label>
+<select id="feedSelect"><option value="all_day">Tous les séismes · dernières 24 heures</option><option value="2.5_day">Magnitude 2,5+ · dernières 24 heures</option><option value="4.5_day">Magnitude 4,5+ · dernières 24 heures</option><option value="significant_day">Séismes significatifs · dernières 24 heures</option><option value="all_hour">Tous les séismes · dernière heure</option></select>
+<button id="refreshButton" type="button">Actualiser</button>
+<button id="notifyButton" type="button">Activer les notifications</button>
+<div class="status" id="status" role="status" aria-live="polite">Chargement des données sismiques…</div>
+</div>
+<div class="stats" aria-live="polite">
+<div class="stat"><strong id="count">—</strong><span>Séismes reçus</span></div>
+<div class="stat"><strong id="strongest">—</strong><span>Magnitude maximale</span></div>
+<div class="stat"><strong id="lastUpdate">—</strong><span>Dernière actualisation</span></div>
+</div>
+<div id="quakeMap" role="application" aria-label="Carte mondiale des séismes récents"></div>
+<section class="events"><h2>Derniers événements enregistrés</h2><div class="event-list" id="eventList"><p>Chargement…</p></div></section>
+<p class="note">Source : <a href="https://earthquake.usgs.gov/earthquakes/feed/v1.0/geojson.php" target="_blank" rel="noopener noreferrer">U.S. Geological Survey (USGS), flux GeoJSON</a>. Les flux de 7 jours et moins sont mis à jour par l’USGS chaque minute. Les heures et magnitudes peuvent être révisées par les organismes sismologiques. Cette page est informative : elle ne remplace pas les alertes officielles de sécurité civile et ne garantit pas la réception immédiate de chaque événement.</p>
+</main>
+<footer>ATLAS MONDE · <a href="mailto:qods112@gmail.com">Partenariats et créations</a> · © Tous droits réservés</footer>
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script>
+const map=L.map('quakeMap',{worldCopyJump:true}).setView([20,0],2);
+L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',{maxZoom:18,attribution:'© OpenStreetMap contributors'}).addTo(map);
+const markers=L.layerGroup().addTo(map);
+const feedSelect=document.getElementById('feedSelect');
+const statusEl=document.getElementById('status');
+let knownIds=new Set();
+let firstLoad=true;
+let notificationReady=false;
+function safeText(value){return String(value??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));}
+function colorFor(m){return m>=6?'#d71920':m>=5?'#f07c22':m>=4?'#e6c229':'#39a96b';}
+function formatTime(ms){return new Intl.DateTimeFormat('fr-FR',{dateStyle:'medium',timeStyle:'short'}).format(new Date(ms));}
+async function loadQuakes(){
+ const feed=feedSelect.value;
+ statusEl.textContent='Mise à jour des événements…';
+ document.getElementById('refreshButton').disabled=true;
+ try{
+  const response=await fetch('https://earthquake.usgs.gov/earthquakes/feed/v1.0/summary/'+feed+'.geojson',{cache:'no-store'});
+  if(!response.ok)throw new Error('Flux indisponible');
+  const data=await response.json();
+  const features=(data.features||[]).filter(f=>f.geometry&&f.geometry.coordinates&&f.properties);
+  markers.clearLayers();
+  const list=document.getElementById('eventList');list.replaceChildren();
+  let strongest=0;const newEvents=[];
+  features.sort((a,b)=>b.properties.time-a.properties.time);
+  for(const feature of features){
+   const p=feature.properties,coords=feature.geometry.coordinates;
+   const lon=Number(coords[0]),lat=Number(coords[1]),depth=Number(coords[2]);
+   const mag=Number(p.mag)||0;
+   strongest=Math.max(strongest,mag);
+   const marker=L.circleMarker([lat,lon],{radius:Math.max(5,Math.min(13,5+mag*1.2)),color:colorFor(mag),fillColor:colorFor(mag),fillOpacity:.85,weight:2}).bindPopup('<strong>'+safeText(p.title||p.place||'Séisme')+'</strong><br>Magnitude : '+mag.toFixed(1)+'<br>Profondeur : '+(Number.isFinite(depth)?depth+' km':'inconnue')+'<br>'+safeText(formatTime(p.time))+'<br><a href="'+safeText(p.url||'https://earthquake.usgs.gov/')+'" target="_blank" rel="noopener noreferrer">Détails USGS</a>');
+   marker.addTo(markers);
+   if(!firstLoad&&!knownIds.has(feature.id)&&mag>=4.5)newEvents.push({title:p.title||p.place||'Séisme',mag});
+   const card=document.createElement('article');card.className='event';
+   const heading=document.createElement('div');const badge=document.createElement('span');badge.className='mag';badge.textContent='M '+mag.toFixed(1);
+   const strong=document.createElement('strong');strong.textContent=p.place||p.title||'Localisation non précisée';heading.append(badge,strong);
+   const details=document.createElement('p');details.textContent=formatTime(p.time)+' · Profondeur : '+(Number.isFinite(depth)?depth+' km':'inconnue');
+   const link=document.createElement('a');link.href=p.url||'https://earthquake.usgs.gov/';link.target='_blank';link.rel='noopener noreferrer';link.textContent='Voir la fiche USGS';
+   card.append(heading,details,link);list.append(card);
+  }
+  const ids=new Set(features.map(f=>f.id));knownIds=ids;
+  document.getElementById('count').textContent=String(features.length);
+  document.getElementById('strongest').textContent=features.length?strongest.toFixed(1):'—';
+  document.getElementById('lastUpdate').textContent=new Intl.DateTimeFormat('fr-FR',{hour:'2-digit',minute:'2-digit',second:'2-digit'}).format(new Date());
+  statusEl.textContent='Données actualisées · '+(data.metadata?.title||feed)+' · Actualisation automatique toutes les 60 secondes.';
+  if(!features.length){const empty=document.createElement('p');empty.textContent='Aucun événement dans ce flux pour la période choisie.';list.append(empty);}
+  if(notificationReady&&Notification.permission==='granted')newEvents.forEach(e=>new Notification('Nouveau séisme · magnitude '+e.mag,{body:e.title}));
+  firstLoad=false;
+ }catch(error){statusEl.textContent='Impossible de récupérer les données. Vérifiez la connexion puis réessayez.';}
+ finally{document.getElementById('refreshButton').disabled=false;}
+}
+document.getElementById('refreshButton').addEventListener('click',loadQuakes);
+feedSelect.addEventListener('change',()=>{firstLoad=true;knownIds=new Set();loadQuakes();});
+document.getElementById('notifyButton').addEventListener('click',async()=>{
+ if(!('Notification'in window)){statusEl.textContent='Les notifications ne sont pas prises en charge par ce navigateur.';return;}
+ const permission=await Notification.requestPermission();
+ notificationReady=permission==='granted';
+ statusEl.textContent=notificationReady?'Notifications activées pendant que cette page reste ouverte.':'Autorisation de notification non accordée.';
+});
+loadQuakes();
+setInterval(loadQuakes,60000);
+</script>
+</body>
+</html>
