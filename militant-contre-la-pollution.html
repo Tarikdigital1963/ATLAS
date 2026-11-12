@@ -24,6 +24,31 @@ p{margin:0 0 14px}ul{padding-left:25px;margin:8px 0 15px}li{margin:7px 0}.call{b
 .mail{font-size:1.15rem;font-weight:bold;overflow-wrap:anywhere}
 footer{border-top:1px solid #315575;padding:22px 0;color:var(--muted);font-size:.95rem}
 @media(max-width:650px){.grid{grid-template-columns:1fr}body{font-size:17px}}
+
+.photo-showcase{margin:24px auto 28px;background:#081a2b;border:1px solid #3c6a88;border-radius:18px;overflow:hidden;box-shadow:0 16px 38px #0008}
+.photo-stage{position:relative;height:clamp(250px,55vw,520px);background:#061321}
+.photo-stage img{width:100%;height:100%;object-fit:cover;display:block}
+.photo-caption{position:absolute;left:0;right:0;bottom:0;padding:22px 20px 18px;background:linear-gradient(transparent,#03101eeF);color:#fff}
+.photo-caption strong{display:block;font-size:clamp(1.1rem,3vw,1.5rem);text-shadow:0 2px 5px #000}
+.photo-caption span{display:block;font-size:.95rem;color:#e1edf7}
+.photo-controls{display:flex;align-items:center;justify-content:center;gap:12px;padding:12px;background:#0c2238}
+.photo-controls button{min-width:48px;min-height:46px;border:1px solid #6ebf9a;border-radius:10px;background:#116345;color:#fff;font-size:1.25rem;font-weight:bold;cursor:pointer}
+.photo-controls button:focus{outline:3px solid #ffe08a;outline-offset:2px}
+.photo-dots{display:flex;gap:9px;align-items:center}
+.photo-dots button{min-width:16px;width:16px;height:16px;min-height:16px;padding:0;border-radius:50%;background:#7790a5;border:2px solid #d5e5f2}
+.photo-dots button[aria-current=true]{background:#ffd45a;border-color:#fff;transform:scale(1.2)}
+.photo-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px}
+.photo-card{overflow:hidden;background:#0b2036;border:1px solid #315575;border-radius:14px}
+.photo-card a{display:block;color:inherit;text-decoration:none}
+.photo-card img{width:100%;height:190px;object-fit:cover;display:block}
+.photo-card h3{padding:12px 14px 0}
+.photo-card p{padding:0 14px 14px;margin:0;color:var(--muted);font-size:.94rem}
+.visual{height:150px;border-radius:12px;margin-bottom:12px;overflow:hidden;background:#0b2036}
+.visual img{width:100%;height:100%;object-fit:cover;display:block}
+@media(max-width:760px){.photo-grid{grid-template-columns:1fr 1fr}.photo-card img{height:155px}}
+@media(max-width:520px){.photo-grid{grid-template-columns:1fr}.photo-card img{height:190px}.photo-stage{height:290px}}
+@media(prefers-reduced-motion:reduce){.photo-stage img{transition:none!important}}
+
 </style>
 </head>
 <body>
@@ -33,6 +58,23 @@ footer{border-top:1px solid #315575;padding:22px 0;color:var(--muted);font-size:
 <p class="lead">Un appel mondial à agir ensemble pour protéger la Terre, la santé humaine, les océans, l’air, les sols et les générations futures.</p>
 </div></header>
 <main class="wrap">
+<section class="photo-showcase" aria-label="Photographies de la pollution et de la mobilisation écologique">
+ <div class="photo-stage">
+  <img id="heroPhoto" src="https://assets.science.nasa.gov/dynamicimage/assets/science/esd/eo/images/iotd/2026/ontario-wildfire-smoke-drifts-east/ontariofires_virs3_20260714_lrg.jpg" alt="Vue satellite des fumées des incendies en Ontario, Canada, le 14 juillet 2026" fetchpriority="high">
+  <div class="photo-caption"><strong id="heroTitle">Incendies au Canada · juillet 2026</strong><span id="heroCredit">Image satellite NOAA-21 / NASA Earth Observatory · Lauren Dauphin</span></div>
+ </div>
+ <div class="photo-controls">
+  <button type="button" id="photoPrev" aria-label="Photo précédente">‹</button>
+  <div class="photo-dots" id="photoDots" aria-label="Choisir une photographie">
+   <button type="button" aria-label="Afficher la photo 1" aria-current="true"></button>
+   <button type="button" aria-label="Afficher la photo 2" aria-current="false"></button>
+   <button type="button" aria-label="Afficher la photo 3" aria-current="false"></button>
+  </div>
+  <button type="button" id="photoNext" aria-label="Photo suivante">›</button>
+  <button type="button" id="photoPause" aria-label="Mettre le diaporama en pause">Ⅱ</button>
+ </div>
+</section>
+
 <section class="panel">
 <h2>La planète n’a pas de frontières. La pollution non plus.</h2>
 <p>La pollution de l’air, de l’eau et des sols traverse les frontières. Les déchets plastiques voyagent dans les fleuves et les océans ; les fumées et les émissions industrielles dégradent la qualité de l’air ; les activités humaines fragilisent les écosystèmes et le climat. Aucun pays, aucune ville et aucune communauté ne peut résoudre seul un problème mondial.</p>
@@ -59,11 +101,40 @@ footer{border-top:1px solid #315575;padding:22px 0;color:var(--muted);font-size:
 <section class="panel">
 <h2>Nos priorités d’action</h2>
 <div class="grid">
-<article class="tile"><div class="visual">🌫️</div><h3>Air et émissions</h3><p>Prévenir la pollution atmosphérique, réduire les émissions de CO₂ et autres polluants, encourager les transports et les procédés moins polluants.</p></article>
-<article class="tile"><div class="visual water">🌊</div><h3>Océans et eaux</h3><p>Combattre les rejets toxiques, les marées noires, les plastiques et les déchets qui contaminent les rivières, les nappes et les mers.</p></article>
-<article class="tile"><div class="visual">🌳</div><h3>Forêts et biodiversité</h3><p>Préserver les milieux naturels, restaurer les écosystèmes dégradés et soutenir la prévention des incendies.</p></article>
-<article class="tile"><div class="visual air">🏭</div><h3>Industrie et responsabilité</h3><p>Encourager la prévention à la source, le contrôle indépendant, la transparence des rejets et la transition vers des activités plus propres.</p></article>
+<article class="tile"><div class="visual"><img src="https://assets.science.nasa.gov/dynamicimage/assets/science/esd/eo/images/iotd/2026/ontario-wildfire-smoke-drifts-east/ontariofires_virs3_20260714_lrg.jpg" alt="Fumées des incendies au-dessus de l’Ontario en juillet 2026" loading="lazy"></div><h3>Air et émissions</h3><p>Prévenir la pollution atmosphérique, réduire les émissions de CO₂ et autres polluants, encourager les transports et les procédés moins polluants.</p></article>
+<article class="tile"><div class="visual water"><img src="https://cdn.pixabay.com/photo/2022/11/26/08/28/plastic-waste-7617454_1280.jpg" alt="Déchets plastiques sous l’eau, image illustrative" loading="lazy"></div><h3>Océans et eaux</h3><p>Combattre les rejets toxiques, les marées noires, les plastiques et les déchets qui contaminent les rivières, les nappes et les mers.</p></article>
+<article class="tile"><div class="visual"><img src="https://cdn.pixabay.com/photo/2023/02/14/04/39/volunteer-7788809_1280.jpg" alt="Bénévole ramassant des déchets sur une plage" loading="lazy"></div><h3>Forêts et biodiversité</h3><p>Préserver les milieux naturels, restaurer les écosystèmes dégradés et soutenir la prévention des incendies.</p></article>
+<article class="tile"><div class="visual air"><img src="https://cdn.pixabay.com/photo/2020/03/25/03/07/waste-4965944_640.jpg" alt="Déchets et emballages accumulés dans une poubelle" loading="lazy"></div><h3>Industrie et responsabilité</h3><p>Encourager la prévention à la source, le contrôle indépendant, la transparence des rejets et la transition vers des activités plus propres.</p></article>
 </div>
+</section>
+
+
+<section class="panel">
+<h2>Galerie photographique : comprendre et agir</h2>
+<div class="photo-grid">
+ <article class="photo-card">
+  <a href="https://science.nasa.gov/earth/earth-observatory/ontario-wildfire-smoke-moves-east/" target="_blank" rel="noopener noreferrer">
+   <img src="https://assets.science.nasa.gov/dynamicimage/assets/science/esd/eo/images/iotd/2026/ontario-wildfire-smoke-drifts-east/ontariofires_virs3_20260714_lrg.jpg" alt="Fumées des incendies en Ontario et au Québec, juillet 2026" loading="lazy">
+   <h3>Incendies et qualité de l’air</h3>
+   <p>Ontario et Québec · juillet 2026. Image satellite publiée par la NASA. Ouvrir le reportage et sa source.</p>
+  </a>
+ </article>
+ <article class="photo-card">
+  <a href="https://pixabay.com/photos/plastic-waste-ocean-pollution-7617454/" target="_blank" rel="noopener noreferrer">
+   <img src="https://cdn.pixabay.com/photo/2022/11/26/08/28/plastic-waste-7617454_1280.jpg" alt="Illustration de déchets plastiques dans un environnement marin" loading="lazy">
+   <h3>Plastiques dans les océans</h3>
+   <p>Image illustrative · RosZie / Pixabay. Ouvrir la fiche et la licence de l’image.</p>
+  </a>
+ </article>
+ <article class="photo-card">
+  <a href="https://pixabay.com/" target="_blank" rel="noopener noreferrer">
+   <img src="https://cdn.pixabay.com/photo/2023/02/14/04/39/volunteer-7788809_1280.jpg" alt="Action bénévole de ramassage des déchets sur une plage" loading="lazy">
+   <h3>La mobilisation bénévole</h3>
+   <p>Action de nettoyage · chaiyananuwatmongkolchai / Pixabay. Découvrir la banque d’images.</p>
+  </a>
+ </article>
+</div>
+<p class="small" style="margin-top:14px">Crédits : NASA Earth Observatory / Lauren Dauphin ; photographes Pixabay indiqués sur leurs fiches. Les images d’illustration ne représentent pas nécessairement un événement réel de 2026.</p>
 </section>
 
 <section class="panel">
@@ -85,4 +156,27 @@ footer{border-top:1px solid #315575;padding:22px 0;color:var(--muted);font-size:
 </section>
 </main>
 <footer><div class="wrap">ATLAS MONDE · Mobilisation citoyenne contre la pollution · Contenus à vocation informative et collaborative.</div></footer>
+
+<script>
+(function(){
+ const slides=[
+  {src:"https://assets.science.nasa.gov/dynamicimage/assets/science/esd/eo/images/iotd/2026/ontario-wildfire-smoke-drifts-east/ontariofires_virs3_20260714_lrg.jpg",alt:"Fumées des incendies en Ontario, Canada, le 14 juillet 2026",title:"Incendies au Canada · juillet 2026",credit:"Image satellite NOAA-21 / NASA Earth Observatory · Lauren Dauphin"},
+  {src:"https://cdn.pixabay.com/photo/2022/11/26/08/28/plastic-waste-7617454_1280.jpg",alt:"Déchets plastiques dans un environnement marin, image illustrative",title:"Les déchets plastiques dans les océans",credit:"Image illustrative · RosZie / Pixabay"},
+  {src:"https://cdn.pixabay.com/photo/2023/02/14/04/39/volunteer-7788809_1280.jpg",alt:"Bénévole ramassant des déchets sur une plage",title:"Agir ensemble sur le terrain",credit:"Photographie · chaiyananuwatmongkolchai / Pixabay"}
+ ];
+ const image=document.getElementById("heroPhoto"),title=document.getElementById("heroTitle"),credit=document.getElementById("heroCredit");
+ const dots=[...document.querySelectorAll("#photoDots button")],pause=document.getElementById("photoPause");
+ let current=0,paused=window.matchMedia("(prefers-reduced-motion: reduce)").matches,timer=null;
+ function show(n){current=(n+slides.length)%slides.length;const s=slides[current];image.src=s.src;image.alt=s.alt;title.textContent=s.title;credit.textContent=s.credit;dots.forEach((d,i)=>d.setAttribute("aria-current",String(i===current)));}
+ function stop(){if(timer)clearInterval(timer);timer=null;}
+ function start(){stop();if(!paused)timer=setInterval(()=>show(current+1),5500);}
+ document.getElementById("photoPrev").addEventListener("click",()=>{show(current-1);start();});
+ document.getElementById("photoNext").addEventListener("click",()=>{show(current+1);start();});
+ dots.forEach((d,i)=>d.addEventListener("click",()=>{show(i);start();}));
+ pause.addEventListener("click",()=>{paused=!paused;pause.textContent=paused?"▶":"Ⅱ";pause.setAttribute("aria-label",paused?"Reprendre le diaporama":"Mettre le diaporama en pause");start();});
+ document.addEventListener("visibilitychange",()=>{if(document.hidden)stop();else start();});
+ start();
+})();
+</script>
+
 </body></html>
