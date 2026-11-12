@@ -4,16 +4,16 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="theme-color" content="#071426">
-  <meta name="description" content="ATLAS MONDE : explorez la planète à travers les cartes interactives, les routes et les vues satellites.">
+  <meta name="description" content="ATLAS MONDE : explorez la planète avec des cartes interactives, des routes, des vues satellites et Google Earth.">
   <title>ATLAS MONDE | Explorer la planète</title>
   <link rel="preconnect" href="https://unpkg.com">
   <link rel="preconnect" href="https://tile.openstreetmap.org">
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
   <style>
-    :root{--bg:#071426;--panel:#0d2038;--panel2:#102944;--blue:#36a9ff;--red:#f04452;--text:#f4f8ff;--muted:#b8c8da;--line:#25415f}
+    :root{--bg:#071426;--panel:#0d2038;--panel2:#102944;--blue:#36a9ff;--red:#f04452;--text:#f4f8ff;--muted:#bfd0e2;--line:#294866}
     *{box-sizing:border-box}
-    html{scroll-behavior:smooth}
-    body{margin:0;background:radial-gradient(ellipse at 50% -20%,#173b62 0,#071426 52%);color:var(--text);font-family:Arial,Helvetica,sans-serif;line-height:1.5}
+    html{scroll-behavior:smooth;scroll-padding-top:18px}
+    body{margin:0;background:radial-gradient(ellipse at 50% -20%,#173b62 0,#071426 52%);color:var(--text);font-family:Arial,Helvetica,sans-serif;line-height:1.55}
     a{color:inherit}
     .wrap{width:min(1180px,94%);margin:auto}
     header{padding:25px 0 18px;border-bottom:1px solid rgba(160,195,230,.16)}
@@ -24,31 +24,57 @@
     .planet{width:clamp(48px,8vw,78px);height:clamp(48px,8vw,78px);flex:none}
     .tagline{margin:13px 0 0;text-align:center;color:#d2e3f5;font-size:clamp(1rem,2.5vw,1.25rem);letter-spacing:.04em}
     nav{display:flex;justify-content:center;gap:10px;flex-wrap:wrap;padding:17px 0 3px}
-    nav a{font-size:.95rem;text-decoration:none;color:#d9e8f7;padding:9px 15px;border:1px solid var(--line);border-radius:30px;background:rgba(12,32,55,.7)}
-    nav a:hover,nav a:focus{background:#173b60;outline:2px solid var(--blue)}
+    nav a,.pill-link{font-size:1rem;text-decoration:none;color:#e4f1ff;padding:10px 16px;border:1px solid var(--line);border-radius:30px;background:rgba(12,32,55,.8)}
+    nav a:hover,nav a:focus,.pill-link:hover,.pill-link:focus{background:#173b60;outline:2px solid var(--blue);outline-offset:2px}
     main{padding:27px 0 50px}
-    .intro{text-align:center;margin:0 auto 22px;max-width:850px}
-    .intro h2{font-size:clamp(1.5rem,4vw,2.3rem);margin:0 0 8px}
-    .intro p{color:var(--muted);margin:0;font-size:1.05rem}
+    .intro{text-align:center;margin:0 auto 22px;max-width:880px}
+    .intro h2{font-size:clamp(1.6rem,4vw,2.4rem);margin:0 0 8px}
+    .intro p{color:var(--muted);margin:0;font-size:1.08rem}
+    .earth-panel{display:grid;grid-template-columns: minmax(180px,.8fr) 1.2fr;align-items:center;gap:24px;background:linear-gradient(120deg,#0b2b4c,#102944 65%,#0b1d33);border:1px solid #28608b;border-radius:22px;padding:clamp(18px,4vw,34px);margin:25px 0;box-shadow:0 18px 55px rgba(0,0,0,.25)}
+    .earth-art{display:flex;justify-content:center;align-items:center;min-height:190px}
+    .earth-art svg{width:min(100%,230px);height:auto;filter:drop-shadow(0 0 28px rgba(43,164,255,.32))}
+    .earth-copy h2{font-size:clamp(1.45rem,3.4vw,2.1rem);margin:0 0 8px}
+    .earth-copy p{color:#d0e1f2;margin:0 0 17px;font-size:1.05rem}
+    .earth-button{display:inline-flex;align-items:center;justify-content:center;gap:10px;text-decoration:none;background:#087fca;color:white;border:1px solid #69c8ff;border-radius:12px;padding:14px 20px;font-weight:800;font-size:1.08rem;box-shadow:0 7px 22px rgba(0,0,0,.2)}
+    .earth-button:hover,.earth-button:focus{background:#139be9;outline:3px solid #a5ddff;outline-offset:3px}
+    .small-note{display:block;color:#a9c2d9;font-size:.88rem;margin-top:10px}
     .map-panel{background:var(--panel);border:1px solid var(--line);border-radius:20px;padding:14px;box-shadow:0 18px 55px rgba(0,0,0,.28)}
     .map-top{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;padding:2px 2px 13px}
-    .map-top h3{margin:0;font-size:1.2rem}
-    .map-top span{color:var(--muted);font-size:.9rem}
-    .search{display:flex;gap:8px;width:min(100%,520px)}
-    input{min-width:0;flex:1;background:#061326;color:white;border:1px solid #42617e;border-radius:10px;padding:13px 14px;font-size:1rem}
-    button{cursor:pointer;background:#147bc4;color:white;border:1px solid #369de7;border-radius:10px;padding:12px 16px;font-size:1rem;font-weight:700}
+    .map-top h3{margin:0;font-size:1.25rem}
+    .map-top span{color:var(--muted);font-size:.95rem}
+    .search{display:flex;gap:8px;width:min(100%,550px)}
+    input{min-width:0;flex:1;background:#061326;color:white;border:1px solid #55728e;border-radius:10px;padding:14px;font-size:1.05rem}
+    input::placeholder{color:#aebfd1}
+    button{cursor:pointer;background:#147bc4;color:white;border:1px solid #369de7;border-radius:10px;padding:13px 17px;font-size:1rem;font-weight:700}
     button:hover,button:focus{background:#2099e8;outline:2px solid #9bd6ff;outline-offset:2px}
     #map{height:min(66vh,610px);min-height:390px;border-radius:13px;overflow:hidden;background:#102b46}
-    .map-note{color:#b9cadd;font-size:.83rem;margin:10px 2px 0}
-    .features{display:grid;grid-template-columns:repeat(3,1fr);gap:15px;margin-top:22px}
-    .feature{background:linear-gradient(145deg,#102944,#0a1b30);border:1px solid var(--line);border-radius:15px;padding:18px}
-    .feature .symbol{font-size:1.8rem}
-    .feature h3{margin:7px 0 5px;font-size:1.12rem}
-    .feature p{margin:0;color:var(--muted);font-size:.95rem}
-    footer{border-top:1px solid rgba(160,195,230,.16);padding:20px 0 30px;text-align:center;color:#9fb4c9;font-size:.9rem}
+    .map-note{color:#bfd0e2;font-size:.88rem;margin:10px 2px 0}
+    .section-heading{text-align:center;margin:42px auto 18px;max-width:850px}
+    .section-heading h2{font-size:clamp(1.5rem,3.6vw,2.15rem);margin:0 0 6px}
+    .section-heading p{color:var(--muted);margin:0;font-size:1.03rem}
+    .category-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}
+    .category{display:block;text-decoration:none;background:linear-gradient(145deg,#102944,#0a1b30);border:1px solid var(--line);border-radius:16px;padding:19px;min-height:155px;transition:transform .15s,border-color .15s}
+    .category:hover,.category:focus{transform:translateY(-2px);border-color:#4ab6ff;outline:2px solid #4ab6ff;outline-offset:2px}
+    .category .symbol{font-size:2rem}
+    .category h3{margin:6px 0 5px;font-size:1.15rem}
+    .category p{margin:0;color:var(--muted);font-size:.98rem}
+    .category .more{display:inline-block;color:#78caff;font-weight:700;margin-top:10px}
+    .module-list{display:grid;grid-template-columns:repeat(2,1fr);gap:13px;margin-top:18px}
+    .module{background:#0b1d32;border:1px solid #294866;border-radius:14px;padding:18px}
+    .module h3{font-size:1.12rem;margin:0 0 5px}
+    .module p{margin:0 0 13px;color:var(--muted)}
+    .module button{padding:10px 14px}
+    .continents{display:grid;grid-template-columns:repeat(4,1fr);gap:10px}
+    .continent{background:#102944;border:1px solid var(--line);border-radius:12px;padding:13px;text-align:center}
+    .continent button{width:100%;background:transparent;border:0;padding:3px;color:#eaf5ff;font-size:1rem}
+    .continent button:hover,.continent button:focus{color:#78caff;background:transparent;outline:2px solid #4ab6ff}
+    footer{border-top:1px solid rgba(160,195,230,.16);padding:22px 0 32px;text-align:center;color:#b5c7d9;font-size:.92rem}
+    footer a{color:#8bd1ff}
     .leaflet-control-layers,.leaflet-bar a{background:#0d2038!important;color:#fff!important;border-color:#45617c!important}
+    .leaflet-control-layers label{color:#fff}
     .leaflet-control-attribution{font-size:10px!important}
-    @media(max-width:720px){.features{grid-template-columns:1fr}.map-panel{padding:9px}#map{min-height:360px;height:58vh}.map-top{align-items:stretch}.search{width:100%}.search button{padding:11px 12px}}
+    @media(max-width:760px){.earth-panel{grid-template-columns:1fr;text-align:center;gap:5px}.earth-art{min-height:150px}.earth-art svg{width:155px}.category-grid{grid-template-columns:repeat(2,1fr)}.continents{grid-template-columns:repeat(2,1fr)}}
+    @media(max-width:540px){.category-grid,.module-list{grid-template-columns:1fr}.map-panel{padding:9px}#map{min-height:350px;height:55vh}.map-top{align-items:stretch}.search{width:100%}.search button{padding:11px 12px}.category{min-height:0}}
     @media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}*{transition:none!important}}
   </style>
 </head>
@@ -66,34 +92,106 @@
     </div>
     <p class="tagline">Explorez la planète, territoire par territoire.</p>
     <nav aria-label="Navigation principale">
-      <a href="#explorer">Explorer la carte</a>
-      <a href="#decouvrir">Découvrir ATLAS</a>
+      <a href="#google-earth">Google Earth</a>
+      <a href="#explorer">Carte interactive</a>
+      <a href="#cartes">Toutes les cartes</a>
+      <a href="#continents">Continents</a>
     </nav>
   </div>
 </header>
 <main class="wrap">
-  <section class="intro" id="explorer">
+  <section class="intro">
     <h2>Le monde à portée de carte</h2>
-    <p>Recherchez un lieu, zoomez sur les routes et explorez les territoires en vue classique ou satellite.</p>
+    <p>Un espace consacré à la cartographie, à la géolocalisation et à la découverte des territoires.</p>
   </section>
-  <section class="map-panel" aria-label="Carte interactive mondiale">
-    <div class="map-top">
-      <div><h3>🌐 Carte interactive mondiale</h3><span>Déplacez la carte et choisissez votre vue.</span></div>
-      <form class="search" id="searchForm">
-        <input id="placeSearch" type="search" placeholder="Rechercher une ville, un pays, un lieu…" aria-label="Rechercher un lieu">
-        <button type="submit">Rechercher</button>
-      </form>
+
+  <section class="earth-panel" id="google-earth" aria-labelledby="earth-title">
+    <div class="earth-art" aria-hidden="true">
+      <svg viewBox="0 0 240 240">
+        <defs>
+          <radialGradient id="earthBlue" cx="32%" cy="25%" r="75%"><stop stop-color="#a9eaff"/><stop offset=".35" stop-color="#278bd5"/><stop offset="1" stop-color="#06366f"/></radialGradient>
+          <linearGradient id="earthLand" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#a8e5b1"/><stop offset="1" stop-color="#32966d"/></linearGradient>
+          <clipPath id="earthClip"><circle cx="120" cy="120" r="88"/></clipPath>
+        </defs>
+        <circle cx="120" cy="120" r="99" fill="none" stroke="#54c7ff" stroke-width="2" opacity=".5"/>
+        <circle cx="120" cy="120" r="88" fill="url(#earthBlue)" stroke="#a9e5ff" stroke-width="2"/>
+        <g clip-path="url(#earthClip)" fill="url(#earthLand)" stroke="#b9f0c8" stroke-width="1.2">
+          <path d="M42 72l22-24 28-8 15 12-7 16-19 6-8 19-20 3-11-13zm67 8 16-9 20 7 8 17-13 13-3 25-18 10-13-21-13-10 3-19zm42-43 23-8 25 13 9 18-14 13-21-8-17 4-12-14zM143 148l22-7 22 13-4 27-18 22-16-9-11-22zM38 147l18-7 18 11 3 22-17 16-16-14z"/>
+        </g>
+        <ellipse cx="120" cy="120" rx="105" ry="37" transform="rotate(-24 120 120)" fill="none" stroke="#65cfff" stroke-width="3" opacity=".85"/>
+        <circle cx="120" cy="120" r="88" fill="none" stroke="#d4f5ff" stroke-width="1" opacity=".45"/>
+      </svg>
     </div>
-    <div id="map" role="application" aria-label="Carte interactive du monde"></div>
-    <p class="map-note">Carte routière : © OpenStreetMap contributors. Vue satellite : Esri, sources et conditions d'utilisation du fournisseur. Les résultats de recherche dépendent du service de géocodage.</p>
+    <div class="earth-copy">
+      <h2 id="earth-title">Explorez la Terre avec Google Earth</h2>
+      <p>Parcourez le globe, observez les paysages en imagerie satellite et découvrez des lieux du monde entier grâce au service officiel Google Earth.</p>
+      <a class="earth-button" href="https://earth.google.com/web/" target="_blank" rel="noopener noreferrer">🌍 Ouvrir Google Earth</a>
+      <span class="small-note">Ce bouton ouvre Google Earth dans un nouvel onglet. La carte ci-dessous reste l’espace cartographique interactif d’ATLAS.</span>
+    </div>
   </section>
-  <section class="features" id="decouvrir">
-    <article class="feature"><div class="symbol">🛰️</div><h3>Vue satellite</h3><p>Observez les paysages, les villes et les grandes formes du territoire depuis le ciel.</p></article>
-    <article class="feature"><div class="symbol">🛣️</div><h3>Routes et accès</h3><p>Explorez le réseau routier, les rues et les chemins disponibles sur la carte.</p></article>
-    <article class="feature"><div class="symbol">📍</div><h3>Recherche de lieux</h3><p>Localisez un pays, une ville ou un point géographique et zoomez directement dessus.</p></article>
+
+  <section id="explorer" aria-labelledby="map-title">
+    <div class="section-heading">
+      <h2 id="map-title">Carte interactive mondiale</h2>
+      <p>Recherchez un lieu, zoomez sur les routes et passez de la carte routière à la vue satellite.</p>
+    </div>
+    <div class="map-panel" aria-label="Carte interactive mondiale">
+      <div class="map-top">
+        <div><h3>🗺️ Explorer la carte</h3><span>Déplacez la carte et choisissez votre vue.</span></div>
+        <form class="search" id="searchForm">
+          <input id="placeSearch" type="search" placeholder="Ville, pays, adresse, monument…" aria-label="Rechercher un lieu">
+          <button type="submit">Rechercher</button>
+        </form>
+      </div>
+      <div id="map" role="application" aria-label="Carte interactive du monde"></div>
+      <p class="map-note">Carte routière : © OpenStreetMap contributors. Vue satellite : Esri. Recherche géographique : Nominatim / OpenStreetMap. Les couches disponibles dépendent des fournisseurs.</p>
+    </div>
+  </section>
+
+  <section id="cartes">
+    <div class="section-heading">
+      <h2>Les univers cartographiques</h2>
+      <p>Choisissez un domaine pour accéder à son espace de découverte. Les rubriques sont déjà reliées à leurs présentations sur cette page ; leurs cartes spécialisées seront développées ensuite.</p>
+    </div>
+    <div class="category-grid">
+      <a class="category" href="#routes"><div class="symbol">🛣️</div><h3>Routes et autoroutes</h3><p>Axes routiers, rues, itinéraires et accès.</p><span class="more">Découvrir cette rubrique →</span></a>
+      <a class="category" href="#satellite"><div class="symbol">🛰️</div><h3>Cartes satellites</h3><p>Images aériennes, paysages et territoires.</p><span class="more">Découvrir cette rubrique →</span></a>
+      <a class="category" href="#relief"><div class="symbol">⛰️</div><h3>Relief et terrain</h3><p>Montagnes, altitudes, vallées et formes du terrain.</p><span class="more">Découvrir cette rubrique →</span></a>
+      <a class="category" href="#transports"><div class="symbol">🚆</div><h3>Transports et accès</h3><p>Aéroports, ports, chemins de fer et grands accès.</p><span class="more">Découvrir cette rubrique →</span></a>
+      <a class="category" href="#frontieres"><div class="symbol">🌐</div><h3>Pays et frontières</h3><p>Pays, limites territoriales et capitales.</p><span class="more">Découvrir cette rubrique →</span></a>
+      <a class="category" href="#environnement"><div class="symbol">🌳</div><h3>Nature et environnement</h3><p>Forêts, océans, déserts et espaces naturels.</p><span class="more">Découvrir cette rubrique →</span></a>
+    </div>
+    <div class="module-list">
+      <article class="module" id="routes"><h3>🛣️ Routes et autoroutes</h3><p>Cette rubrique est destinée aux cartes routières, aux axes principaux et à la recherche d’itinéraires. La couche « Routes et villes » est disponible dans la carte interactive.</p><button type="button" onclick="showMapLayer('roads')">Afficher la carte routière</button></article>
+      <article class="module" id="satellite"><h3>🛰️ Cartes satellites</h3><p>Explorez les images satellite avec la couche dédiée dans la carte ATLAS, ou ouvrez Google Earth pour une exploration mondiale complémentaire.</p><button type="button" onclick="showMapLayer('satellite')">Afficher la vue satellite</button></article>
+      <article class="module" id="relief"><h3>⛰️ Relief et terrain</h3><p>Un espace prévu pour les cartes de relief, les altitudes, les chaînes montagneuses et les grands paysages.</p><button type="button" onclick="goToMap([28,0],3)">Explorer les reliefs du monde</button></article>
+      <article class="module" id="transports"><h3>🚆 Transports et accès</h3><p>Un espace prévu pour situer les aéroports, les ports maritimes, les réseaux ferroviaires et les grands points d’accès.</p><button type="button" onclick="goToMap([25,15],2)">Voir la carte mondiale</button></article>
+      <article class="module" id="frontieres"><h3>🌐 Pays et frontières</h3><p>Un espace prévu pour découvrir les pays, les capitales, les frontières et les régions du monde.</p><button type="button" onclick="goToMap([20,0],2)">Revenir à la carte mondiale</button></article>
+      <article class="module" id="environnement"><h3>🌳 Nature et environnement</h3><p>Un espace prévu pour explorer les forêts, les déserts, les littoraux, les océans et les espaces protégés.</p><button type="button" onclick="goToMap([-5,20],2)">Explorer les paysages</button></article>
+    </div>
+  </section>
+
+  <section id="continents">
+    <div class="section-heading">
+      <h2>Découvrir les sept continents</h2>
+      <p>Sélectionnez un continent pour déplacer la carte vers cette partie du monde.</p>
+    </div>
+    <div class="continents">
+      <div class="continent"><button type="button" onclick="goToMap([8,20],3)">🌍 Afrique</button></div>
+      <div class="continent"><button type="button" onclick="goToMap([48,15],3)">🌍 Europe</button></div>
+      <div class="continent"><button type="button" onclick="goToMap([35,100],3)">🌏 Asie</button></div>
+      <div class="continent"><button type="button" onclick="goToMap([-15, -60],3)">🌎 Amérique du Sud</button></div>
+      <div class="continent"><button type="button" onclick="goToMap([40,-100],3)">🌎 Amérique du Nord</button></div>
+      <div class="continent"><button type="button" onclick="goToMap([-25,135],3)">🌏 Océanie</button></div>
+      <div class="continent"><button type="button" onclick="goToMap([-82,0],2)">🧊 Antarctique</button></div>
+    </div>
   </section>
 </main>
-<footer><div class="wrap">ATLAS MONDE · Cartographie et exploration géographique · Un projet indépendant</div></footer>
+<footer>
+  <div class="wrap">ATLAS MONDE · Cartographie et exploration géographique · Projet indépendant<br>
+    Données cartographiques : <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener noreferrer">OpenStreetMap</a> · Imagerie : <a href="https://www.esri.com/" target="_blank" rel="noopener noreferrer">Esri</a> · Globe : <a href="https://earth.google.com/web/" target="_blank" rel="noopener noreferrer">Google Earth</a>
+  </div>
+</footer>
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 <script>
   const map = L.map('map', {worldCopyJump:true}).setView([20, 0], 2);
@@ -105,6 +203,21 @@
   });
   L.control.layers({'Routes et villes':roads,'Satellite':satellite},null,{collapsed:false}).addTo(map);
   let marker;
+  function goToMap(coords, zoom) {
+    document.getElementById('explorer').scrollIntoView({behavior:'smooth'});
+    map.setView(coords, zoom);
+    setTimeout(() => map.invalidateSize(), 350);
+  }
+  function showMapLayer(layer) {
+    if (layer === 'satellite') {
+      if (map.hasLayer(roads)) map.removeLayer(roads);
+      satellite.addTo(map);
+    } else {
+      if (map.hasLayer(satellite)) map.removeLayer(satellite);
+      roads.addTo(map);
+    }
+    goToMap(map.getCenter(), map.getZoom());
+  }
   document.getElementById('searchForm').addEventListener('submit', async (event) => {
     event.preventDefault();
     const input = document.getElementById('placeSearch');
@@ -120,7 +233,9 @@
       const place = results[0], lat = Number(place.lat), lon = Number(place.lon);
       map.setView([lat,lon], Math.max(map.getZoom(),12));
       if (marker) map.removeLayer(marker);
-      marker = L.marker([lat,lon]).addTo(map).bindPopup('<strong>' + String(place.display_name).replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c])) + '</strong>').openPopup();
+      const safeName = String(place.display_name).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+      marker = L.marker([lat,lon]).addTo(map).bindPopup('<strong>' + safeName + '</strong>').openPopup();
+      document.getElementById('explorer').scrollIntoView({behavior:'smooth'});
     } catch (error) {
       alert('La recherche n’a pas abouti. Vérifiez votre connexion puis réessayez.');
     } finally {
