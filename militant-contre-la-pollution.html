@@ -65,11 +65,7 @@ footer{border-top:1px solid #315575;padding:22px 0;color:var(--muted);font-size:
  </div>
  <div class="photo-controls">
   <button type="button" id="photoPrev" aria-label="Photo précédente">‹</button>
-  <div class="photo-dots" id="photoDots" aria-label="Choisir une photographie">
-   <button type="button" aria-label="Afficher la photo 1" aria-current="true"></button>
-   <button type="button" aria-label="Afficher la photo 2" aria-current="false"></button>
-   <button type="button" aria-label="Afficher la photo 3" aria-current="false"></button>
-  </div>
+  <div class="photo-dots" id="photoDots" aria-label="Choisir une photographie"></div>
   <button type="button" id="photoNext" aria-label="Photo suivante">›</button>
   <button type="button" id="photoPause" aria-label="Mettre le diaporama en pause">Ⅱ</button>
  </div>
@@ -162,10 +158,19 @@ footer{border-top:1px solid #315575;padding:22px 0;color:var(--muted);font-size:
  const slides=[
   {src:"https://assets.science.nasa.gov/dynamicimage/assets/science/esd/eo/images/iotd/2026/ontario-wildfire-smoke-drifts-east/ontariofires_virs3_20260714_lrg.jpg",alt:"Fumées des incendies en Ontario, Canada, le 14 juillet 2026",title:"Incendies au Canada · juillet 2026",credit:"Image satellite NOAA-21 / NASA Earth Observatory · Lauren Dauphin"},
   {src:"https://cdn.pixabay.com/photo/2022/11/26/08/28/plastic-waste-7617454_1280.jpg",alt:"Déchets plastiques dans un environnement marin, image illustrative",title:"Les déchets plastiques dans les océans",credit:"Image illustrative · RosZie / Pixabay"},
-  {src:"https://cdn.pixabay.com/photo/2023/02/14/04/39/volunteer-7788809_1280.jpg",alt:"Bénévole ramassant des déchets sur une plage",title:"Agir ensemble sur le terrain",credit:"Photographie · chaiyananuwatmongkolchai / Pixabay"}
+  {src:"https://cdn.pixabay.com/photo/2023/02/14/04/39/volunteer-7788809_1280.jpg",alt:"Bénévole ramassant des déchets sur une plage",title:"Agir ensemble sur le terrain",credit:"Photographie · chaiyananuwatmongkolchai / Pixabay"},
+  {src:"https://upload.wikimedia.org/wikipedia/commons/b/b0/Beach_Cleaning_Volunteers.jpg",alt:"Groupe d'étudiants bénévoles participant à un nettoyage de plage",title:"Des étudiants mobilisés pour nettoyer une plage",credit:"Debbie Foote · National Park Service · domaine public"},
+  {src:"https://upload.wikimedia.org/wikipedia/commons/a/a9/CA_Volunteers_clean_the_beach_%285857565406%29.jpg",alt:"Bénévoles et sacs de déchets collectés lors d'une opération de nettoyage",title:"Collecter les déchets, protéger les espaces naturels",credit:"Virginia State Parks staff · CC BY 2.0"},
+  {src:"https://upload.wikimedia.org/wikipedia/commons/c/cb/A_Sailor_collects_trash_on_the_beach.jpg",alt:"Marin transportant des sacs de déchets ramassés sur une plage",title:"Nettoyage d'une plage à Diego Garcia",credit:"U.S. Navy · Eric A. Pastor · domaine public"},
+  {src:"https://upload.wikimedia.org/wikipedia/commons/1/14/230126-G-DV874-1161_-_USCGC_Spencer_%28WMEC_905%29_participates_in_a_joint_organization_beach_clean-up.jpg",alt:"Nettoyage collectif d'une plage à Lomé au Togo",title:"Une coopération internationale au Togo",credit:"U.S. Coast Guard · Mikaela McGee · domaine public"},
+  {src:"https://upload.wikimedia.org/wikipedia/commons/7/7f/A_man_cleaning_up_the_beach.jpg",alt:"Un bénévole nettoie la plage de Kawe à Dar es Salaam en Tanzanie",title:"Un geste citoyen en Tanzanie",credit:"Rwebogora · CC BY-SA 4.0"},
+  {src:"https://upload.wikimedia.org/wikipedia/commons/b/b2/Beach_cleanup_140502-N-RI884-006.jpg",alt:"Plus de cinquante bénévoles participant à un nettoyage de plage à Pearl Harbor",title:"Plus de cinquante bénévoles à Pearl Harbor",credit:"U.S. Navy · Daniel Barker · domaine public"},
+  {src:"https://cdn.pixabay.com/photo/2020/03/25/03/07/waste-4965944_640.jpg",alt:"Déchets et emballages accumulés dans une poubelle",title:"Réduire les déchets à la source",credit:"Image illustrative · Pixabay"}
  ];
  const image=document.getElementById("heroPhoto"),title=document.getElementById("heroTitle"),credit=document.getElementById("heroCredit");
- const dots=[...document.querySelectorAll("#photoDots button")],pause=document.getElementById("photoPause");
+ const dotsHost=document.getElementById("photoDots"),pause=document.getElementById("photoPause");
+ slides.forEach((slide,i)=>{const b=document.createElement("button");b.type="button";b.setAttribute("aria-label","Afficher la photo "+(i+1)+" : "+slide.title);b.setAttribute("aria-current",String(i===0));dotsHost.appendChild(b);});
+ const dots=[...dotsHost.querySelectorAll("button")];
  let current=0,paused=window.matchMedia("(prefers-reduced-motion: reduce)").matches,timer=null;
  function show(n){current=(n+slides.length)%slides.length;const s=slides[current];image.src=s.src;image.alt=s.alt;title.textContent=s.title;credit.textContent=s.credit;dots.forEach((d,i)=>d.setAttribute("aria-current",String(i===current)));}
  function stop(){if(timer)clearInterval(timer);timer=null;}
