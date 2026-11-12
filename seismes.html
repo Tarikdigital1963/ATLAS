@@ -40,6 +40,7 @@ footer{text-align:center;color:var(--muted);border-top:1px solid var(--line);pad
 <select id="feedSelect"><option value="all_day">Tous les séismes · dernières 24 heures</option><option value="2.5_day">Magnitude 2,5+ · dernières 24 heures</option><option value="4.5_day">Magnitude 4,5+ · dernières 24 heures</option><option value="significant_day">Séismes significatifs · dernières 24 heures</option><option value="all_hour">Tous les séismes · dernière heure</option></select>
 <button id="refreshButton" type="button">Actualiser</button>
 <button id="notifyButton" type="button">Activer les notifications</button>
+<button id="soundButton" type="button">🔊 Activer le son des alertes</button>
 <div class="status" id="status" role="status" aria-live="polite">Chargement des données sismiques…</div>
 </div>
 <div class="stats" aria-live="polite">
@@ -62,6 +63,27 @@ const statusEl=document.getElementById('status');
 let knownIds=new Set();
 let firstLoad=true;
 let notificationReady=false;
+let soundEnabled=false;
+let audioContext=null;
+function playAlertTone(){
+ try{
+  const AudioCtx=window.AudioContext||window.webkitAudioContext;
+  if(!AudioCtx)return;
+  if(!audioContext)audioContext=new AudioCtx();
+  if(audioContext.state==="suspended")audioContext.resume();
+  const now=audioContext.currentTime;
+  [880,660].forEach((frequency,index)=>{
+   const oscillator=audioContext.createOscillator();
+   const gain=audioContext.createGain();
+   oscillator.type="sine";oscillator.frequency.value=frequency;
+   gain.gain.setValueAtTime(0.0001,now+index*0.22);
+   gain.gain.exponentialRampToValueAtTime(0.18,now+index*0.22+0.025);
+   gain.gain.exponentialRampToValueAtTime(0.0001,now+index*0.22+0.18);
+   oscillator.connect(gain);gain.connect(audioContext.destination);
+   oscillator.start(now+index*0.22);oscillator.stop(now+index*0.22+0.2);
+  });
+ }catch(error){statusEl.textContent="Le son n’a pas pu être démarré. Touchez à nouveau le bouton son."}
+}
 function safeText(value){return String(value??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));}
 function colorFor(m){return m>=6?'#d71920':m>=5?'#f07c22':m>=4?'#e6c229':'#39a96b';}
 function formatTime(ms){return new Intl.DateTimeFormat('fr-FR',{dateStyle:'medium',timeStyle:'short'}).format(new Date(ms));}
@@ -99,13 +121,20 @@ async function loadQuakes(){
   document.getElementById('lastUpdate').textContent=new Intl.DateTimeFormat('fr-FR',{hour:'2-digit',minute:'2-digit',second:'2-digit'}).format(new Date());
   statusEl.textContent='Données actualisées · '+(data.metadata?.title||feed)+' · Actualisation automatique toutes les 60 secondes.';
   if(!features.length){const empty=document.createElement('p');empty.textContent='Aucun événement dans ce flux pour la période choisie.';list.append(empty);}
-  if(notificationReady&&Notification.permission==='granted')newEvents.forEach(e=>new Notification('Nouveau séisme · magnitude '+e.mag,{body:e.title}));
+  if(soundEnabled&&newEvents.length)playAlertTone();
+  if(notificationReady&&Notification.permission==='granted')newEvents.forEach(e=>new Notification('Nouveau séisme · magnitude '+e.mag,{body:e.title,silent:false}));
   firstLoad=false;
  }catch(error){statusEl.textContent='Impossible de récupérer les données. Vérifiez la connexion puis réessayez.';}
  finally{document.getElementById('refreshButton').disabled=false;}
 }
 document.getElementById('refreshButton').addEventListener('click',loadQuakes);
 feedSelect.addEventListener('change',()=>{firstLoad=true;knownIds=new Set();loadQuakes();});
+document.getElementById('soundButton').addEventListener('click',()=>{
+ soundEnabled=true;
+ playAlertTone();
+ document.getElementById('soundButton').textContent='🔔 Son des alertes activé';
+ statusEl.textContent='Son activé : un signal retentira pour chaque nouveau séisme de magnitude 4,5 ou plus détecté pendant que cette page fonctionne.';
+});
 document.getElementById('notifyButton').addEventListener('click',async()=>{
  if(!('Notification'in window)){statusEl.textContent='Les notifications ne sont pas prises en charge par ce navigateur.';return;}
  const permission=await Notification.requestPermission();
