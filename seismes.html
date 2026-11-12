@@ -133,7 +133,7 @@ document.getElementById('soundButton').addEventListener('click',()=>{
  soundEnabled=true;
  playAlertTone();
  document.getElementById('soundButton').textContent='🔔 Son des alertes activé';
- statusEl.textContent='Son activé : un signal retentira pour chaque nouveau séisme de magnitude 4,5 ou plus détecté pendant que cette page fonctionne.';
+ statusEl.textContent='Son activé : un signal retentira pour chaque nouveau séisme de magnitude 2,5 ou plus détecté pendant que cette page fonctionne.';
 });
 document.getElementById('notifyButton').addEventListener('click',async()=>{
  if(!('Notification'in window)){statusEl.textContent='Les notifications ne sont pas prises en charge par ce navigateur.';return;}
