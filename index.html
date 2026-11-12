@@ -84,6 +84,9 @@
     .side-menu a:hover,.side-menu a:focus{outline:2px solid #69c8ff;background:#173b60}
     .side-menu .quake-menu-link{font-size:1.3rem;font-weight:900;line-height:1.35;padding:20px 14px;text-align:center;background:linear-gradient(135deg,#7b202a,#c43c35 55%,#7b202a);border:2px solid #ff8b7e;box-shadow:0 0 20px rgba(240,68,82,.22);margin:0 0 18px}
     .side-menu .quake-menu-link span{display:block;font-size:.92rem;font-weight:600;margin-top:5px;color:#fff0ed}
+    .side-menu .fire-menu-link{display:block!important;background:#ffd400!important;color:#151515!important;border:3px solid #ff4b2b!important;border-radius:12px;font-size:1.12rem!important;font-weight:1000!important;text-align:center;box-shadow:0 0 0 2px #ffd40066,0 4px 14px #0008;margin:0 0 18px!important;padding:16px 12px!important}
+    .side-menu .fire-menu-link small{display:block;color:#222;font-size:.85rem;font-weight:700;margin-top:5px}
+    .fire-menu-badge{display:inline-block;background:#b51e26;color:#fff;border-radius:6px;padding:3px 7px;font-size:.75rem;margin-left:5px;letter-spacing:.03em}
     .menu-backdrop{display:none;position:fixed;inset:0;background:rgba(0,0,0,.58);z-index:1198}
     .menu-backdrop.show{display:block}
     @media(prefers-reduced-motion:reduce){.side-menu{transition:none}}
@@ -97,6 +100,7 @@
 <aside class="side-menu" id="atlasSideMenu" aria-label="Menu des catégories">
   <h2>Explorer ATLAS MONDE</h2>
   <a class="quake-menu-link" href="./seismes.html">🌍 SÉISMES EN DIRECT<span>Carte mondiale · dernières secousses · magnitudes</span></a>
+  <a class="fire-menu-link" href="./incendies.html">🔥 INCENDIES ET ALERTES <span class="fire-menu-badge">ALERTE MONDIALE</span><small>Carte mondiale · feux actifs · notifications</small></a>
   <h2>Catégories cartographiques</h2>
   <a href="#explorer">🗺️ Carte interactive</a>
   <a href="#routes">🛣️ Routes et autoroutes</a>
