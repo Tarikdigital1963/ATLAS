@@ -58,6 +58,21 @@ footer{border-top:1px solid #315575;padding:22px 0;color:var(--muted);font-size:
 @media(max-width:520px){.photo-grid{grid-template-columns:1fr}.photo-card img{height:190px}.photo-stage{height:290px}}
 @media(prefers-reduced-motion:reduce){.photo-stage img{transition:none!important}}
 
+
+/* Dossier spécial COP31 */
+.cop31-box{border:1px solid #4b8b72;background:linear-gradient(145deg,#123b3a,#0a2032);border-radius:18px;padding:clamp(18px,4vw,30px);margin:24px 0;box-shadow:0 12px 32px #0005}
+.cop31-box h2{color:#a8f0bd}
+.cop31-meta{color:#c4dfd5;font-size:.95rem;margin-bottom:14px}
+.cop31-hero{position:relative;border-radius:14px;overflow:hidden;background:#061321;margin:18px 0 10px}
+.cop31-hero img{display:block;width:100%;height:clamp(240px,52vw,470px);object-fit:cover}
+.cop31-caption{padding:10px 13px;background:#061a2b;color:#dceeff;font-size:.9rem}
+.cop31-controls{display:flex;justify-content:center;align-items:center;gap:12px;margin:10px 0 18px}
+.cop31-controls button{min-width:48px;min-height:46px;border:1px solid #8be0b0;border-radius:10px;background:#116345;color:#fff;font-size:1.25rem}
+.cop31-credit{font-size:.88rem;color:#c2d4e5}
+.cop31-sources{display:flex;flex-wrap:wrap;gap:10px;margin-top:15px}
+.cop31-sources a{display:inline-block;padding:10px 13px;border:1px solid #4d7894;border-radius:10px;background:#0b2036;text-decoration:none}
+@media(prefers-reduced-motion:reduce){.cop31-hero img{transition:none!important}}
+
 </style>
 </head>
 <body>
@@ -78,6 +93,38 @@ footer{border-top:1px solid #315575;padding:22px 0;color:var(--muted);font-size:
   <button type="button" id="photoNext" aria-label="Photo suivante">›</button>
   <button type="button" id="photoPause" aria-label="Mettre le diaporama en pause">Ⅱ</button>
  </div>
+</section>
+
+
+<section class="cop31-box" aria-labelledby="cop31-title">
+  <div class="cop31-meta">DOSSIER SPÉCIAL · 14 NOVEMBRE 2026 · ANTALYA, TÜRKİYE</div>
+  <h2 id="cop31-title">COP31 en Turquie : le monde appelé à transformer les engagements climatiques en actions concrètes</h2>
+  <p><strong>Par Tarik El Mers · ATLAS MONDE</strong></p>
+  <p>La 31e Conférence des Nations unies sur les changements climatiques, connue sous le nom de COP31, se déroule à Antalya, en Türkiye, du 9 au 20 novembre 2026. À mi-parcours, responsables politiques, négociateurs, scientifiques, organisations et représentants de la société civile poursuivent leurs échanges sur les réponses à apporter à la crise climatique.</p>
+  <div class="cop31-hero">
+    <img id="cop31Photo" src="https://web-cdnprod.aa.com.tr/uploads/PhotoGallery/2026/11/13/thumbs_b_f9d1013e1d10a00a2fb06e55b783c0c1.jpg" alt="Pavillon de la Türkiye dans la zone bleue de la COP31 à Antalya, photographie du 13 novembre 2026" loading="lazy">
+  </div>
+  <div class="cop31-caption" id="cop31Caption">Le pavillon de la Türkiye dans la zone bleue de la COP31 · Antalya, 13 novembre 2026 · Anadolu Ajansı / Beyza Cömert</div>
+  <div class="cop31-controls" aria-label="Commandes du diaporama COP31">
+    <button type="button" id="cop31Prev" aria-label="Photo précédente">‹</button>
+    <span id="cop31Count" aria-live="polite">1 / 3</span>
+    <button type="button" id="cop31Next" aria-label="Photo suivante">›</button>
+    <button type="button" id="cop31Pause" aria-label="Mettre le diaporama en pause">Ⅱ</button>
+  </div>
+  <p>Les discussions portent notamment sur la réduction des émissions, l’adaptation aux effets du changement climatique, le financement des pays les plus vulnérables, la transition énergétique et la mise en œuvre des engagements internationaux. L’enjeu central est de passer des déclarations politiques à des mesures vérifiables, financées et suivies dans le temps.</p>
+  <p>Les échanges de la première semaine ont aussi mis en évidence les difficultés d’accès au financement et aux technologies, particulièrement pour les pays en développement. Le 13 novembre, des fondations ont annoncé une enveloppe de 480 millions de dollars destinée à réduire le méthane et d’autres polluants climatiques puissants dans les secteurs de l’énergie, de l’agriculture et des déchets. Cette annonce constitue un signal financier important, mais elle ne remplace pas les décisions et les moyens nécessaires à long terme.</p>
+  <p>Le 14 novembre, le secrétariat de la Convention-cadre des Nations unies a fait le point sur l’avancement des négociations et appelé les participants à accélérer les travaux sur les questions les plus difficiles. La conférence doit se poursuivre jusqu’au 20 novembre : ses conclusions définitives ne sont donc pas encore connues.</p>
+  <h3>Pourquoi cette conférence concerne-t-elle aussi la lutte contre la pollution ?</h3>
+  <p>Le changement climatique et la pollution sont étroitement liés. La combustion des énergies fossiles émet des gaz à effet de serre et contribue également à la pollution de l’air. Une meilleure gestion des déchets peut réduire les émissions de méthane, tandis que la protection des océans, des sols et des ressources en eau renforce la résilience des populations.</p>
+  <p>Pour ATLAS MONDE, cette rencontre rappelle que la protection de l’environnement ne doit pas rester un sujet de conférence. Elle doit se traduire par des politiques publiques cohérentes, des investissements, des contrôles transparents et des initiatives locales auxquelles les citoyens peuvent prendre part.</p>
+  <p><strong>Notre appel :</strong> soutenir les actions de prévention, réduire les déchets à la source, préserver l’eau et les espaces naturels, et demander aux décideurs des engagements mesurables. La responsabilité est collective, mais les moyens d’agir doivent être à la hauteur des défis.</p>
+  <p class="cop31-credit">Photographies : Anadolu Ajansı, galerie COP31 à Antalya, 13 novembre 2026. Les images sont créditées à leur agence et à leur photographe ; leur réutilisation doit respecter les conditions de l’éditeur.</p>
+  <div class="cop31-sources">
+    <a href="https://www.un.org/en/climatechange/cop31" target="_blank" rel="noopener noreferrer">ONU · Présentation officielle de la COP31</a>
+    <a href="https://unfccc.int/cop31" target="_blank" rel="noopener noreferrer">CCNUCC · Actualités et programme</a>
+    <a href="https://enb.iisd.org/fr/antalya-un-climate-change-conference-cop31" target="_blank" rel="noopener noreferrer">IISD · Suivi des négociations en français</a>
+    <a href="https://www.aa.com.tr/en/pg/photo-gallery/cop31-climate-summit-in-turkiyes-antalya/169891" target="_blank" rel="noopener noreferrer">Anadolu Ajansı · Galerie photographique</a>
+  </div>
 </section>
 
 <section class="panel">
@@ -187,6 +234,28 @@ footer{border-top:1px solid #315575;padding:22px 0;color:var(--muted);font-size:
  document.getElementById("photoPrev").addEventListener("click",()=>{show(current-1);start();});
  document.getElementById("photoNext").addEventListener("click",()=>{show(current+1);start();});
  dots.forEach((d,i)=>d.addEventListener("click",()=>{show(i);start();}));
+ pause.addEventListener("click",()=>{paused=!paused;pause.textContent=paused?"▶":"Ⅱ";pause.setAttribute("aria-label",paused?"Reprendre le diaporama":"Mettre le diaporama en pause");start();});
+ document.addEventListener("visibilitychange",()=>{if(document.hidden)stop();else start();});
+ start();
+})();
+</script>
+
+
+<script>
+(function(){
+ const slides=[
+  {src:"https://web-cdnprod.aa.com.tr/uploads/PhotoGallery/2026/11/13/thumbs_b_f9d1013e1d10a00a2fb06e55b783c0c1.jpg",alt:"Pavillon de la Türkiye dans la zone bleue de la COP31 à Antalya",caption:"Pavillon de la Türkiye dans la zone bleue · 13 novembre 2026 · Anadolu Ajansı / Beyza Cömert"},
+  {src:"https://web-cdnprod.aa.com.tr/uploads/PhotoGallery/2026/11/13/thumbs_b2_5094fff5eaccb2f1bd39da0e7a737020.jpg",alt:"Visiteur découvrant une exposition dans le pavillon de la Türkiye à la COP31",caption:"Exposition au pavillon de la Türkiye · COP31, Antalya · Anadolu Ajansı / Beyza Cömert"},
+  {src:"https://web-cdnprod.aa.com.tr/uploads/PhotoGallery/2026/11/13/thumbs_b2_2b55257faeb1cc793ae213e7ac905090.jpg",alt:"Présentation d'un espace d'exposition consacré au patrimoine à la COP31",caption:"Espace d'exposition dans la zone bleue · COP31, Antalya · Anadolu Ajansı / Beyza Cömert"}
+ ];
+ const img=document.getElementById("cop31Photo"),caption=document.getElementById("cop31Caption"),count=document.getElementById("cop31Count"),pause=document.getElementById("cop31Pause");
+ if(!img||!caption||!count||!pause)return;
+ let current=0,paused=window.matchMedia("(prefers-reduced-motion: reduce)").matches,timer=null;
+ function show(n){current=(n+slides.length)%slides.length;const s=slides[current];img.src=s.src;img.alt=s.alt;caption.textContent=s.caption;count.textContent=(current+1)+" / "+slides.length;}
+ function stop(){if(timer)clearInterval(timer);timer=null;}
+ function start(){stop();if(!paused)timer=setInterval(()=>show(current+1),6000);}
+ document.getElementById("cop31Prev").addEventListener("click",()=>{show(current-1);start();});
+ document.getElementById("cop31Next").addEventListener("click",()=>{show(current+1);start();});
  pause.addEventListener("click",()=>{paused=!paused;pause.textContent=paused?"▶":"Ⅱ";pause.setAttribute("aria-label",paused?"Reprendre le diaporama":"Mettre le diaporama en pause");start();});
  document.addEventListener("visibilitychange",()=>{if(document.hidden)stop();else start();});
  start();
