@@ -84,8 +84,8 @@
     .leaflet-control-attribution{font-size:10px!important}
 
     /* Accès rapides circulaires : séismes, incendies et pollution de l'air */
-    .alert-shortcuts{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:clamp(12px,3vw,28px);justify-items:center;align-items:center;margin:30px auto 36px;max-width:900px}
-    .alert-circle{width:clamp(150px,22vw,220px);aspect-ratio:1;border-radius:50%;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:7px;text-align:center;text-decoration:none;color:#fff;border:5px solid rgba(255,255,255,.78);box-shadow:0 10px 28px rgba(0,0,0,.38),inset 0 0 0 5px rgba(255,255,255,.12);transition:transform .18s ease,filter .18s ease,box-shadow .18s ease;padding:14px}
+    .alert-shortcuts{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:clamp(10px,2vw,20px);justify-items:center;align-items:center;margin:30px auto 36px;max-width:1050px}
+    .alert-circle{width:clamp(128px,17vw,178px);aspect-ratio:1;border-radius:50%;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:7px;text-align:center;text-decoration:none;color:#fff;border:5px solid rgba(255,255,255,.78);box-shadow:0 10px 28px rgba(0,0,0,.38),inset 0 0 0 5px rgba(255,255,255,.12);transition:transform .18s ease,filter .18s ease,box-shadow .18s ease;padding:14px}
     .alert-circle:hover,.alert-circle:focus{transform:scale(1.07);filter:brightness(1.12);box-shadow:0 14px 36px rgba(0,0,0,.48),0 0 0 4px rgba(255,255,255,.2);outline:3px solid #fff;outline-offset:4px}
     .alert-circle .alert-emoji{font-size:clamp(2.5rem,6vw,4.2rem);line-height:1;filter:drop-shadow(0 3px 4px rgba(0,0,0,.35))}
     .alert-circle strong{font-size:clamp(1.05rem,2.4vw,1.45rem);font-weight:900;letter-spacing:.035em;text-shadow:0 2px 5px rgba(0,0,0,.5)}
@@ -94,7 +94,8 @@
     .alert-fire{background:radial-gradient(circle at 35% 25%,#fff08a,#e6a900 58%,#9b5900);border-color:#fff1ad;color:#241600}
     .alert-fire strong,.alert-fire span:last-child{text-shadow:0 1px 3px rgba(255,255,255,.5)}
     .alert-pollution{background:radial-gradient(circle at 35% 25%,#9cf0a9,#159b59 58%,#07552f);border-color:#b9ffd0}
-    @media(max-width:600px){.alert-shortcuts{gap:9px;margin:24px auto 30px}.alert-circle{width:clamp(102px,28vw,150px);border-width:3px;padding:8px;gap:5px}.alert-circle .alert-emoji{font-size:clamp(2rem,9vw,3rem)}.alert-circle strong{font-size:clamp(.82rem,3.3vw,1.05rem)}.alert-circle span:last-child{font-size:clamp(.65rem,2.4vw,.78rem)}}
+    .alert-space{background:radial-gradient(circle at 35% 25%,#a6e7ff,#1878ad 58%,#10345e);border-color:#a9e5ff}
+    @media(max-width:760px){.alert-shortcuts{grid-template-columns:repeat(2,minmax(0,1fr));gap:14px;margin:24px auto 30px}.alert-circle{width:clamp(125px,34vw,170px);border-width:3px;padding:8px;gap:5px}.alert-circle .alert-emoji{font-size:clamp(2rem,9vw,3rem)}.alert-circle strong{font-size:clamp(.82rem,3.3vw,1.05rem)}.alert-circle span:last-child{font-size:clamp(.65rem,2.4vw,.78rem)}}
     @media(prefers-reduced-motion:reduce){.alert-circle{transition:none}}
 
     @media(max-width:760px){.earth-panel{grid-template-columns:1fr;text-align:center;gap:5px}.earth-art{min-height:150px}.earth-art svg{width:155px}.category-grid{grid-template-columns:repeat(2,1fr)}.continents{grid-template-columns:repeat(2,1fr)}}
@@ -113,6 +114,8 @@
     .fire-menu-badge{display:inline-block;background:#b51e26;color:#fff;border-radius:6px;padding:3px 7px;font-size:.75rem;margin-left:5px;letter-spacing:.03em}
     .side-menu .activism-menu-link{display:block!important;background:linear-gradient(135deg,#075b42,#0d8a5b)!important;color:#fff!important;border:2px solid #7ce4ae!important;border-radius:12px;font-size:1.08rem!important;font-weight:900!important;text-align:center;box-shadow:0 4px 16px #0008;margin:0 0 18px!important;padding:16px 12px!important}
     .side-menu .activism-menu-link small{display:block;color:#e2ffed;font-size:.84rem;font-weight:700;margin-top:5px}
+    .side-menu .space-menu-link{display:block!important;background:linear-gradient(135deg,#123b68,#176d9c)!important;color:#fff!important;border:2px solid #7bd5ff!important;border-radius:12px;font-size:1.04rem!important;font-weight:900!important;text-align:center;box-shadow:0 4px 16px #0008;margin:0 0 18px!important;padding:16px 12px!important}
+    .side-menu .space-menu-link small{display:block;color:#e1f6ff;font-size:.84rem;font-weight:700;margin-top:5px}
     .menu-backdrop{display:none;position:fixed;inset:0;background:rgba(0,0,0,.58);z-index:1198}
     .menu-backdrop.show{display:block}
     @media(prefers-reduced-motion:reduce){.side-menu{transition:none}}
@@ -140,6 +143,7 @@
   <a class="quake-menu-link" href="./seismes.html">🌍 SÉISMES EN DIRECT<span>Carte mondiale · dernières secousses · magnitudes</span></a>
   <a class="fire-menu-link" href="./incendies.html">🔥 INCENDIES ET ALERTES <span class="fire-menu-badge">ALERTE MONDIALE</span><small>Carte mondiale · feux actifs · notifications</small></a>
   <a class="activism-menu-link" href="./militant-contre-la-pollution.html">🌍 MILITANT CONTRE LA POLLUTION <small>Mobilisation mondiale · bénévoles · associations · partenariats</small></a>
+  <a class="space-menu-link" href="./observation-monde.html">🛰️ TERRE & ESPACE EN OBSERVATION <small>Satellites · espace · webcams publiques du monde</small></a>
   <h2>Catégories cartographiques</h2>
   <a href="./carte-interactive.html">🗺️ Carte interactive</a>
   <a href="./routes-autoroutes.html">🛣️ Routes et autoroutes</a>
@@ -192,6 +196,11 @@
       <span class="alert-emoji" aria-hidden="true">🌫️</span>
       <strong>POLLUTION</strong>
       <span>Air et environnement</span>
+    </a>
+    <a class="alert-circle alert-space" href="./observation-monde.html" aria-label="Ouvrir la section Observation de la Terre et de l’espace">
+      <span class="alert-emoji" aria-hidden="true">🛰️</span>
+      <strong>TERRE & ESPACE</strong>
+      <span>Satellites et webcams</span>
     </a>
   </section>
 
