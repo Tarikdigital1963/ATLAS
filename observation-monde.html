@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <!-- Google Analytics 4 : ATLAS MONDE -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-3MDQRV236R"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+    gtag('config', 'G-3MDQRV236R');
+  </script>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#071426">
+  <meta name="description" content="Centre public d'observation ATLAS MONDE : satellites, Terre, espace, webcams publiques et données environnementales.">
+  <title>Observation de la Terre et de l’espace | ATLAS MONDE</title>
+  <style>
+    :root{color-scheme:dark;--bg:#071426;--panel:#102944;--line:#315575;--text:#f3f8ff;--muted:#c2d4e5;--blue:#69c8ff;--green:#79e0ad;--gold:#ffd45a}
+    *{box-sizing:border-box}
+    body{margin:0;background:radial-gradient(ellipse at top,#174363 0,#071426 58%);color:var(--text);font:18px/1.65 Arial,Helvetica,sans-serif}
+    .wrap{width:min(1120px,92%);margin:auto}
+    header{padding:24px 0 20px;border-bottom:1px solid var(--line)}
+    h1{font-size:clamp(2rem,6vw,3.6rem);line-height:1.12;color:#8bd6ff;margin:20px 0 10px}
+    h2{font-size:clamp(1.4rem,4vw,2rem);color:#a8e9ff;margin:0 0 10px}
+    h3{font-size:1.18rem;color:#ffe08a;margin:0 0 8px}
+    p{margin:0 0 13px}
+    a{color:#8bd6ff}
+    .back,.action{display:inline-block;text-decoration:none;border-radius:11px;padding:12px 16px;font-weight:800;border:1px solid #5e9fc5;background:#102944}
+    .lead{max-width:900px;color:#e2effa;font-size:clamp(1.08rem,2.8vw,1.28rem)}
+    main{padding:22px 0 48px}
+    .notice{border-left:5px solid var(--gold);background:#332c19;border-radius:10px;padding:14px 17px;margin:18px 0 24px}
+    .section{background:linear-gradient(145deg,#102944,#0a1c30);border:1px solid var(--line);border-radius:18px;padding:clamp(17px,3vw,26px);margin:20px 0;box-shadow:0 12px 30px #0004}
+    .cards{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px;margin-top:16px}
+    .card{background:#091d32;border:1px solid #365a78;border-radius:14px;padding:17px;min-width:0}
+    .card p{color:var(--muted)}
+    .symbol{font-size:2rem;line-height:1.2;margin-bottom:8px}
+    .actions{display:flex;gap:10px;flex-wrap:wrap;margin-top:12px}
+    .action{background:#087fca;color:#fff;border-color:#69c8ff}
+    .action.green{background:#116345;border-color:#79e0ad}
+    .action.gold{background:#71551a;border-color:#ffe08a}
+    .action:focus,.back:focus{outline:3px solid #fff;outline-offset:3px}
+    .frame-wrap{position:relative;overflow:hidden;border:1px solid #426887;border-radius:14px;background:#061321;margin:14px 0}
+    .frame-wrap iframe{display:block;width:100%;height:clamp(340px,60vw,620px);border:0;background:#061321}
+    .small{font-size:.94rem;color:var(--muted)}
+    .status{font-size:.95rem;color:#b9e7ff}
+    .pill{display:inline-block;background:#123d35;color:#baf5d1;border:1px solid #4b9a73;border-radius:20px;padding:4px 10px;font-size:.83rem;font-weight:800;margin-bottom:8px}
+    .two-col{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+    footer{border-top:1px solid var(--line);padding:22px 0;color:var(--muted);font-size:.95rem}
+    @media(max-width:680px){body{font-size:17px}.cards,.two-col{grid-template-columns:1fr}.frame-wrap iframe{height:440px}}
+    @media(prefers-reduced-motion:reduce){*{scroll-behavior:auto!important;transition:none!important}}
+  </style>
+</head>
+<body>
+<header><div class="wrap">
+  <a class="back" href="./index.html">← Retour à ATLAS MONDE</a>
+  <h1>🛰️ Observation de la Terre et de l’espace</h1>
+  <p class="lead">Un centre public d’observation pour explorer les images satellitaires, suivre certains phénomènes terrestres et spatiaux, et consulter des webcams librement accessibles dans le monde.</p>
+  <p class="status" id="lastVisit" role="status" aria-live="polite">Ouverture du centre d’observation…</p>
+</div></header>
+<main class="wrap">
+  <div class="notice"><strong>À savoir :</strong> « en direct » ne signifie pas toujours vidéo instantanée. Les satellites fournissent souvent des images quasi récentes avec un délai de quelques minutes ou heures. Les webcams dépendent de leur opérateur et de leur disponibilité. Cette page référence uniquement des services publics ; elle ne donne pas accès aux caméras privées ou protégées.</div>
+
+  <section class="section" aria-labelledby="earth-title">
+    <span class="pill">TERRE · IMAGES SATELLITAIRES</span>
+    <h2 id="earth-title">🌍 Observer la planète depuis l’espace</h2>
+    <p>Explorez les images de la Terre, les nuages, les océans, les fumées, les inondations et les changements de surface à partir de plateformes scientifiques publiques.</p>
+    <div class="frame-wrap">
+      <iframe title="NASA Worldview : carte mondiale d’images satellitaires" src="https://worldview.earthdata.nasa.gov/" loading="lazy" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
+    </div>
+    <div class="actions">
+      <a class="action" href="https://worldview.earthdata.nasa.gov/" target="_blank" rel="noopener noreferrer">Ouvrir NASA Worldview</a>
+      <a class="action green" href="https://www.nesdis.noaa.gov/imagery/satellite-maps" target="_blank" rel="noopener noreferrer">NOAA · Images satellites actualisées</a>
+    </div>
+    <p class="small">NASA Worldview donne accès à plus de 1 200 couches d’images satellitaires. De nombreuses couches sont quotidiennes et disponibles environ trois heures après l’observation ; certaines vues géostationnaires sont proposées par intervalles de dix minutes.</p>
+  </section>
+
+  <section class="section" aria-labelledby="fire-title">
+    <span class="pill">ALERTES ENVIRONNEMENTALES</span>
+    <h2 id="fire-title">🔥 Incendies, chaleur et phénomènes naturels</h2>
+    <div class="cards">
+      <article class="card"><div class="symbol">🔥</div><h3>NASA FIRMS · Détections de feux</h3><p>Carte des anomalies thermiques et détections de feux actifs observées par les satellites. Les données mondiales sont généralement disponibles dans les trois heures suivant l’observation.</p><a class="action gold" href="https://firms.modaps.eosdis.nasa.gov/map/" target="_blank" rel="noopener noreferrer">Consulter la carte NASA FIRMS</a></article>
+      <article class="card"><div class="symbol">🌪️</div><h3>NASA EONET · Événements naturels</h3><p>Suivre les événements naturels signalés : incendies, tempêtes, volcans et autres phénomènes documentés.</p><a class="action" href="https://eonet.gsfc.nasa.gov/" target="_blank" rel="noopener noreferrer">Explorer NASA EONET</a></article>
+    </div>
+  </section>
+
+  <section class="section" aria-labelledby="space-title">
+    <span class="pill">ESPACE · OBSERVATION</span>
+    <h2 id="space-title">🚀 Activité spatiale et météo de l’espace</h2>
+    <div class="cards">
+      <article class="card"><div class="symbol">🛰️</div><h3>Station spatiale internationale</h3><p>Informations officielles sur la Station spatiale internationale, ses missions et les possibilités d’observation de son passage.</p><a class="action" href="https://spotthestation.nasa.gov/" target="_blank" rel="noopener noreferrer">Suivre la Station avec la NASA</a></article>
+      <article class="card"><div class="symbol">☀️</div><h3>Météo spatiale NOAA</h3><p>Consulter l’activité solaire, les alertes géomagnétiques et les phénomènes susceptibles d’affecter les satellites et les communications.</p><a class="action gold" href="https://www.swpc.noaa.gov/" target="_blank" rel="noopener noreferrer">Ouvrir NOAA Space Weather</a></article>
+    </div>
+  </section>
+
+  <section class="section" aria-labelledby="camera-title">
+    <span class="pill">WEBCAMS PUBLIQUES · VUES DU MONDE</span>
+    <h2 id="camera-title">📷 Caméras et webcams accessibles au public</h2>
+    <p>Découvrez des images diffusées volontairement par des villes, des sites touristiques, des organismes de transport et des opérateurs de webcams. La disponibilité des flux varie selon les lieux et les diffuseurs.</p>
+    <div class="cards">
+      <article class="card"><div class="symbol">🌐</div><h3>Windy · Carte des webcams</h3><p>Carte interactive permettant de repérer des webcams publiques et de consulter les vues disponibles autour du monde.</p><a class="action green" href="https://www.windy.com/webcams" target="_blank" rel="noopener noreferrer">Explorer les webcams Windy</a></article>
+      <article class="card"><div class="symbol">🏙️</div><h3>EarthCam · Villes et lieux publics</h3><p>Sélection de caméras diffusant des vues publiques de villes, de paysages et de lieux connus.</p><a class="action" href="https://www.earthcam.com/" target="_blank" rel="noopener noreferrer">Voir EarthCam</a></article>
+      <article class="card"><div class="symbol">🏞️</div><h3>Skyline Webcams</h3><p>Webcams touristiques publiques : panoramas, plages, places et paysages de nombreux pays.</p><a class="action gold" href="https://www.skylinewebcams.com/" target="_blank" rel="noopener noreferrer">Voir Skyline Webcams</a></article>
+      <article class="card"><div class="symbol">🌦️</div><h3>Webcams météo et paysages</h3><p>Rechercher des vues publiques utiles pour observer les conditions météorologiques et l’état des paysages.</p><a class="action" href="https://www.windy.com/" target="_blank" rel="noopener noreferrer">Ouvrir la carte météo Windy</a></article>
+    </div>
+    <p class="small">ATLAS MONDE ne contourne aucun mot de passe, accès privé ou système de sécurité. Les caméras de surveillance privées, résidentielles ou non autorisées ne sont pas répertoriées.</p>
+  </section>
+
+  <section class="section" aria-labelledby="limits-title">
+    <h2 id="limits-title">ℹ️ Fiabilité et limites des observations</h2>
+    <div class="two-col">
+      <div><h3>Images satellitaires</h3><p class="small">Une image peut être récente sans être une vidéo en direct. Les nuages, l’orbite du satellite, la résolution et le traitement des données influencent ce que l’on peut observer.</p></div>
+      <div><h3>Webcams</h3><p class="small">Un flux peut être interrompu, retardé ou indisponible. La date et l’heure de diffusion dépendent du site qui publie la caméra.</p></div>
+    </div>
+    <p class="small">Sources principales : NASA Worldview, NASA FIRMS, NASA EONET, NOAA NESDIS, NOAA Space Weather Prediction Center et plateformes de webcams citées dans cette page. Les services externes ont leurs propres conditions d’utilisation.</p>
+  </section>
+</main>
+<footer><div class="wrap">ATLAS MONDE · Centre public d’observation · <a href="mailto:qods112@gmail.com">Contact et partenariats</a> · <a href="./index.html">Accueil</a></div></footer>
+<script>
+  const stamp=document.getElementById('lastVisit');
+  stamp.textContent='Page ouverte le '+new Intl.DateTimeFormat('fr-FR',{dateStyle:'full',timeStyle:'short'}).format(new Date())+' · Les données externes se mettent à jour selon chaque service.';
+</script>
+</body>
+</html>
