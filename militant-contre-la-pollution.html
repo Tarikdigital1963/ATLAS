@@ -73,6 +73,22 @@ footer{border-top:1px solid #315575;padding:22px 0;color:var(--muted);font-size:
 .cop31-sources a{display:inline-block;padding:10px 13px;border:1px solid #4d7894;border-radius:10px;background:#0b2036;text-decoration:none}
 @media(prefers-reduced-motion:reduce){.cop31-hero img{transition:none!important}}
 
+
+/* Appel à une mobilisation internationale parallèle */
+.global-call{border:1px solid #8b7444;background:linear-gradient(145deg,#332b18,#10283a 72%);border-radius:18px;padding:clamp(18px,4vw,30px);margin:26px 0;box-shadow:0 12px 32px #0006}
+.global-call h2{color:#ffe08a}
+.global-call .eyebrow{color:#f5d88c;font-weight:bold;letter-spacing:.04em;font-size:.92rem}
+.global-call .call-photo{border-radius:14px;overflow:hidden;background:#061321;margin:18px 0 8px}
+.global-call .call-photo img{display:block;width:100%;height:clamp(240px,52vw,460px);object-fit:cover}
+.global-call .call-caption{font-size:.9rem;color:#d7e5ef;padding:9px 12px;background:#081b2d}
+.global-call .call-controls{display:flex;justify-content:center;align-items:center;gap:12px;margin:10px 0 18px}
+.global-call .call-controls button{min-width:48px;min-height:46px;border:1px solid #f1d38a;border-radius:10px;background:#71551a;color:#fff;font-size:1.25rem}
+.global-call .partner-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;margin:16px 0}
+.global-call .partner-item{background:#0b2036;border:1px solid #49617a;border-radius:12px;padding:15px}
+.global-call .contact-link{display:inline-block;padding:13px 18px;border-radius:10px;background:#147f58;border:1px solid #8ce3ad;color:#fff;font-weight:bold;text-decoration:none;overflow-wrap:anywhere}
+.global-call .notice{border-left:5px solid #ffd45a;padding:12px 15px;background:#352d18;border-radius:8px}
+@media(max-width:600px){.global-call .partner-grid{grid-template-columns:1fr}}
+
 </style>
 </head>
 <body>
@@ -125,6 +141,41 @@ footer{border-top:1px solid #315575;padding:22px 0;color:var(--muted);font-size:
     <a href="https://enb.iisd.org/fr/antalya-un-climate-change-conference-cop31" target="_blank" rel="noopener noreferrer">IISD · Suivi des négociations en français</a>
     <a href="https://www.aa.com.tr/en/pg/photo-gallery/cop31-climate-summit-in-turkiyes-antalya/169891" target="_blank" rel="noopener noreferrer">Anadolu Ajansı · Galerie photographique</a>
   </div>
+</section>
+
+
+<section class="global-call" aria-labelledby="global-call-title">
+ <div class="eyebrow">APPEL INTERNATIONAL À PARTENARIATS · ATLAS MONDE</div>
+ <h2 id="global-call-title">Et si la COP31 devenait le point de départ d’une mobilisation citoyenne mondiale contre la pollution ?</h2>
+ <p><strong>Par Tarik El Mers · Initiateur de l’appel · ATLAS MONDE</strong></p>
+ <p>Alors que la COP31 réunit à Antalya les responsables publics, les organisations internationales, les scientifiques, les entreprises et la société civile, nous lançons un appel complémentaire : unir les associations, ONG, collectivités, établissements d’enseignement, entreprises responsables, médias et citoyens autour d’un <strong>événement international parallèle consacré à la lutte contre la pollution</strong>.</p>
+ <div class="call-photo">
+  <img id="globalCallPhoto" src="https://cdn.pixabay.com/photo/2023/02/14/04/39/volunteer-7788809_1280.jpg" alt="Bénévole participant au nettoyage d'une plage, photographie illustrative" loading="lazy">
+  <div class="call-caption" id="globalCallCaption">Agir ensemble sur le terrain · Photographie illustrative, Pixabay</div>
+ </div>
+ <div class="call-controls" aria-label="Diaporama de l'appel international">
+  <button type="button" id="globalCallPrev" aria-label="Photo précédente">‹</button>
+  <span id="globalCallCount" aria-live="polite">1 / 3</span>
+  <button type="button" id="globalCallNext" aria-label="Photo suivante">›</button>
+  <button type="button" id="globalCallPause" aria-label="Mettre le diaporama en pause">Ⅱ</button>
+ </div>
+ <p>Notre ambition est simple et exigeante : faire émerger une rencontre ouverte au monde, en présentiel et à distance, pour transformer les bonnes volontés en coopération concrète. Associations de protection de l’environnement, organisations de jeunesse, experts de la qualité de l’air et de l’eau, acteurs du recyclage, chercheurs, entreprises et institutions : votre expérience et vos réseaux peuvent contribuer à bâtir un rendez-vous utile, crédible et accessible.</p>
+ <h3>Nous recherchons des partenaires pour construire l’événement</h3>
+ <div class="partner-grid">
+  <div class="partner-item"><h3>Associations et ONG</h3><p>Mobiliser des bénévoles, proposer des ateliers, partager des campagnes de terrain et représenter les réalités locales.</p></div>
+  <div class="partner-item"><h3>Institutions et collectivités</h3><p>Apporter un appui institutionnel, faciliter les autorisations, identifier des lieux d’accueil et relier les initiatives locales.</p></div>
+  <div class="partner-item"><h3>Entreprises et mécènes</h3><p>Soutenir la logistique, les équipements, les transports, l’hébergement, la traduction, la communication et les outils numériques, dans un cadre transparent.</p></div>
+  <div class="partner-item"><h3>Experts, universités et médias</h3><p>Contribuer aux conférences, aux données scientifiques, à la sensibilisation, à la couverture médiatique et à la diffusion multilingue.</p></div>
+ </div>
+ <h3>Un événement à construire ensemble</h3>
+ <p>Nous souhaitons étudier plusieurs formats complémentaires : conférences et tables rondes, ateliers pratiques, campagnes de nettoyage, expositions photographiques, présentations de solutions, rencontres entre associations et diffusion en ligne pour permettre une participation internationale.</p>
+ <p>Les partenaires sont également invités à proposer leur aide pour la recherche de salles, l’accueil des participants, la coordination des bénévoles, les déplacements, l’hébergement, le matériel audiovisuel, l’interprétation, la sécurité, l’accessibilité et la gestion des inscriptions.</p>
+ <p><strong>Chaque contribution compte :</strong> un réseau associatif, une expertise scientifique, un espace de réunion, un soutien technique, une aide logistique ou un relais médiatique peuvent faire la différence. Les partenariats seront discutés individuellement, avec des responsabilités, des moyens et des engagements clairement définis.</p>
+ <div class="notice"><strong>Transparence :</strong> cet appel est une proposition de mobilisation et de partenariat portée par Tarik El Mers. L’événement parallèle n’est pas encore officiellement programmé, financé ou affilié à la COP31 ou à l’ONU. Sa date, son lieu, son format, son budget et ses partenaires seront définis avec les organisations intéressées. Aucune contribution financière n’est demandée par cet article.</div>
+ <h3>Associations, organismes, entreprises et citoyens : prenez contact</h3>
+ <p>Pour proposer un partenariat, rejoindre le comité préparatoire, offrir un appui logistique ou présenter une initiative contre la pollution, écrivez-nous. Merci d’indiquer le nom de votre organisation, votre pays, votre domaine d’action et le type de contribution que vous pourriez apporter.</p>
+ <p><a class="contact-link" href="mailto:qods112@gmail.com?subject=Partenariat%20-%20Evenement%20international%20contre%20la%20pollution&body=Bonjour%2C%0A%0ANom%20de%20l%27organisation%20%3A%0APays%20%3A%0ADomaine%20d%27activite%20%3A%0AProposition%20de%20partenariat%20ou%20d%27appui%20logistique%20%3A%0A%0ACordialement">✉ Contacter Tarik El Mers pour partenariat et organisation</a></p>
+ <p><strong>Ensemble, faisons de la protection de l’environnement une action collective, visible et durable. La planète n’a pas besoin d’un slogan de plus : elle a besoin de femmes et d’hommes qui coopèrent et agissent.</strong></p>
 </section>
 
 <section class="panel">
@@ -256,6 +307,28 @@ footer{border-top:1px solid #315575;padding:22px 0;color:var(--muted);font-size:
  function start(){stop();if(!paused)timer=setInterval(()=>show(current+1),6000);}
  document.getElementById("cop31Prev").addEventListener("click",()=>{show(current-1);start();});
  document.getElementById("cop31Next").addEventListener("click",()=>{show(current+1);start();});
+ pause.addEventListener("click",()=>{paused=!paused;pause.textContent=paused?"▶":"Ⅱ";pause.setAttribute("aria-label",paused?"Reprendre le diaporama":"Mettre le diaporama en pause");start();});
+ document.addEventListener("visibilitychange",()=>{if(document.hidden)stop();else start();});
+ start();
+})();
+</script>
+
+
+<script>
+(function(){
+ const slides=[
+  {src:"https://cdn.pixabay.com/photo/2023/02/14/04/39/volunteer-7788809_1280.jpg",alt:"Bénévole ramassant des déchets sur une plage, photo illustrative",caption:"Agir ensemble sur le terrain · Photographie illustrative, Pixabay"},
+  {src:"https://upload.wikimedia.org/wikipedia/commons/b/b0/Beach_Cleaning_Volunteers.jpg",alt:"Groupe de bénévoles participant à un nettoyage de plage",caption:"La mobilisation collective · Debbie Foote / National Park Service · domaine public"},
+  {src:"https://upload.wikimedia.org/wikipedia/commons/a/a9/CA_Volunteers_clean_the_beach_%285857565406%29.jpg",alt:"Bénévoles et sacs de déchets collectés lors d'une opération de nettoyage",caption:"Nettoyer et protéger les littoraux · Virginia State Parks · CC BY 2.0"}
+ ];
+ const img=document.getElementById("globalCallPhoto"),caption=document.getElementById("globalCallCaption"),count=document.getElementById("globalCallCount"),pause=document.getElementById("globalCallPause");
+ if(!img||!caption||!count||!pause)return;
+ let current=0,paused=window.matchMedia("(prefers-reduced-motion: reduce)").matches,timer=null;
+ function show(n){current=(n+slides.length)%slides.length;const s=slides[current];img.src=s.src;img.alt=s.alt;caption.textContent=s.caption;count.textContent=(current+1)+" / "+slides.length;}
+ function stop(){if(timer)clearInterval(timer);timer=null;}
+ function start(){stop();if(!paused)timer=setInterval(()=>show(current+1),6000);}
+ document.getElementById("globalCallPrev").addEventListener("click",()=>{show(current-1);start();});
+ document.getElementById("globalCallNext").addEventListener("click",()=>{show(current+1);start();});
  pause.addEventListener("click",()=>{paused=!paused;pause.textContent=paused?"▶":"Ⅱ";pause.setAttribute("aria-label",paused?"Reprendre le diaporama":"Mettre le diaporama en pause");start();});
  document.addEventListener("visibilitychange",()=>{if(document.hidden)stop();else start();});
  start();
