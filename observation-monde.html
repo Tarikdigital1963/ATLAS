@@ -41,6 +41,13 @@
     .action:focus,.back:focus{outline:3px solid #fff;outline-offset:3px}
     .frame-wrap{position:relative;overflow:hidden;border:1px solid #426887;border-radius:14px;background:#061321;margin:14px 0}
     .frame-wrap iframe{display:block;width:100%;height:clamp(340px,60vw,620px);border:0;background:#061321}
+    .camera-feed{position:relative;overflow:hidden;border:2px solid #4d8eb5;border-radius:16px;background:#020b15;margin:16px 0;box-shadow:0 12px 28px #0006}
+    .camera-feed iframe{display:block;width:100%;height:clamp(280px,56vw,590px);border:0;background:#020b15}
+    .camera-caption{display:flex;align-items:center;gap:10px;flex-wrap:wrap;padding:11px 14px;background:#0a2035;color:#e8f6ff;font-weight:700}
+    .live-dot{display:inline-block;width:11px;height:11px;border-radius:50%;background:#ff4545;box-shadow:0 0 0 5px #ff454533;flex:0 0 auto}
+    .camera-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px;margin-top:16px}
+    .camera-grid .camera-feed{margin:0}
+    .camera-grid .camera-feed iframe{height:clamp(300px,38vw,430px)}
     .small{font-size:.94rem;color:var(--muted)}
     .status{font-size:.95rem;color:#b9e7ff}
     .pill{display:inline-block;background:#123d35;color:#baf5d1;border:1px solid #4b9a73;border-radius:20px;padding:4px 10px;font-size:.83rem;font-weight:800;margin-bottom:8px}
@@ -61,17 +68,14 @@
   <div class="notice"><strong>À savoir :</strong> « en direct » ne signifie pas toujours vidéo instantanée. Les satellites fournissent souvent des images quasi récentes avec un délai de quelques minutes ou heures. Les webcams dépendent de leur opérateur et de leur disponibilité. Cette page référence uniquement des services publics ; elle ne donne pas accès aux caméras privées ou protégées.</div>
 
   <section class="section" aria-labelledby="earth-title">
-    <span class="pill">TERRE · IMAGES SATELLITAIRES</span>
-    <h2 id="earth-title">🌍 Observer la planète depuis l’espace</h2>
-    <p>Explorez les images de la Terre, les nuages, les océans, les fumées, les inondations et les changements de surface à partir de plateformes scientifiques publiques.</p>
-    <div class="frame-wrap">
-      <iframe title="NASA Worldview : carte mondiale d’images satellitaires" src="https://worldview.earthdata.nasa.gov/" loading="lazy" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
+    <span class="pill">SATELLITE MÉTÉOROLOGIQUE · ACTUALISATION RÉGULIÈRE</span>
+    <h2 id="earth-title">🌍 Vue satellitaire de la Terre</h2>
+    <p>Une grande image animée issue du satellite météorologique GOES-19 : nuages, océans et systèmes météorologiques. La séquence est actualisée par NOAA environ toutes les dix minutes, ce n’est pas une vidéo instantanée.</p>
+    <div class="camera-feed">
+      <iframe title="NOAA GOES-19 : images satellitaires animées de la Terre" src="https://www.goes.noaa.gov/fulldisk_band.php?band=GEOCOLOR&amp;length=12&amp;sat=G19" loading="lazy" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
+      <div class="camera-caption"><span class="live-dot" aria-hidden="true"></span> IMAGE SATELLITAIRE ACTUALISÉE · NOAA GOES-19 · ENVIRON 10 MINUTES</div>
     </div>
-    <div class="actions">
-      <a class="action" href="https://worldview.earthdata.nasa.gov/" target="_blank" rel="noopener noreferrer">Ouvrir NASA Worldview</a>
-      <a class="action green" href="https://www.nesdis.noaa.gov/imagery/satellite-maps" target="_blank" rel="noopener noreferrer">NOAA · Images satellites actualisées</a>
-    </div>
-    <p class="small">NASA Worldview donne accès à plus de 1 200 couches d’images satellitaires. De nombreuses couches sont quotidiennes et disponibles environ trois heures après l’observation ; certaines vues géostationnaires sont proposées par intervalles de dix minutes.</p>
+    <p class="small">Crédit : CIRA / NOAA. La vue couvre le disque terrestre observé par GOES-19. Les images nocturnes combinent des données infrarouges et certaines lumières urbaines sont issues d’une base statique.</p>
   </section>
 
   <section class="section" aria-labelledby="fire-title">
@@ -84,25 +88,29 @@
   </section>
 
   <section class="section" aria-labelledby="space-title">
-    <span class="pill">ESPACE · OBSERVATION</span>
-    <h2 id="space-title">🚀 Activité spatiale et météo de l’espace</h2>
+    <span class="pill">CAMÉRA SPATIALE · FLUX VIDÉO PUBLIC</span>
+    <h2 id="space-title">🚀 Caméra de la Station spatiale internationale</h2>
+    <p>Regardez directement le flux vidéo public de la NASA depuis la Station spatiale internationale. Selon les périodes, la caméra montre la Terre depuis l’extérieur ou des vues intérieures de la station.</p>
+    <div class="camera-feed">
+      <iframe title="Flux vidéo officiel NASA depuis la Station spatiale internationale" src="https://www.youtube-nocookie.com/embed/M3HKLzjvKPc?rel=0&amp;modestbranding=1" loading="lazy" referrerpolicy="strict-origin-when-cross-origin" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe>
+      <div class="camera-caption"><span class="live-dot" aria-hidden="true"></span> CAMÉRA NASA · STATION SPATIALE INTERNATIONALE</div>
+    </div>
+    <p class="small">Le flux peut afficher un écran bleu ou noir lors d’une perte de signal, pendant la nuit orbitale ou lorsque la caméra n’est pas disponible. La diffusion est fournie par la NASA sur YouTube.</p>
     <div class="cards">
-      <article class="card"><div class="symbol">🛰️</div><h3>Station spatiale internationale</h3><p>Informations officielles sur la Station spatiale internationale, ses missions et les possibilités d’observation de son passage.</p><a class="action" href="https://spotthestation.nasa.gov/" target="_blank" rel="noopener noreferrer">Suivre la Station avec la NASA</a></article>
-      <article class="card"><div class="symbol">☀️</div><h3>Météo spatiale NOAA</h3><p>Consulter l’activité solaire, les alertes géomagnétiques et les phénomènes susceptibles d’affecter les satellites et les communications.</p><a class="action gold" href="https://www.swpc.noaa.gov/" target="_blank" rel="noopener noreferrer">Ouvrir NOAA Space Weather</a></article>
+      <article class="card"><div class="symbol">☀️</div><h3>Météo spatiale NOAA</h3><p>Activité solaire et alertes géomagnétiques. Ce tableau de bord complète les images de la caméra spatiale.</p><a class="action gold" href="https://www.swpc.noaa.gov/" target="_blank" rel="noopener noreferrer">Tableau de bord NOAA</a></article>
+      <article class="card"><div class="symbol">🛰️</div><h3>Passages de la station</h3><p>Prévisions des passages visibles de la Station spatiale au-dessus de votre région.</p><a class="action" href="https://spotthestation.nasa.gov/" target="_blank" rel="noopener noreferrer">Prévisions NASA</a></article>
     </div>
   </section>
 
   <section class="section" aria-labelledby="camera-title">
-    <span class="pill">WEBCAMS PUBLIQUES · VUES DU MONDE</span>
-    <h2 id="camera-title">📷 Caméras et webcams accessibles au public</h2>
-    <p>Découvrez des images diffusées volontairement par des villes, des sites touristiques, des organismes de transport et des opérateurs de webcams. La disponibilité des flux varie selon les lieux et les diffuseurs.</p>
-    <div class="cards">
-      <article class="card"><div class="symbol">🌐</div><h3>Windy · Carte des webcams</h3><p>Carte interactive permettant de repérer des webcams publiques et de consulter les vues disponibles autour du monde.</p><a class="action green" href="https://www.windy.com/webcams" target="_blank" rel="noopener noreferrer">Explorer les webcams Windy</a></article>
-      <article class="card"><div class="symbol">🏙️</div><h3>EarthCam · Villes et lieux publics</h3><p>Sélection de caméras diffusant des vues publiques de villes, de paysages et de lieux connus.</p><a class="action" href="https://www.earthcam.com/" target="_blank" rel="noopener noreferrer">Voir EarthCam</a></article>
-      <article class="card"><div class="symbol">🏞️</div><h3>Skyline Webcams</h3><p>Webcams touristiques publiques : panoramas, plages, places et paysages de nombreux pays.</p><a class="action gold" href="https://www.skylinewebcams.com/" target="_blank" rel="noopener noreferrer">Voir Skyline Webcams</a></article>
-      <article class="card"><div class="symbol">🌦️</div><h3>Webcams météo et paysages</h3><p>Rechercher des vues publiques utiles pour observer les conditions météorologiques et l’état des paysages.</p><a class="action" href="https://www.windy.com/" target="_blank" rel="noopener noreferrer">Ouvrir la carte météo Windy</a></article>
+    <span class="pill">CAMÉRAS PUBLIQUES · CARTE INTERACTIVE</span>
+    <h2 id="camera-title">📷 Caméras publiques dans le monde</h2>
+    <p>La carte ci-dessous affiche les webcams publiques répertoriées par Windy. Touchez un symbole de caméra sur la carte pour afficher l’aperçu disponible et les informations de diffusion.</p>
+    <div class="camera-feed">
+      <iframe title="Carte interactive Windy des webcams publiques dans le monde" src="https://embed.windy.com/embed2.html?lat=25&amp;lon=0&amp;detailLat=25&amp;detailLon=0&amp;width=650&amp;height=500&amp;zoom=2&amp;level=surface&amp;overlay=webcams&amp;product=ecmwf&amp;menu=&amp;message=true&amp;marker=&amp;calendar=now&amp;pressure=&amp;type=map&amp;location=coordinates&amp;detail=&amp;metricWind=default&amp;metricTemp=default" loading="lazy" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
+      <div class="camera-caption"><span class="live-dot" aria-hidden="true"></span> CARTE DES WEBCAMS PUBLIQUES · WINDY</div>
     </div>
-    <p class="small">ATLAS MONDE ne contourne aucun mot de passe, accès privé ou système de sécurité. Les caméras de surveillance privées, résidentielles ou non autorisées ne sont pas répertoriées.</p>
+    <p class="small">Les webcams dépendent de leurs propriétaires et peuvent diffuser une image fixe actualisée, une séquence accélérée ou une vidéo. Seules les caméras publiquement proposées par leurs diffuseurs sont présentées. Les caméras privées et protégées ne sont pas accessibles.</p>
   </section>
 
   <section class="section" aria-labelledby="limits-title">
@@ -111,7 +119,7 @@
       <div><h3>Images satellitaires</h3><p class="small">Une image peut être récente sans être une vidéo en direct. Les nuages, l’orbite du satellite, la résolution et le traitement des données influencent ce que l’on peut observer.</p></div>
       <div><h3>Webcams</h3><p class="small">Un flux peut être interrompu, retardé ou indisponible. La date et l’heure de diffusion dépendent du site qui publie la caméra.</p></div>
     </div>
-    <p class="small">Sources principales : NASA Worldview, NASA FIRMS, NASA EONET, NOAA NESDIS, NOAA Space Weather Prediction Center et plateformes de webcams citées dans cette page. Les services externes ont leurs propres conditions d’utilisation.</p>
+    <p class="small">Sources principales : NASA, NOAA / NESDIS / CIRA, Windy et les organismes publics qui diffusent les flux vidéo. Les services externes ont leurs propres conditions d’utilisation.</p>
   </section>
 </main>
 <footer><div class="wrap">ATLAS MONDE · Centre public d’observation · <a href="mailto:qods112@gmail.com">Contact et partenariats</a> · <a href="./index.html">Accueil</a></div></footer>
