@@ -40,11 +40,11 @@ footer{text-align:center;padding:22px;color:#b5c7d9;border-top:1px solid #294866
 </section>
 <section class="panel">
 <h2>Comment consulter les vols ?</h2>
-<p>Ouvrez le tableau des <strong>départs</strong> pour voir les vols quittant l'aéroport, ou celui des <strong>arrivées</strong> pour suivre les avions attendus. Le fournisseur externe actualise ses propres données. Les informations disponibles varient selon l'aéroport et la couverture de ses sources.</p>
-<p class="notice">À noter : la carte « Trafic aérien » d'ATLAS MONDE montre les avions détectés en vol par ADS-B. Elle est différente des tableaux d'horaires, de départs et d'arrivées présentés ici.</p>
+<p>Ouvrez le suivi ADS-B de l’aéroport pour consulter les avions détectés à proximité et leurs informations de vol lorsqu’elles sont reçues. Les mouvements au sol et en approche peuvent apparaître selon la couverture des récepteurs. Les données peuvent être incomplètes, notamment dans les zones où peu de stations reçoivent les signaux.</p>
+<p class="notice">À noter : la source ADSB.lol est gratuite et ouverte (licence ODbL). Elle fournit des observations ADS-B, pas les horaires commerciaux complets. Pour obtenir les portes d’embarquement, les heures prévues et les retards officiels, il faudrait une seconde source spécialisée, généralement soumise à abonnement ou à des quotas payants.</p>
 </section>
 </main>
-<footer>ATLAS MONDE · Tableaux de vols consultés auprès de <a href="https://www.flightaware.com/" target="_blank" rel="noopener noreferrer">FlightAware</a> · <a href="./trafic-aerien.html">Voir la carte du trafic aérien</a> · <a href="./index.html">← Retour à l'accueil</a></footer>
+<footer>ATLAS MONDE · Positions d’avions : <a href="https://adsb.lol/" target="_blank" rel="noopener noreferrer">ADSB.lol</a> · Données ouvertes sous licence ODbL · <a href="./trafic-aerien.html">Voir la carte du trafic aérien</a> · <a href="./index.html">← Retour à l’accueil</a></footer>
 <script>
 const airports=[
 {country:'Maroc',city:'Casablanca',name:'Aéroport Mohammed V',iata:'CMN',icao:'GMMN'},
@@ -73,7 +73,7 @@ const country=document.getElementById('countryFilter'),search=document.getElemen
 function render(){
  const q=search.value.trim().toLocaleLowerCase('fr'),c=country.value;
  const found=airports.filter(a=>(!c||a.country===c)&&(!q||[a.country,a.city,a.name,a.iata,a.icao].join(' ').toLocaleLowerCase('fr').includes(q)));
- grid.innerHTML=found.map(a=>'<article class="airport"><div class="codes">'+a.iata+' · '+a.icao+'</div><h3>'+a.city+' · '+a.country+'</h3><p>'+a.name+'</p><div class="actions"><a href="https://www.flightaware.com/live/airport/'+a.icao+'/departures" target="_blank" rel="noopener noreferrer">🛫 Départs en direct</a><a class="secondary" href="https://www.flightaware.com/live/airport/'+a.icao+'/arrivals" target="_blank" rel="noopener noreferrer">🛬 Arrivées en direct</a></div></article>').join('');
+ grid.innerHTML=found.map(a=>'<article class="airport"><div class="codes">'+a.iata+' · '+a.icao+'</div><h3>'+a.city+' · '+a.country+'</h3><p>'+a.name+'</p><div class="actions"><a href="https://adsb.lol/live/airport/'+a.icao+'" target="_blank" rel="noopener noreferrer">📡 Avions détectés en direct</a></div></article>').join('');
  empty.style.display=found.length?'none':'block';
 }
 country.addEventListener('change',render);search.addEventListener('input',render);
