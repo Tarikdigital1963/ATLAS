@@ -36,7 +36,7 @@ footer{padding:25px 0 35px;text-align:center;color:#aebfd1;border-top:1px solid 
 <a class="btn secondary" href="https://www.vesselfinder.com/" target="_blank" rel="noopener noreferrer">Voir VesselFinder ↗</a>
 </div>
 </section>
-<div class="info"><strong>Comment lire cette page :</strong> la carte ci-dessous est une carte géographique interactive avec imagerie satellite et repères portuaires. Elle ne prétend pas afficher les positions AIS en direct. Pour voir les navires réellement détectés, utilisez les services AIS externes. Leur couverture, leur fréquence de mise à jour et certaines fonctions dépendent de leurs réseaux et abonnements.</div>
+<div class="info"><strong>Comment lire cette page :</strong> la carte combine imagerie satellite, repères portuaires et positions AIS réelles lorsqu'elles sont disponibles. Le flux gratuit Open Waters couvre ici une zone limitée autour du détroit de Gibraltar.</div>
 
 <section class="panel" id="liveAisPanel">
 <div class="panel-head"><h2>📡 Positions réelles des navires · AIS</h2><span class="muted" id="aisStatus" aria-live="polite">Connexion AIS en cours</span></div>
@@ -47,7 +47,7 @@ footer{padding:25px 0 35px;text-align:center;color:#aebfd1;border-top:1px solid 
 <div class="stat"><strong>60 s</strong><span>Intervalle de rafraîchissement</span></div>
 </div>
 <div class="map-tools"><button type="button" id="aisRefreshBtn">↻ Actualiser les positions AIS</button><a class="btn secondary" href="https://openwaters.io/api/ais/" target="_blank" rel="noopener noreferrer">API Open Waters AIS ↗</a></div>
-<p class="mapnote" id="aisMessage">En attente d'une passerelle AIS sécurisée. Aucune position réelle n'est simulée ou inventée.</p>
+<p class="mapnote" id="aisMessage">Connexion au flux Open Waters AIS. Aucune position n'est simulée ou inventée.</p>
 <p class="mapnote">Source : Open Waters AIS, accès anonyme gratuit sans clé. Limite appliquée : zone restreinte autour du détroit, actualisation toutes les 60 secondes. Les navires immobiles peuvent avoir une position plus ancienne.</p>
 </section>
 
