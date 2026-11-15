@@ -15,13 +15,13 @@ header{padding:20px 0;border-bottom:1px solid #ffffff22}.topline{display:flex;ju
 .actions,.tools{display:flex;gap:10px;flex-wrap:wrap}.btn{display:inline-flex;align-items:center;justify-content:center;border:1px solid #73e5f5;border-radius:11px;padding:12px 16px;background:#087c98;color:white;font-weight:800;font-size:1rem;cursor:pointer;text-decoration:none}.btn.secondary{background:#102944;border-color:#7395b4}.btn:focus,a:focus,button:focus,select:focus{outline:3px solid #fff;outline-offset:3px}
 .notice{margin:17px 0;padding:15px 17px;border:1px solid #8b673f;background:#332817;border-radius:13px;color:#ffedcf}.info{margin:17px 0;padding:15px 17px;border:1px solid #287f9a;background:#0b2b40;border-radius:13px;color:#d9f5ff}
 h2{font-size:clamp(1.4rem,3.8vw,2rem);margin:30px 0 12px}.panel,.stat,.port,.source{background:linear-gradient(145deg,#102944,#0a1b30);border:1px solid var(--line);border-radius:15px;padding:17px}.panel{margin:16px 0}.panel-head{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap}.panel-head h2{margin:0 0 12px}.muted,.mapnote{color:var(--muted);font-size:.94rem}
-#maritimeMap{height:520px;min-height:390px;border-radius:12px;background:#102944}.map-tools{display:flex;gap:9px;flex-wrap:wrap;margin:8px 0 13px}.map-tools button{background:#102944;color:#fff;border:1px solid #7895b1;border-radius:10px;padding:10px 13px;font-size:1rem;cursor:pointer}.map-tools button.active{background:#087c98;border-color:#8deeff}
+#maritimeMap{height:520px;min-height:390px;border-radius:12px;background:#102944}#worldPortsMap,#routesMap{height:430px;min-height:340px;border-radius:12px;background:#102944}.map-tools{display:flex;gap:9px;flex-wrap:wrap;margin:8px 0 13px}.map-tools button{background:#102944;color:#fff;border:1px solid #7895b1;border-radius:10px;padding:10px 13px;font-size:1rem;cursor:pointer}.map-tools button.active{background:#087c98;border-color:#8deeff}
 .stats{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin:16px 0}.stat strong{display:block;font-size:1.25rem;color:#9cecff}.stat span{color:var(--muted);font-size:.94rem}
 .port-grid,.sources{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}.port h3,.source h3{margin:0 0 6px}.port p,.source p{color:var(--muted);margin:0 0 10px}.port button{border:1px solid #68cfe5;background:#102944;color:#fff;border-radius:9px;padding:9px 12px;font-size:.95rem;font-weight:700;cursor:pointer}
 .table-wrap{overflow-x:auto}table{width:100%;border-collapse:collapse;min-width:520px}th,td{text-align:left;padding:12px;border-bottom:1px solid #294866}th{color:#a9eaff;background:#0a1b30}td{color:#e3edf7}
 .legend{display:flex;gap:12px;flex-wrap:wrap;margin:10px 0}.legend span{display:inline-flex;align-items:center;gap:7px;color:#d7e4f0;font-size:.92rem}.dot{display:inline-block;width:11px;height:11px;border-radius:50%;border:1px solid #fff8;background:#25c8e6}
 footer{padding:25px 0 35px;text-align:center;color:#aebfd1;border-top:1px solid #ffffff22;margin-top:35px}
-@media(max-width:760px){.stats,.port-grid,.sources{grid-template-columns:1fr}#maritimeMap{height:430px}.topline{align-items:flex-start}.hero{background-position:center}}
+@media(max-width:760px){.stats,.port-grid,.sources{grid-template-columns:1fr}#maritimeMap{height:430px}#worldPortsMap,#routesMap{height:380px}.topline{align-items:flex-start}.hero{background-position:center}}
 </style>
 </head>
 <body>
@@ -76,6 +76,37 @@ footer{padding:25px 0 35px;text-align:center;color:#aebfd1;border-top:1px solid 
 <tr><td>Asie</td><td>Shanghai</td><td>Chine</td><td><a href="https://www.marinetraffic.com/" target="_blank" rel="noopener noreferrer">Carte AIS ↗</a></td></tr>
 <tr><td>Amérique du Nord</td><td>Los Angeles</td><td>États-Unis</td><td><a href="https://www.marinetraffic.com/" target="_blank" rel="noopener noreferrer">Carte AIS ↗</a></td></tr>
 </tbody></table></div>
+
+</section>
+<section class="panel">
+<div class="panel-head"><h2>🌍 Carte interactive des ports mondiaux</h2><span class="muted">Sélectionner un port pour le localiser</span></div>
+<div class="map-tools" aria-label="Commandes de la carte mondiale">
+<button type="button" class="active" id="worldStreetBtn">Carte classique</button>
+<button type="button" id="worldSatBtn">Vue satellite</button>
+<button type="button" id="showAllPortsBtn">Afficher tous les ports</button>
+</div>
+<div id="worldPortsMap" role="application" aria-label="Carte interactive des grands ports mondiaux"></div>
+<div class="port-grid" style="margin-top:13px">
+<article class="port"><h3>🇲🇦 Casablanca</h3><p>Maroc · Atlantique</p><button type="button" onclick="focusWorldPort('casablanca')">Voir sur la carte</button></article>
+<article class="port"><h3>🇳🇱 Rotterdam</h3><p>Pays-Bas · Europe</p><button type="button" onclick="focusWorldPort('rotterdam')">Voir sur la carte</button></article>
+<article class="port"><h3>🇸🇬 Singapour</h3><p>Singapour · Asie</p><button type="button" onclick="focusWorldPort('singapore')">Voir sur la carte</button></article>
+<article class="port"><h3>🇨🇳 Shanghai</h3><p>Chine · Asie</p><button type="button" onclick="focusWorldPort('shanghai')">Voir sur la carte</button></article>
+<article class="port"><h3>🇺🇸 Los Angeles</h3><p>États-Unis · Pacifique</p><button type="button" onclick="focusWorldPort('losangeles')">Voir sur la carte</button></article>
+<article class="port"><h3>🇺🇸 New York</h3><p>États-Unis · Atlantique</p><button type="button" onclick="focusWorldPort('newyork')">Voir sur la carte</button></article>
+</div>
+<p class="mapnote">Les marqueurs représentent des ports fixes. Ils ne signalent ni navires présents, ni activité portuaire en direct.</p>
+</section>
+<section class="panel">
+<div class="panel-head"><h2>🧭 Carte interactive des grandes routes maritimes</h2><span class="muted">Routes commerciales schématiques</span></div>
+<div class="map-tools" aria-label="Sélection des routes maritimes">
+<button type="button" class="active" id="routeAllBtn">Toutes les routes</button>
+<button type="button" id="routeAsiaEuropeBtn">Asie – Europe</button>
+<button type="button" id="routeAtlanticBtn">Atlantique</button>
+<button type="button" id="routeMedBtn">Méditerranée – Atlantique</button>
+</div>
+<div id="routesMap" role="application" aria-label="Carte interactive des routes maritimes commerciales"></div>
+<div class="info" id="routeDescription" aria-live="polite">Sélectionnez une route pour mettre en évidence son tracé schématique et lire sa description.</div>
+<p class="mapnote">Ces lignes illustrent des corridors commerciaux généraux. Elles ne représentent pas des trajectoires GPS, des horaires ou des positions AIS en temps réel.</p>
 </section>
 <section class="panel">
 <h2>🚢 Catégories de navires à observer</h2>
@@ -116,7 +147,47 @@ document.getElementById('streetBtn').addEventListener('click',()=>{if(maritimeMa
 document.getElementById('satBtn').addEventListener('click',()=>{if(maritimeMap.hasLayer(street))maritimeMap.removeLayer(street);satellite.addTo(maritimeMap);document.getElementById('satBtn').classList.add('active');document.getElementById('streetBtn').classList.remove('active')});
 document.getElementById('gibraltarBtn').addEventListener('click',()=>maritimeMap.setView([35.92,-5.55],8));
 document.getElementById('worldBtn').addEventListener('click',()=>maritimeMap.setView([20,0],2));
-window.addEventListener('resize',()=>maritimeMap.invalidateSize());
+
+const globalPorts={
+ casablanca:{name:'Casablanca · Maroc',coords:[33.60,-7.62]},
+ rotterdam:{name:'Rotterdam · Pays-Bas',coords:[51.95,4.14]},
+ singapore:{name:'Singapour',coords:[1.26,103.84]},
+ shanghai:{name:'Shanghai · Chine',coords:[31.23,121.49]},
+ losangeles:{name:'Los Angeles · États-Unis',coords:[33.74,-118.27]},
+ newyork:{name:'New York · États-Unis',coords:[40.68,-74.04]}
+};
+const worldPortsMap=L.map('worldPortsMap',{worldCopyJump:true}).setView([20,5],2);
+const worldStreet=L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',{maxZoom:18,attribution:'© OpenStreetMap contributors'}).addTo(worldPortsMap);
+const worldSatellite=L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}',{maxZoom:18,attribution:'Tiles © Esri'});
+const worldMarkers=L.featureGroup().addTo(worldPortsMap);
+Object.entries(globalPorts).forEach(([id,p])=>L.marker(p.coords).addTo(worldMarkers).bindPopup('<strong>'+p.name+'</strong><br>Port de référence · position géographique').bindTooltip(p.name));
+function focusWorldPort(id){const p=globalPorts[id];if(!p)return;worldPortsMap.setView(p.coords,9);worldMarkers.eachLayer(m=>{if(m.getLatLng().equals(L.latLng(p.coords)))m.openPopup()});document.getElementById('worldPortsMap').scrollIntoView({behavior:'smooth',block:'center'});setTimeout(()=>worldPortsMap.invalidateSize(),250)}
+document.getElementById('worldStreetBtn').addEventListener('click',()=>{if(worldPortsMap.hasLayer(worldSatellite))worldPortsMap.removeLayer(worldSatellite);worldStreet.addTo(worldPortsMap);document.getElementById('worldStreetBtn').classList.add('active');document.getElementById('worldSatBtn').classList.remove('active')});
+document.getElementById('worldSatBtn').addEventListener('click',()=>{if(worldPortsMap.hasLayer(worldStreet))worldPortsMap.removeLayer(worldStreet);worldSatellite.addTo(worldPortsMap);document.getElementById('worldSatBtn').classList.add('active');document.getElementById('worldStreetBtn').classList.remove('active')});
+document.getElementById('showAllPortsBtn').addEventListener('click',()=>worldPortsMap.fitBounds(worldMarkers.getBounds().pad(.18)));
+const routesMap=L.map('routesMap',{worldCopyJump:true}).setView([22,12],2);
+L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',{maxZoom:18,attribution:'© OpenStreetMap contributors'}).addTo(routesMap);
+const routeDefs={
+ asia:{name:'Asie – Europe',description:'Corridor schématique reliant les grands centres portuaires d’Asie orientale à l’Europe, via l’océan Indien, le canal de Suez et la Méditerranée.',coords:[[31.23,121.49],[22,114],[6,80],[12,45],[30,32],[35.9,-5.5],[40,0],[45,5],[51.95,4.14]]},
+ atlantic:{name:'Atlantique',description:'Illustration des échanges transatlantiques entre les ports d’Amérique du Nord et d’Europe occidentale.',coords:[[40.68,-74.04],[42,-55],[45,-35],[48,-18],[51.95,4.14]]},
+ med:{name:'Méditerranée – Atlantique',description:'Corridor schématique reliant la Méditerranée occidentale au détroit de Gibraltar puis à l’Atlantique.',coords:[[31.23,121.49],[20,60],[12,35],[30,32],[36,15],[36,-2],[35.9,-5.5],[30,-15],[20,-25]]}
+};
+const routeLayers={};
+Object.entries(routeDefs).forEach(([id,r])=>{routeLayers[id]=L.polyline(r.coords,{color:id==='asia'?'#4bd5f2':id==='atlantic'?'#f4c15d':'#69d69a',weight:4,opacity:.9}).addTo(routesMap).bindPopup(r.name+' · route schématique')});
+function selectRoutes(id){
+ Object.entries(routeLayers).forEach(([key,layer])=>{if(id==='all'||key===id){if(!routesMap.hasLayer(layer))layer.addTo(routesMap)}else routesMap.removeLayer(layer)});
+ const d=id==='all'?'Vue générale des trois corridors commerciaux schématiques. Les tracés ne constituent pas des routes de navigation officielles.':routeDefs[id].description;
+ document.getElementById('routeDescription').textContent=d;
+ const buttons={all:'routeAllBtn',asia:'routeAsiaEuropeBtn',atlantic:'routeAtlanticBtn',med:'routeMedBtn'};
+ Object.entries(buttons).forEach(([key,btn])=>document.getElementById(btn).classList.toggle('active',key===id));
+ if(id==='all')routesMap.setView([22,12],2);else routesMap.fitBounds(routeLayers[id].getBounds().pad(.15));
+}
+document.getElementById('routeAllBtn').addEventListener('click',()=>selectRoutes('all'));
+document.getElementById('routeAsiaEuropeBtn').addEventListener('click',()=>selectRoutes('asia'));
+document.getElementById('routeAtlanticBtn').addEventListener('click',()=>selectRoutes('atlantic'));
+document.getElementById('routeMedBtn').addEventListener('click',()=>selectRoutes('med'));
+window.addEventListener('resize',()=>{maritimeMap.invalidateSize();worldPortsMap.invalidateSize();routesMap.invalidateSize()});
+
 </script>
 </body>
 </html>
