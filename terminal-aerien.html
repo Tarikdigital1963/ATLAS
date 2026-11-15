@@ -48,22 +48,42 @@ footer{text-align:center;padding:22px;color:#b5c7d9;border-top:1px solid #294866
 @media(max-width:650px){.board-head{align-items:flex-start}.board-tabs a,.board-tabs button{flex:1}.board-clock{font-size:1.05rem}}
 
 
-/* Présentation principale en grand tableau de contrôle aéroportuaire */
+/* Grand tableau de contrôle : l'affichage principal du terminal */
 main.wrap{width:min(1600px,98%);padding-top:18px}
-#flightBoard{width:100%;margin:16px auto 24px;padding:clamp(12px,2vw,2<section class="intro"><h2>Les tableaux des vols internationaux</h2><p>Sélectionnez un pays ou recherchez un aéroport pour consulter ses vols.</p></section>\n<section class="panel" id="flightBoard">
+#flightBoard{width:100%;margin:16px auto 24px;padding:clamp(12px,2vw,24px);border-color:#53799b;background:linear-gradient(145deg,#0a1a2c,#06101d);box-shadow:0 18px 48px #0009}
+#flightBoard>.intro{max-width:none;margin:0 0 16px;text-align:left;border-bottom:1px solid #42617d;padding:4px 2px 14px}
+#flightBoard>.intro h2{font-size:clamp(1.55rem,3vw,2.35rem);color:#f5f8fc;letter-spacing:.02em}
+#flightBoard>.intro p{font-size:1.02rem}
+#flightBoard>.toolbar{display:grid;grid-template-columns:minmax(220px,.75fr) minmax(260px,1.5fr) auto;gap:12px;align-items:end;margin:12px 0 16px}
+.board-shell{width:100%;min-height:430px;background:#020914;border:2px solid #55718d;border-radius:8px;overflow:hidden;box-shadow:inset 0 0 35px #000,0 12px 30px #0008}
+.board-head{min-height:76px;padding:16px 20px;background:linear-gradient(90deg,#102944,#06101d 75%);border-bottom:2px solid #53718e}
+.board-head h2{font-size:clamp(1.2rem,2.5vw,1.9rem);letter-spacing:.09em}
+.board-clock{font-size:clamp(1.25rem,2.5vw,1.8rem);letter-spacing:.08em}
+.board-tabs{padding:12px 16px;background:#0b1928}
+.board-tabs a,.board-tabs button{min-height:48px;padding:10px 18px;border-radius:4px;font-size:.94rem;letter-spacing:.04em}
+.board-info{padding:13px 18px;background:#071321;border-bottom:1px solid #344e68;font-size:1rem;gap:24px}
+.board-table-wrap{width:100%;max-height:68vh;min-height:330px;overflow:auto}
+.board-table{width:100%;min-width:1080px;border-collapse:separate;border-spacing:0;table-layout:auto}
+.board-table th{position:sticky;top:0;z-index:2;background:#17334e;color:#d5eaff;padding:16px 13px;font-size:.88rem;border-right:1px solid #38536e;border-bottom:2px solid #6a8aa7}
+.board-table td{height:58px;padding:14px 13px;border-right:1px solid #203b55;border-bottom:1px solid #29445e;font-size:1rem}
+.board-table tbody tr:nth-child(odd){background:#081728}
+.board-table tbody tr:nth-child(even){background:#10243a}
+.board-table tbody tr:hover{background:#1b3b58}
+.board-table .flight-code{font-size:1.08rem;color:#ffd65a}
+.board-status{padding:6px 10px;border-radius:3px;white-space:nowrap}
+.board-note{font-size:.95rem;padding:14px 18px}
+#flightBoard>.notice{font-size:.96rem;margin:15px 0 0}
+@media(max-width:760px){main.wrap{width:96%}#flightBoard>.toolbar{grid-template-columns:1fr}#flightBoard>.toolbar button{width:100%}.board-shell{min-height:390px}.board-table-wrap{max-height:62vh}.board-head{align-items:center}.board-tabs a,.board-tabs button{flex:1;min-width:145px}}
+
+</style>
+</head>
+<body>
+<header><div class="wrap brand"><h1>✈ ATLAS MONDE · TERMINAL AÉRIEN</h1><p>Départs et arrivées des grands aéroports internationaux</p></div></header>
+<main class="wrap">
+<section class="intro"><h2>Les tableaux des vols internationaux</h2><p>Sélectionnez un pays ou recherchez un aéroport pour consulter ses vols.</p></section>
+<section class="panel" id="flightBoard">
 <div class="intro"><h2>🛫 Tableau des départs et des arrivées</h2><p>Un affichage de terminal international, avec les avions réellement détectés autour de l'aéroport sélectionné.</p></div>
 <div class="toolbar"><div class="field"><label for="boardAirport">Aéroport à consulter</label><select id="boardAirport"></select></div><div class="field"><label for="boardFilter">Rechercher un vol, une compagnie ou un modèle</label><input id="boardFilter" type="search" placeholder="Indicatif, immatriculation, Airbus, Boeing…"></div><button id="boardRefresh" type="button">↻ Actualiser</button></div>
-<div class="board-shell"><div class="board-head"><h2>✈ FLIGHT INFORMATION · MOUVEMENTS EN DIRECT</h2><div class="board-clock" id="boardClock">--:--:--</div></div>
-<div class="board-tabs"><a id="officialDepartures" target="_blank" rel="noopener noreferrer">🛫 DÉPARTS OFFICIELS ↗</a><a id="officialArrivals" target="_blank" rel="noopener noreferrer">🛬 ARRIVÉES OFFICIELLES ↗</a><button id="showAllBoard" class="active" type="button">📡 AVIONS DÉTECTÉS</button></div>
-<div class="board-info"><span>AÉROPORT : <strong id="boardAirportName">—</strong></span><span>APPAREILS : <strong id="boardCount">0</strong></span><span>DERNIÈRE MISE À JOUR : <strong id="boardUpdated">En attente</strong></span></div>
-<div class="board-table-wrap"><table class="board-table"><thead><tr><th>Indicatif / Vol</th><th>Compagnie</th><th>Immatriculation</th><th>Constructeur / Modèle</th><th>Altitude</th><th>Vitesse</th><th>Cap</th><th>Observation</th></tr></thead><tbody id="boardRows"><tr><td colspan="8" class="board-empty">Connexion au réseau aérien…</td></tr></tbody></table></div>
-<div class="board-note" id="boardStatus" role="status" aria-live="polite">Connexion à la source ADS-B ouverte…</div></div>
-<p class="notice"><strong>Lecture honnête des données :</strong> les liens DÉPARTS OFFICIELS et ARRIVÉES OFFICIELLES ouvrent les tableaux publiés par FlightAware. Le tableau intégré affiche les avions effectivement détectés par ADS-B. Un signal ADS-B ne confirme pas à lui seul qu'un appareil est en départ ou en arrivée, ni sa porte ou son horaire commercial : ces informations ne sont pas inventées.</p>
-</section>\n<section class="panel">
-<h2>Comment consulter les vols ?</h2>
-<p>Ouvrez le suivi ADS-B de l’aéroport pour consulter les avions détectés à proximité et leurs informations de vol lorsqu’elles sont reçues. Les mouvements au sol et en approche peuvent apparaître selon la couverture des récepteurs. Les données peuvent être incomplètes, notamment dans les zones où peu de stations reçoivent les signaux.</p>
-<p class="notice">À noter : la source ADSB.lol est gratuite et ouverte (licence ODbL). Elle fournit des observations ADS-B, pas les horaires commerciaux complets. Pour obtenir les portes d’embarquement, les heures prévues et les retards officiels, il faudrait une seconde source spécialisée, généralement soumise à abonnement ou à des quotas payants.</p>
-</section>\n>Rechercher un vol, une compagnie ou un modèle</label><input id="boardFilter" type="search" placeholder="Indicatif, immatriculation, Airbus, Boeing…"></div><button id="boardRefresh" type="button">↻ Actualiser</button></div>
 <div class="board-shell"><div class="board-head"><h2>✈ FLIGHT INFORMATION · MOUVEMENTS EN DIRECT</h2><div class="board-clock" id="boardClock">--:--:--</div></div>
 <div class="board-tabs"><a id="officialDepartures" target="_blank" rel="noopener noreferrer">🛫 DÉPARTS OFFICIELS ↗</a><a id="officialArrivals" target="_blank" rel="noopener noreferrer">🛬 ARRIVÉES OFFICIELLES ↗</a><button id="showAllBoard" class="active" type="button">📡 AVIONS DÉTECTÉS</button></div>
 <div class="board-info"><span>AÉROPORT : <strong id="boardAirportName">—</strong></span><span>APPAREILS : <strong id="boardCount">0</strong></span><span>DERNIÈRE MISE À JOUR : <strong id="boardUpdated">En attente</strong></span></div>
