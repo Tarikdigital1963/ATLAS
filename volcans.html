@@ -99,7 +99,7 @@ async function loadUSGS(notifyNew=false){
 }
 async function loadGlobalFeed(notifyNew=false){
  const box=document.getElementById('globalFeed');
- const feed='https://volcano.si.edu/news/WeeklyVolcanicActivityReport.xml';
+ const feed='https://volcano.si.edu/news/WeeklyVolcanoRSS.xml';
  try{
   const url='https://api.rss2json.com/v1/api.json?rss_url='+encodeURIComponent(feed);
   const data=await getJson(url);if(!data.items||!data.items.length)throw new Error('Flux vide');
