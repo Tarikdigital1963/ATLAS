@@ -37,6 +37,20 @@ footer{padding:25px 0 35px;text-align:center;color:#aebfd1;border-top:1px solid 
 </div>
 </section>
 <div class="info"><strong>Comment lire cette page :</strong> la carte ci-dessous est une carte géographique interactive avec imagerie satellite et repères portuaires. Elle ne prétend pas afficher les positions AIS en direct. Pour voir les navires réellement détectés, utilisez les services AIS externes. Leur couverture, leur fréquence de mise à jour et certaines fonctions dépendent de leurs réseaux et abonnements.</div>
+
+<section class="panel" id="liveAisPanel">
+<div class="panel-head"><h2>📡 Positions réelles des navires · AIS</h2><span class="muted" id="aisStatus" aria-live="polite">Connexion AIS non configurée</span></div>
+<p>Cette couche est réservée aux positions reçues d'un flux AIS. Lorsqu'une connexion sécurisée sera activée, les navires apparaîtront directement sur la carte de Gibraltar, avec les informations disponibles.</p>
+<div class="stats">
+<div class="stat"><strong id="aisVesselCount">0</strong><span>Navires reçus</span></div>
+<div class="stat"><strong id="aisLastUpdate">—</strong><span>Dernière réception</span></div>
+<div class="stat"><strong>60 s</strong><span>Fréquence de vérification du flux</span></div>
+</div>
+<div class="map-tools"><button type="button" id="aisRefreshBtn">↻ Actualiser les positions AIS</button><a class="btn secondary" href="https://aisstream.io/documentation" target="_blank" rel="noopener noreferrer">Documentation AISstream ↗</a></div>
+<p class="mapnote" id="aisMessage">En attente d'une passerelle AIS sécurisée. Aucune position réelle n'est simulée ou inventée.</p>
+<p class="mapnote">Pour activer le suivi : installer un petit service serveur qui se connecte au fournisseur AIS, conserve la clé API côté serveur et expose à cette page un flux JSON sécurisé. Le navigateur ne doit jamais recevoir la clé API.</p>
+</section>
+
 <section class="stats" aria-label="Périmètre de l'observatoire">
 <div class="stat"><strong>Détroit de Gibraltar</strong><span>Zone régionale prioritaire</span></div>
 <div class="stat"><strong>Maroc · Espagne</strong><span>Deux rives et ports voisins</span></div>
@@ -127,6 +141,40 @@ footer{padding:25px 0 35px;text-align:center;color:#aebfd1;border-top:1px solid 
 <footer><div class="wrap">ATLAS MONDE · Observatoire maritime à vocation informative · Les données AIS peuvent être incomplètes ou retardées.<br><a href="./index.html">Retour à l'accueil ATLAS MONDE</a></div></footer>
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 <script>
+
+/* URL d'une passerelle serveur AIS. Ne jamais placer une clé API dans ce fichier public.
+   JSON attendu : { vessels: [{mmsi,name,lat,lon,type,speed,course,timestamp}] } */
+const AIS_PROXY_URL = '';
+let aisLayer = null;
+function aisText(value){return String(value ?? '').replace(/[&<>"']/g,ch=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[ch]));}
+function setAisStatus(status,message){document.getElementById('aisStatus').textContent=status;document.getElementById('aisMessage').textContent=message;}
+async function refreshAisPositions(){
+ const count=document.getElementById('aisVesselCount'),last=document.getElementById('aisLastUpdate');
+ if(!AIS_PROXY_URL){setAisStatus('Connexion AIS non configurée','La carte est prête à recevoir les positions réelles, mais aucune passerelle AIS sécurisée n’est encore reliée. Les repères fixes des ports ne représentent pas des navires.');return;}
+ setAisStatus('Réception des données…','Interrogation de la passerelle AIS sécurisée.');
+ try{
+  const response=await fetch(AIS_PROXY_URL,{cache:'no-store',headers:{'Accept':'application/json'}});
+  if(!response.ok)throw new Error('Réponse HTTP '+response.status);
+  const payload=await response.json();
+  if(!payload||!Array.isArray(payload.vessels))throw new Error('Format JSON invalide : tableau vessels absent');
+  if(aisLayer)maritimeMap.removeLayer(aisLayer);
+  aisLayer=L.layerGroup();
+  let valid=0;
+  payload.vessels.forEach(v=>{
+   const lat=Number(v.lat),lon=Number(v.lon);
+   if(!Number.isFinite(lat)||!Number.isFinite(lon)||lat < -90||lat > 90||lon < -180||lon > 180)return;
+   const details=['MMSI : '+aisText(v.mmsi||'non fourni'),'Type : '+aisText(v.type||'non renseigné'),'Vitesse : '+aisText(v.speed??'non fournie')+' nd','Cap : '+aisText(v.course??'non fourni')+'°','Réception : '+aisText(v.timestamp||'non fournie')].join('<br>');
+   L.circleMarker([lat,lon],{radius:7,color:'#ffffff',weight:1,fillColor:'#ffb347',fillOpacity:.95}).bindPopup('<strong>'+aisText(v.name||'Navire sans nom')+'</strong><br>'+details).addTo(aisLayer);
+   valid++;
+  });
+  aisLayer.addTo(maritimeMap);count.textContent=String(valid);
+  last.textContent=new Date().toLocaleTimeString('fr-FR',{hour:'2-digit',minute:'2-digit'});
+  setAisStatus('Flux AIS connecté',valid+' position(s) AIS valide(s) reçue(s). Les données peuvent être retardées ou incomplètes.');
+ }catch(error){setAisStatus('Flux AIS indisponible','La passerelle AIS ne répond pas ou renvoie des données invalides. Détail : '+error.message);}
+}
+document.getElementById('aisRefreshBtn').addEventListener('click',refreshAisPositions);
+if(AIS_PROXY_URL){refreshAisPositions();setInterval(refreshAisPositions,60000);}
+
 const maritimeMap=L.map('maritimeMap',{worldCopyJump:true}).setView([35.92,-5.55],8);
 const street=L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',{maxZoom:19,attribution:'© <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'}).addTo(maritimeMap);
 const satellite=L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}',{maxZoom:19,attribution:'Tiles © Esri'});
