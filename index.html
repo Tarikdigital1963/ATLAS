@@ -84,7 +84,7 @@
     .leaflet-control-attribution{font-size:10px!important}
 
     /* Accès rapides circulaires : séismes, incendies et pollution de l'air */
-    .alert-shortcuts{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:clamp(10px,2vw,20px);justify-items:center;align-items:center;margin:30px auto 36px;max-width:1050px}
+    .alert-shortcuts{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:clamp(8px,1.5vw,16px);justify-items:center;align-items:center;margin:30px auto 36px;max-width:1050px}
     .alert-circle{width:clamp(128px,17vw,178px);aspect-ratio:1;border-radius:50%;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:7px;text-align:center;text-decoration:none;color:#fff;border:5px solid rgba(255,255,255,.78);box-shadow:0 10px 28px rgba(0,0,0,.38),inset 0 0 0 5px rgba(255,255,255,.12);transition:transform .18s ease,filter .18s ease,box-shadow .18s ease;padding:14px}
     .alert-circle:hover,.alert-circle:focus{transform:scale(1.07);filter:brightness(1.12);box-shadow:0 14px 36px rgba(0,0,0,.48),0 0 0 4px rgba(255,255,255,.2);outline:3px solid #fff;outline-offset:4px}
     .alert-circle .alert-emoji{font-size:clamp(2.5rem,6vw,4.2rem);line-height:1;filter:drop-shadow(0 3px 4px rgba(0,0,0,.35))}
@@ -95,6 +95,7 @@
     .alert-fire strong,.alert-fire span:last-child{text-shadow:0 1px 3px rgba(255,255,255,.5)}
     .alert-pollution{background:radial-gradient(circle at 35% 25%,#9cf0a9,#159b59 58%,#07552f);border-color:#b9ffd0}
     .alert-space{background:radial-gradient(circle at 35% 25%,#a6e7ff,#1878ad 58%,#10345e);border-color:#a9e5ff}
+    .alert-volcano{background:radial-gradient(circle at 35% 25%,#ffc38a,#d94b24 58%,#762016);border-color:#ffd0a8}
     @media(max-width:760px){.alert-shortcuts{grid-template-columns:repeat(2,minmax(0,1fr));gap:14px;margin:24px auto 30px}.alert-circle{width:clamp(125px,34vw,170px);border-width:3px;padding:8px;gap:5px}.alert-circle .alert-emoji{font-size:clamp(2rem,9vw,3rem)}.alert-circle strong{font-size:clamp(.82rem,3.3vw,1.05rem)}.alert-circle span:last-child{font-size:clamp(.65rem,2.4vw,.78rem)}}
 
     /* Visibilité renforcée sur mobile : images plus présentes et contraste du texte */
@@ -185,6 +186,7 @@
   <a class="fire-menu-link" href="./incendies.html">🔥 INCENDIES ET ALERTES <span class="fire-menu-badge">ALERTE MONDIALE</span><small>Carte mondiale · feux actifs · notifications</small></a>
   <a class="activism-menu-link" href="./militant-contre-la-pollution.html">🌍 MILITANT CONTRE LA POLLUTION <small>Mobilisation mondiale · bénévoles · associations · partenariats</small></a>
   <a class="space-menu-link" href="./observation-monde.html">🛰️ TERRE & ESPACE EN OBSERVATION <small>Satellites · espace · webcams publiques du monde</small></a>
+  <a class="space-menu-link" href="./volcans.html">🌋 VOLCANS DU MONDE <small>Carte mondiale · activité · alertes et notifications</small></a>
   <h2>Catégories cartographiques</h2>
   <a href="./carte-interactive.html">🗺️ Carte interactive</a>
   <a href="./routes-autoroutes.html">🛣️ Routes et autoroutes</a>
@@ -238,6 +240,11 @@
       <strong>POLLUTION</strong>
       <span>Air et environnement</span>
     </a>
+    <a class="alert-circle alert-volcano" href="./volcans.html" aria-label="Ouvrir la surveillance mondiale des volcans">
+      <span class="alert-emoji" aria-hidden="true">🌋</span>
+      <strong>VOLCANS</strong>
+      <span>Activité et alertes mondiales</span>
+    </a>
     <a class="alert-circle alert-space" href="./observation-monde.html" aria-label="Ouvrir la section Observation de la Terre et de l’espace">
       <span class="alert-emoji" aria-hidden="true">🛰️</span>
       <strong>TERRE & ESPACE</strong>
@@ -260,7 +267,7 @@
 
   <section class="discover-section" id="univers" aria-labelledby="univers-title">
     <div class="section-heading">
-      <h2 id="univers-title">Six portes pour découvrir notre planète</h2>
+      <h2 id="univers-title">Sept portes pour découvrir notre planète</h2>
       <p>Explorez les territoires, les phénomènes naturels et les grands équilibres de la Terre.</p>
     </div>
     <div class="discover-grid">
@@ -272,6 +279,9 @@
       </a>
       <a class="discover-card" href="./observation-monde.html">
         <span class="discover-icon" aria-hidden="true">🌦️</span><h3>Météo et climat</h3><p>Suivez les paysages, les nuages et les grands phénomènes climatiques.</p><span class="discover-link">Voir la carte satellite →</span>
+      </a>
+      <a class="discover-card" href="./volcans.html" style="--card-image:url('https://images.unsplash.com/photo-1462331940025-496dfbfc7564?auto=format&fit=crop&w=900&q=80')">
+        <span class="discover-icon" aria-hidden="true">🌋</span><h3>Volcans du monde</h3><p>Surveillance de l’activité volcanique, bulletins scientifiques et alertes disponibles.</p><span class="discover-link">Surveiller les volcans →</span>
       </a>
       <a class="discover-card" href="./seismes.html" style="--card-image:url('https://images.unsplash.com/photo-1518837695005-2083093ee35b?auto=format&fit=crop&w=900&q=80')">
         <span class="discover-icon" aria-hidden="true">🌋</span><h3>Risques naturels</h3><p>Séismes, incendies et phénomènes à surveiller.</p><span class="discover-link">Accéder aux surveillances →</span>
@@ -293,6 +303,7 @@
     <div class="watch-grid">
       <article class="watch-item"><h3>🛰️ Observer la Terre</h3><p>Images et observations satellitaires pour mieux comprendre les changements de la planète.</p><a href="./observation-monde.html">Voir l'observation mondiale →</a></article>
       <article class="watch-item"><h3>🌍 Surveiller les séismes</h3><p>Consultez la carte dédiée aux secousses et aux informations sismiques disponibles.</p><a href="./seismes.html">Ouvrir la surveillance sismique →</a></article>
+      <article class="watch-item"><h3>🌋 Surveiller les volcans</h3><p>Consultez les bulletins mondiaux, les alertes et les volcans suivis.</p><a href="./volcans.html">Ouvrir la surveillance volcanique →</a></article>
       <article class="watch-item"><h3>🔥 Suivre les incendies</h3><p>Accédez à la rubrique consacrée aux feux actifs et aux alertes incendie.</p><a href="./incendies.html">Voir les incendies et alertes →</a></article>
     </div>
   </section>
