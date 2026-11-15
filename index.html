@@ -84,7 +84,7 @@
     .leaflet-control-attribution{font-size:10px!important}
 
     /* Accès rapides circulaires : séismes, incendies et pollution de l'air */
-    .alert-shortcuts{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:clamp(8px,1.5vw,16px);justify-items:center;align-items:center;margin:30px auto 36px;max-width:1050px}
+    .alert-shortcuts{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:clamp(8px,1.5vw,16px);justify-items:center;align-items:center;margin:30px auto 36px;max-width:1160px}
     .alert-circle{width:clamp(128px,17vw,178px);aspect-ratio:1;border-radius:50%;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:7px;text-align:center;text-decoration:none;color:#fff;border:5px solid rgba(255,255,255,.78);box-shadow:0 10px 28px rgba(0,0,0,.38),inset 0 0 0 5px rgba(255,255,255,.12);transition:transform .18s ease,filter .18s ease,box-shadow .18s ease;padding:14px}
     .alert-circle:hover,.alert-circle:focus{transform:scale(1.07);filter:brightness(1.12);box-shadow:0 14px 36px rgba(0,0,0,.48),0 0 0 4px rgba(255,255,255,.2);outline:3px solid #fff;outline-offset:4px}
     .alert-circle .alert-emoji{font-size:clamp(2.5rem,6vw,4.2rem);line-height:1;filter:drop-shadow(0 3px 4px rgba(0,0,0,.35))}
@@ -96,6 +96,7 @@
     .alert-pollution{background:radial-gradient(circle at 35% 25%,#9cf0a9,#159b59 58%,#07552f);border-color:#b9ffd0}
     .alert-space{background:radial-gradient(circle at 35% 25%,#a6e7ff,#1878ad 58%,#10345e);border-color:#a9e5ff}
     .alert-volcano{background:radial-gradient(circle at 35% 25%,#ffc38a,#d94b24 58%,#762016);border-color:#ffd0a8}
+    .alert-maritime{background:radial-gradient(circle at 35% 25%,#9deeff,#087d9e 58%,#06344f);border-color:#b8f5ff}
     @media(max-width:760px){.alert-shortcuts{grid-template-columns:repeat(2,minmax(0,1fr));gap:14px;margin:24px auto 30px}.alert-circle{width:clamp(125px,34vw,170px);border-width:3px;padding:8px;gap:5px}.alert-circle .alert-emoji{font-size:clamp(2rem,9vw,3rem)}.alert-circle strong{font-size:clamp(.82rem,3.3vw,1.05rem)}.alert-circle span:last-child{font-size:clamp(.65rem,2.4vw,.78rem)}}
 
     /* Visibilité renforcée sur mobile : images plus présentes et contraste du texte */
@@ -249,6 +250,11 @@
       <span class="alert-emoji" aria-hidden="true">🛰️</span>
       <strong>TERRE & ESPACE</strong>
       <span>Satellites et webcams</span>
+    </a>
+    <a class="alert-circle alert-maritime" href="./trafic-maritime.html" aria-label="Ouvrir la surveillance du trafic maritime mondial">
+      <span class="alert-emoji" aria-hidden="true">🚢</span>
+      <strong>TRAFIC MARITIME</strong>
+      <span>Surveillance mondiale</span>
     </a>
   </section>
 
