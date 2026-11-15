@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#071426">
+<meta name="description" content="ATLAS MONDE : cartographie du trafic aérien, avions détectés par ADS-B et grands aéroports du monde.">
+<title>ATLAS MONDE | Trafic aérien mondial</title>
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
+<style>
+:root{--bg:#071426;--panel:#0d2038;--panel2:#102944;--blue:#36a9ff;--text:#f4f8ff;--muted:#bfd0e2;--line:#294866}
+*{box-sizing:border-box}body{margin:0;background:radial-gradient(ellipse at 50% -20%,#173b62 0,#071426 55%);color:var(--text);font:16px/1.55 Arial,Helvetica,sans-serif}a{color:#8bd1ff}.wrap{width:min(1240px,94%);margin:auto}
+header{padding:22px 0;border-bottom:1px solid #294866}.brand{text-align:center}.brand h1{font-size:clamp(2rem,6vw,4rem);margin:0;color:#48b5ff}.brand p{color:var(--muted);margin:6px 0 0}
+main{padding:24px 0 50px}.intro{text-align:center;margin:0 auto 22px;max-width:900px}.intro h2{font-size:clamp(1.5rem,4vw,2.4rem);margin:0 0 8px}.intro p{color:var(--muted);margin:0}
+.panel{background:linear-gradient(135deg,#0d2946,#0a1b30);border:1px solid #315879;border-radius:18px;padding:clamp(14px,2.5vw,24px);margin:18px 0;box-shadow:0 14px 38px #0005}
+.toolbar{display:flex;gap:10px;flex-wrap:wrap;align-items:end}.field{display:flex;flex-direction:column;gap:5px;flex:1;min-width:180px}.field label{font-weight:700;color:#dcecff}select,button{min-height:46px;border-radius:10px;border:1px solid #55728e;background:#061326;color:white;padding:10px 13px;font-size:1rem}button{background:#087fca;border-color:#69c8ff;font-weight:800;cursor:pointer}button:disabled{opacity:.55;cursor:wait}
+.status{margin:12px 0 0;padding:12px;border-radius:10px;background:#102944;color:#d8eaff}.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin:16px 0}.stat{background:#06182c;border:1px solid #294866;border-radius:12px;padding:13px}.stat span{display:block;color:var(--muted);font-size:.9rem}.stat strong{display:block;font-size:clamp(1.4rem,3vw,2rem);color:#fff}
+#flightMap{height:min(68vh,680px);min-height:390px;border:1px solid #426987;border-radius:14px;background:#102b46}.map-tools{display:flex;gap:8px;flex-wrap:wrap;margin:0 0 12px}.map-tools button{min-height:40px;padding:8px 12px}.note{font-size:.9rem;color:#c2d6e8;margin:10px 2px 0}
+.grid-two{display:grid;grid-template-columns:1.2fr .8fr;gap:15px}.subpanel{background:#06182c;border:1px solid #294866;border-radius:13px;padding:15px}.subpanel h3{margin:0 0 10px}.table-wrap{overflow:auto}table{width:100%;border-collapse:collapse;min-width:520px}th,td{text-align:left;padding:10px;border-bottom:1px solid #294866;font-size:.93rem}th{color:#9edcff}td{color:#e6f2ff}.airport-list{display:grid;grid-template-columns:repeat(2,1fr);gap:8px}.airport{padding:10px;background:#102944;border-radius:9px}.airport b{display:block}.airport small{color:var(--muted)}
+footer{text-align:center;padding:22px;color:#b5c7d9;border-top:1px solid #294866}
+.aircraft-pin{font-size:22px;line-height:24px;text-shadow:0 1px 5px #000;transform-origin:center}
+.leaflet-control-layers,.leaflet-bar a{background:#0d2038!important;color:#fff!important;border-color:#45617c!important}
+@media(max-width:760px){.stats{grid-template-columns:repeat(2,1fr)}.grid-two{grid-template-columns:1fr}.airport-list{grid-template-columns:1fr}#flightMap{min-height:350px;height:58vh}}
+</style>
+</head>
+<body>
+<header><div class="wrap brand"><h1>✈ ATLAS MONDE · TRAFIC AÉRIEN</h1><p>Surveillance informative des aéronefs détectés par les réseaux ADS-B</p></div></header>
+<main class="wrap">
+<section class="intro"><h2>Le ciel en mouvement</h2><p>Carte satellite, avions observés, appareils militaires signalés par le réseau et principaux aéroports internationaux.</p></section>
+<section class="panel">
+<div class="toolbar">
+<div class="field"><label for="regionSelect">Pays ou région de surveillance</label><select id="regionSelect">
+<option value="20,0,2500">Monde central · Europe, Afrique et Atlantique</option>
+<option value="31,-7,500">Maroc</option><option value="40,-3,500">Espagne</option><option value="48,2,500">France</option><option value="51,0,500">Royaume-Uni</option><option value="52,10,500">Allemagne</option><option value="41,12,500">Italie</option><option value="39,22,500">Grèce</option><option value="30,31,500">Égypte</option><option value="25,45,500">Arabie saoudite</option><option value="25,55,500">Émirats arabes unis</option><option value="35,139,500">Japon</option><option value="31,121,500">Chine orientale</option><option value="40,-74,500">États-Unis · New York</option><option value="34,-118,500">États-Unis · Los Angeles</option><option value="-23,-46,500">Brésil</option>
+</select></div>
+<div class="field"><label for="aircraftMode">Type d'appareils</label><select id="aircraftMode"><option value="all">Tous les appareils détectés</option><option value="civil">Aviation civile (hors militaires identifiés)</option><option value="mil">Appareils signalés comme militaires</option></select></div>
+<button id="refreshFlights" type="button">↻ Actualiser</button>
+</div>
+<div class="status" id="feedStatus" role="status" aria-live="polite">Préparation de la connexion ADS-B…</div>
+<div class="stats">
+<div class="stat"><span>Appareils affichés</span><strong id="aircraftCount">—</strong></div>
+<div class="stat"><span>Appareils militaires identifiés</span><strong id="milCount">—</strong></div>
+<div class="stat"><span>Aéroports repérés</span><strong id="airportCount">20</strong></div>
+<div class="stat"><span>Dernière actualisation</span><strong id="lastUpdate">—</strong></div>
+</div>
+<div class="map-tools"><button id="streetMap" type="button">Carte classique</button><button id="satMap" type="button">Vue satellite</button><button id="worldView" type="button">Vue mondiale</button></div>
+<div id="flightMap" role="application" aria-label="Carte interactive satellite du trafic aérien"></div>
+<p class="note">Les avions sont positionnés à partir de messages ADS-B reçus par des stations au sol. La couverture varie selon les régions, l'altitude et les équipements des appareils. L'orientation indique le cap observé, pas la destination.</p>
+</section>
+<section class="panel grid-two">
+<div class="subpanel"><h3>✈ Appareils détectés</h3><div class="table-wrap"><table><thead><tr><th>Indicatif</th><th>Type</th><th>Altitude</th><th>Vitesse</th><th>Cap</th></tr></thead><tbody id="flightRows"><tr><td colspan="5">En attente des données…</td></tr></tbody></table></div></div>
+<div class="subpanel"><h3>🛫 Principaux aéroports</h3><div class="airport-list" id="airportList"></div></div>
+</section>
+<section class="panel">
+<h2>Départs, arrivées et destinations</h2>
+<p>Cette première version affiche les positions réellement observées et les identifiants transmis. Le flux ADS-B public ne fournit pas systématiquement l'aéroport de départ, l'aéroport d'arrivée ni la destination commerciale. Ces informations ne seront affichées que lorsqu'une source fiable les fournira, sans déduction hasardeuse à partir du cap de l'avion.</p>
+<p class="note">Les appareils militaires ne sont visibles que lorsqu'ils sont détectés et identifiés comme tels par la source. Les aéronefs qui n'émettent pas de signal accessible ne peuvent pas être localisés par cette carte.</p>
+</section>
+</main>
+<footer>ATLAS MONDE · Données ADS-B communautaires fournies par <a href="https://adsb.lol/" target="_blank" rel="noopener">ADSB.lol</a> · Licence ODbL 1.0 · Carte © OpenStreetMap / Esri<br><a href="./index.html">← Retour à l'accueil ATLAS MONDE</a></footer>
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script>
+const airports=[
+{name:'Casablanca Mohammed V',code:'CMN',country:'Maroc',lat:33.3675,lon:-7.58997},{name:'Marrakech Menara',code:'RAK',country:'Maroc',lat:31.6069,lon:-8.0363},{name:'Rabat-Salé',code:'RBA',country:'Maroc',lat:34.0515,lon:-6.7515},{name:'Tanger Ibn Battouta',code:'TNG',country:'Maroc',lat:35.7269,lon:-5.9169},
+{name:'Paris Charles-de-Gaulle',code:'CDG',country:'France',lat:49.0097,lon:2.5479},{name:'London Heathrow',code:'LHR',country:'Royaume-Uni',lat:51.47,lon:-0.4543},{name:'Madrid-Barajas',code:'MAD',country:'Espagne',lat:40.4983,lon:-3.5676},{name:'Amsterdam Schiphol',code:'AMS',country:'Pays-Bas',lat:52.3086,lon:4.7639},
+{name:'Frankfurt',code:'FRA',country:'Allemagne',lat:50.0379,lon:8.5622},{name:'Rome Fiumicino',code:'FCO',country:'Italie',lat:41.8003,lon:12.2389},{name:'Istanbul',code:'IST',country:'Turquie',lat:41.2753,lon:28.7519},{name:'Dubai',code:'DXB',country:'Émirats arabes unis',lat:25.2532,lon:55.3657},
+{name:'Doha Hamad',code:'DOH',country:'Qatar',lat:25.2731,lon:51.6081},{name:'Cairo',code:'CAI',country:'Égypte',lat:30.1219,lon:31.4056},{name:'New York JFK',code:'JFK',country:'États-Unis',lat:40.6413,lon:-73.7781},{name:'Los Angeles',code:'LAX',country:'États-Unis',lat:33.9416,lon:-118.4085},
+{name:'Singapore Changi',code:'SIN',country:'Singapour',lat:1.3644,lon:103.9915},{name:'Tokyo Haneda',code:'HND',country:'Japon',lat:35.5494,lon:139.7798},{name:'Beijing Capital',code:'PEK',country:'Chine',lat:40.0799,lon:116.6031},{name:'São Paulo Guarulhos',code:'GRU',country:'Brésil',lat:-23.4356,lon:-46.4731}
+];
+const map=L.map('flightMap',{worldCopyJump:true}).setView([25,0],2);
+const streets=L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',{maxZoom:18,attribution:'© OpenStreetMap contributors'}).addTo(map);
+const satellite=L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}',{maxZoom:18,attribution:'Tiles © Esri'});
+const planeLayer=L.layerGroup().addTo(map),airportLayer=L.layerGroup().addTo(map);
+airports.forEach(a=>L.circleMarker([a.lat,a.lon],{radius:5,color:'#fff',weight:1,fillColor:'#38bdf8',fillOpacity:.95}).bindPopup('<b>'+a.name+'</b><br>'+a.code+' · '+a.country).addTo(airportLayer));
+document.getElementById('airportList').innerHTML=airports.slice(0,12).map(a=>'<div class="airport"><b>'+a.code+' · '+a.name+'</b><small>'+a.country+'</small></div>').join('');
+const safe=v=>String(v??'—').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+let lastAircraft=[];
+function aircraftIsMilitary(a){return ((Number(a.dbFlags)||0)&1)===1 || a.category==='military';}
+function fmtAlt(a){const v=a.alt_baro??a.alt_geom;return typeof v==='number'?Math.round(v).toLocaleString('fr-FR')+' ft':(v||'—');}
+function fmtSpeed(a){return a.gs!=null?Math.round(a.gs)+' kt':'—';}
+function drawAircraft(list){
+ planeLayer.clearLayers();
+ const rows=[];
+ list.forEach(a=>{
+  if(!Number.isFinite(Number(a.lat))||!Number.isFinite(Number(a.lon)))return;
+  const military=aircraftIsMilitary(a),heading=Number(a.track)||0;
+  const icon=L.divIcon({className:'',html:'<div class="aircraft-pin" style="transform:rotate('+heading+'deg);color:'+(military?'#ff9c62':'#7de0ff')+'">▲</div>',iconSize:[26,26],iconAnchor:[13,13]});
+  const label=a.flight?String(a.flight).trim():a.hex||'Avion sans indicatif';
+  const popup='<b>'+safe(label)+'</b><br>Type : '+safe(a.t||a.type)+'<br>Immatriculation : '+safe(a.r)+'<br>Altitude : '+safe(fmtAlt(a))+'<br>Vitesse sol : '+safe(fmtSpeed(a))+'<br>Cap : '+safe(a.track)+'°<br>Signal : '+safe(a.seen??'âge inconnu')+' s<br>Catégorie : '+(military?'Militaire identifié':'Non identifié militaire');
+  L.marker([a.lat,a.lon],{icon}).bindPopup(popup).addTo(planeLayer);
+  rows.push({label,type:a.t||a.type||'—',alt:fmtAlt(a),speed:fmtSpeed(a),track:a.track!=null?Math.round(a.track)+'°':'—',military});
+ });
+ document.getElementById('aircraftCount').textContent=String(rows.length);
+ document.getElementById('milCount').textContent=String(rows.filter(x=>x.military).length);
+ document.getElementById('flightRows').innerHTML=rows.slice(0,60).map(r=>'<tr><td>'+safe(r.label)+'</td><td>'+safe(r.type)+'</td><td>'+safe(r.alt)+'</td><td>'+safe(r.speed)+'</td><td>'+safe(r.track)+'</td></tr>').join('')||'<tr><td colspan="5">Aucun appareil positionné dans cette réponse.</td></tr>';
+}
+async function refreshFlights(){
+ const btn=document.getElementById('refreshFlights'),status=document.getElementById('feedStatus');
+ btn.disabled=true;status.textContent='Connexion au réseau ADS-B.lol…';
+ try{
+  const mode=document.getElementById('aircraftMode').value;
+  let url;
+  if(mode==='mil')url='https://api.adsb.lol/v2/mil';
+  else {const [lat,lon,dist]=document.getElementById('regionSelect').value.split(',');url='https://api.adsb.lol/v2/lat/'+lat+'/lon/'+lon+'/dist/'+dist;}
+  const response=await fetch(url,{cache:'no-store',headers:{'Accept':'application/json'}});
+  if(!response.ok)throw new Error('HTTP '+response.status);
+  const payload=await response.json(),aircraft=Array.isArray(payload.ac)?payload.ac:[];
+  let list=aircraft.filter(a=>Number.isFinite(Number(a.lat))&&Number.isFinite(Number(a.lon)));
+  if(mode==='civil')list=list.filter(a=>!aircraftIsMilitary(a));
+  lastAircraft=list;drawAircraft(list);
+  document.getElementById('lastUpdate').textContent=new Date().toLocaleTimeString('fr-FR',{hour:'2-digit',minute:'2-digit'});
+  status.textContent=list.length+' appareil(s) avec position reçue. '+(payload.msg||'Source ADSB.lol · couverture variable selon les stations réceptrices.');
+ }catch(error){status.textContent='Flux momentanément indisponible : '+error.message+'. Les repères d’aéroports restent visibles.';document.getElementById('aircraftCount').textContent='—';}
+ finally{btn.disabled=false;}
+}
+document.getElementById('refreshFlights').addEventListener('click',refreshFlights);
+document.getElementById('regionSelect').addEventListener('change',e=>{const [lat,lon]=e.target.value.split(',').map(Number);map.setView([lat,lon],5);refreshFlights();});
+document.getElementById('aircraftMode').addEventListener('change',refreshFlights);
+document.getElementById('streetMap').addEventListener('click',()=>{map.removeLayer(satellite);streets.addTo(map);});
+document.getElementById('satMap').addEventListener('click',()=>{map.removeLayer(streets);satellite.addTo(map);});
+document.getElementById('worldView').addEventListener('click',()=>map.setView([20,0],2));
+refreshFlights();setInterval(refreshFlights,60000);
+</script>
+</body>
+</html>
