@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#071426">
+<meta name="description" content="ATLAS MONDE · Terminal aérien : consultez les tableaux réels de départs et d'arrivées des grands aéroports internationaux.">
+<title>ATLAS MONDE | Terminal aérien</title>
+<style>
+:root{--bg:#071426;--panel:#0d2038;--panel2:#102944;--blue:#36a9ff;--text:#f4f8ff;--muted:#bfd0e2;--line:#294866}
+*{box-sizing:border-box}body{margin:0;background:radial-gradient(ellipse at 50% -20%,#173b62 0,#071426 55%);color:var(--text);font:16px/1.55 Arial,Helvetica,sans-serif}a{color:#8bd1ff}.wrap{width:min(1180px,94%);margin:auto}
+header{padding:22px 0;border-bottom:1px solid #294866}.brand{text-align:center}.brand h1{font-size:clamp(2rem,6vw,4rem);line-height:1.1;margin:0;color:#48b5ff}.brand p{color:var(--muted);margin:8px 0 0;font-size:1.05rem}
+main{padding:25px 0 50px}.intro{text-align:center;max-width:900px;margin:0 auto 24px}.intro h2{font-size:clamp(1.5rem,4vw,2.3rem);margin:0 0 8px}.intro p{color:var(--muted);margin:0}
+.panel{background:linear-gradient(135deg,#0d2946,#0a1b30);border:1px solid #315879;border-radius:18px;padding:clamp(15px,3vw,25px);margin:18px 0;box-shadow:0 14px 38px #0005}
+.notice{padding:14px 16px;border-left:4px solid #36a9ff;background:#102944;border-radius:10px;color:#e2f2ff;margin:16px 0}
+.toolbar{display:flex;gap:12px;flex-wrap:wrap;align-items:end}.field{display:flex;flex-direction:column;gap:6px;flex:1;min-width:220px}.field label{font-weight:800;color:#dcecff}select,input{width:100%;min-height:48px;border-radius:10px;border:1px solid #55728e;background:#061326;color:#fff;padding:11px 13px;font-size:1.05rem}
+button{min-height:48px;border-radius:10px;border:1px solid #69c8ff;background:#087fca;color:#fff;padding:11px 17px;font-size:1rem;font-weight:800;cursor:pointer}
+.airport-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:13px;margin-top:18px}
+.airport{background:#06182c;border:1px solid #294866;border-radius:14px;padding:16px;display:flex;flex-direction:column;gap:8px}
+.airport h3{margin:0;font-size:1.12rem}.airport .codes{color:#9edcff;font-weight:800;letter-spacing:.04em}.airport p{margin:0;color:var(--muted);font-size:.95rem}
+.actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:5px}.actions a{display:inline-flex;align-items:center;justify-content:center;text-decoration:none;border-radius:9px;padding:10px 12px;font-weight:800;border:1px solid #69c8ff;background:#087fca;color:white;min-height:44px}.actions a.secondary{background:#102944;border-color:#55728e;color:#dff1ff}
+.empty{display:none;padding:18px;color:var(--muted);text-align:center}
+footer{text-align:center;padding:22px;color:#b5c7d9;border-top:1px solid #294866}footer a{color:#8bd1ff}
+@media(max-width:650px){.airport-grid{grid-template-columns:1fr}.field{min-width:100%}.toolbar button{width:100%}.airport{padding:15px}.actions a{flex:1}}
+</style>
+</head>
+<body>
+<header><div class="wrap brand"><h1>✈ ATLAS MONDE · TERMINAL AÉRIEN</h1><p>Départs et arrivées des grands aéroports internationaux</p></div></header>
+<main class="wrap">
+<section class="intro"><h2>Les tableaux des vols internationaux</h2><p>Sélectionnez un pays ou recherchez un aéroport pour consulter ses vols.</p></section>
+<section class="panel">
+<div class="notice"><strong>Données de vols réelles :</strong> les tableaux détaillés sont ouverts depuis FlightAware, qui fournit les informations de vols publiées pour chaque aéroport. Les horaires, portes et retards peuvent changer. Cette page ne fabrique aucun horaire et n'affiche pas de données simulées.</div>
+<div class="toolbar">
+<div class="field"><label for="countryFilter">Choisir un pays</label><select id="countryFilter"><option value="">Tous les pays</option></select></div>
+<div class="field"><label for="airportSearch">Rechercher un pays, une ville ou un aéroport</label><input id="airportSearch" type="search" placeholder="Ex. Casablanca, Paris, New York…"></div>
+<button id="resetFilters" type="button">Réinitialiser</button>
+</div>
+<div class="airport-grid" id="airportGrid" aria-live="polite"></div>
+<div class="empty" id="emptyState">Aucun aéroport ne correspond à cette recherche.</div>
+</section>
+<section class="panel">
+<h2>Comment consulter les vols ?</h2>
+<p>Ouvrez le tableau des <strong>départs</strong> pour voir les vols quittant l'aéroport, ou celui des <strong>arrivées</strong> pour suivre les avions attendus. Le fournisseur externe actualise ses propres données. Les informations disponibles varient selon l'aéroport et la couverture de ses sources.</p>
+<p class="notice">À noter : la carte « Trafic aérien » d'ATLAS MONDE montre les avions détectés en vol par ADS-B. Elle est différente des tableaux d'horaires, de départs et d'arrivées présentés ici.</p>
+</section>
+</main>
+<footer>ATLAS MONDE · Tableaux de vols consultés auprès de <a href="https://www.flightaware.com/" target="_blank" rel="noopener noreferrer">FlightAware</a> · <a href="./trafic-aerien.html">Voir la carte du trafic aérien</a> · <a href="./index.html">← Retour à l'accueil</a></footer>
+<script>
+const airports=[
+{country:'Maroc',city:'Casablanca',name:'Aéroport Mohammed V',iata:'CMN',icao:'GMMN'},
+{country:'Algérie',city:'Alger',name:'Aéroport Houari-Boumédiène',iata:'ALG',icao:'DAAG'},
+{country:'Tunisie',city:'Tunis',name:'Aéroport Tunis-Carthage',iata:'TUN',icao:'DTTA'},
+{country:'Égypte',city:'Le Caire',name:'Aéroport international du Caire',iata:'CAI',icao:'HECA'},
+{country:'Sénégal',city:'Dakar',name:'Aéroport Blaise-Diagne',iata:'DSS',icao:'GOBD'},
+{country:"Côte d’Ivoire",city:'Abidjan',name:'Aéroport Félix-Houphouët-Boigny',iata:'ABJ',icao:'DIAP'},
+{country:'Afrique du Sud',city:'Johannesbourg',name:'O. R. Tambo International',iata:'JNB',icao:'FAOR'},
+{country:'France',city:'Paris',name:'Charles-de-Gaulle',iata:'CDG',icao:'LFPG'},
+{country:'Espagne',city:'Madrid',name:'Adolfo-Suárez Madrid-Barajas',iata:'MAD',icao:'LEMD'},
+{country:'Allemagne',city:'Francfort',name:'Frankfurt Airport',iata:'FRA',icao:'EDDF'},
+{country:'Royaume-Uni',city:'Londres',name:'Heathrow Airport',iata:'LHR',icao:'EGLL'},
+{country:'Italie',city:'Rome',name:'Leonardo da Vinci–Fiumicino',iata:'FCO',icao:'LIRF'},
+{country:'Pays-Bas',city:'Amsterdam',name:'Amsterdam Schiphol',iata:'AMS',icao:'EHAM'},
+{country:'États-Unis',city:'New York',name:'John F. Kennedy International',iata:'JFK',icao:'KJFK'},
+{country:'Canada',city:'Toronto',name:'Toronto Pearson International',iata:'YYZ',icao:'CYYZ'},
+{country:'Brésil',city:'São Paulo',name:'Guarulhos International',iata:'GRU',icao:'SBGR'},
+{country:'Arabie saoudite',city:'Riyad',name:'King Khalid International',iata:'RUH',icao:'OERK'},
+{country:'Émirats arabes unis',city:'Dubaï',name:'Dubai International',iata:'DXB',icao:'OMDB'},
+{country:'Turquie',city:'Istanbul',name:'Istanbul Airport',iata:'IST',icao:'LTFM'},
+{country:'Chine',city:'Pékin',name:'Beijing Capital International',iata:'PEK',icao:'ZBAA'}
+];
+const country=document.getElementById('countryFilter'),search=document.getElementById('airportSearch'),grid=document.getElementById('airportGrid'),empty=document.getElementById('emptyState');
+[...new Set(airports.map(a=>a.country))].sort((a,b)=>a.localeCompare(b,'fr')).forEach(c=>{const o=document.createElement('option');o.value=c;o.textContent=c;country.appendChild(o);});
+function render(){
+ const q=search.value.trim().toLocaleLowerCase('fr'),c=country.value;
+ const found=airports.filter(a=>(!c||a.country===c)&&(!q||[a.country,a.city,a.name,a.iata,a.icao].join(' ').toLocaleLowerCase('fr').includes(q)));
+ grid.innerHTML=found.map(a=>'<article class="airport"><div class="codes">'+a.iata+' · '+a.icao+'</div><h3>'+a.city+' · '+a.country+'</h3><p>'+a.name+'</p><div class="actions"><a href="https://www.flightaware.com/live/airport/'+a.icao+'/departures" target="_blank" rel="noopener noreferrer">🛫 Départs en direct</a><a class="secondary" href="https://www.flightaware.com/live/airport/'+a.icao+'/arrivals" target="_blank" rel="noopener noreferrer">🛬 Arrivées en direct</a></div></article>').join('');
+ empty.style.display=found.length?'none':'block';
+}
+country.addEventListener('change',render);search.addEventListener('input',render);
+document.getElementById('resetFilters').addEventListener('click',()=>{country.value='';search.value='';render();});
+render();
+</script>
+</body>
+</html>
