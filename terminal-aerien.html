@@ -131,7 +131,7 @@ async function refresh(){
  rows.innerHTML='<tr><td colspan="11" style="text-align:center;padding:30px">Chargement des appareils…</td></tr>';
  try{
   const url="https://api.adsb.lol/v2/lat/"+a.lat+"/lon/"+a.lon+"/dist/80";
-  const res=await fetch("https://proxy.cors.dev/"+url,{cache:"no-store",credentials:"omit"});
+  const res=await fetch(url,{cache:"no-store",headers:{"Accept":"application/json"},credentials:"omit"});
   if(!res.ok)throw new Error("Réponse serveur "+res.status);
   const data=await res.json();aircraft=Array.isArray(data.ac)?data.ac:[];
   render();
@@ -140,7 +140,7 @@ async function refresh(){
   $("message").textContent=aircraft.length+" appareil(s) transmis par ADSB.lol dans le rayon de couverture demandé. Actualisation automatique toutes les 60 secondes.";
  }catch(err){
   aircraft=[];render();
-  $("message").textContent="Le relais de lecture ADS-B ou la source ne répond pas ("+err.message+"). Réessayez dans un instant ou consultez les tableaux officiels via les liens ci-dessus.";
+  $("message").textContent="La source ADS-B.lol ne répond pas directement ("+err.message+"). Réessayez dans un instant ou consultez les tableaux officiels via les liens ci-dessus.";
  }
  btn.disabled=false;
 }
