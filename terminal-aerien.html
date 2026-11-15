@@ -63,6 +63,16 @@ footer{text-align:center;padding:22px;color:#b5c7d9;border-top:1px solid #294866
 <div class="airport-grid" id="airportGrid" aria-live="polite"></div>
 <div class="empty" id="emptyState">Aucun aéroport ne correspond à cette recherche.</div>
 </section>
+<section class="panel" id="flightBoard">
+<div class="intro"><h2>🛫 Tableau des départs et des arrivées</h2><p>Un affichage de terminal international, avec les avions réellement détectés autour de l'aéroport sélectionné.</p></div>
+<div class="toolbar"><div class="field"><label for="boardAirport">Aéroport à consulter</label><select id="boardAirport"></select></div><div class="field"><label for="boardFilter">Rechercher un vol, une compagnie ou un modèle</label><input id="boardFilter" type="search" placeholder="Indicatif, immatriculation, Airbus, Boeing…"></div><button id="boardRefresh" type="button">↻ Actualiser</button></div>
+<div class="board-shell"><div class="board-head"><h2>✈ FLIGHT INFORMATION · MOUVEMENTS EN DIRECT</h2><div class="board-clock" id="boardClock">--:--:--</div></div>
+<div class="board-tabs"><a id="officialDepartures" target="_blank" rel="noopener noreferrer">🛫 DÉPARTS OFFICIELS ↗</a><a id="officialArrivals" target="_blank" rel="noopener noreferrer">🛬 ARRIVÉES OFFICIELLES ↗</a><button id="showAllBoard" class="active" type="button">📡 AVIONS DÉTECTÉS</button></div>
+<div class="board-info"><span>AÉROPORT : <strong id="boardAirportName">—</strong></span><span>APPAREILS : <strong id="boardCount">0</strong></span><span>DERNIÈRE MISE À JOUR : <strong id="boardUpdated">En attente</strong></span></div>
+<div class="board-table-wrap"><table class="board-table"><thead><tr><th>Indicatif / Vol</th><th>Compagnie</th><th>Immatriculation</th><th>Constructeur / Modèle</th><th>Altitude</th><th>Vitesse</th><th>Cap</th><th>Observation</th></tr></thead><tbody id="boardRows"><tr><td colspan="8" class="board-empty">Connexion au réseau aérien…</td></tr></tbody></table></div>
+<div class="board-note" id="boardStatus" role="status" aria-live="polite">Connexion à la source ADS-B ouverte…</div></div>
+<p class="notice"><strong>Lecture honnête des données :</strong> les liens DÉPARTS OFFICIELS et ARRIVÉES OFFICIELLES ouvrent les tableaux publiés par FlightAware. Le tableau intégré affiche les avions effectivement détectés par ADS-B. Un signal ADS-B ne confirme pas à lui seul qu'un appareil est en départ ou en arrivée, ni sa porte ou son horaire commercial : ces informations ne sont pas inventées.</p>
+</section>
 <section class="panel">
 <h2>Comment consulter les vols ?</h2>
 <p>Ouvrez le suivi ADS-B de l’aéroport pour consulter les avions détectés à proximité et leurs informations de vol lorsqu’elles sont reçues. Les mouvements au sol et en approche peuvent apparaître selon la couverture des récepteurs. Les données peuvent être incomplètes, notamment dans les zones où peu de stations reçoivent les signaux.</p>
