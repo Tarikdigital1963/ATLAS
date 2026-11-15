@@ -78,7 +78,7 @@ async function getJson(url){const r=await fetch(url,{cache:'no-store'});if(!r.ok
 function eruptionYear(v){
  const raw=pick(v,['lastEruptionYear','last_eruption_year','lastEruption','last_eruption','lastEruptionDate','last_eruption_date','lastEruptionYearBP']);
  if(raw===null)return null;if(typeof raw==='number'&&Number.isFinite(raw))return raw;
- const match=String(raw).match(/-?\d{3,4}/);if(!match)return null;const year=Number(match[0]);return Number.isFinite(year)?year:null;
+ const str=String(raw);const match=str.match(/-?\d{3,4}/);if(!match)return null;let year=Number(match[0]);if(/\\bBCE\\b|\\bBC\\b/i.test(str)&&year>0)year=-year;return Number.isFinite(year)?year:null;
 }
 function activityClass(v){const y=eruptionYear(v);if(y===null)return 'unknown';if(y>=new Date().getFullYear()-200)return 'recent';if(y>=new Date().getFullYear()-12000)return 'holocene';return 'old';}
 function continentFor(v,c){
