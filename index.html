@@ -96,6 +96,14 @@
     .alert-pollution{background:radial-gradient(circle at 35% 25%,#9cf0a9,#159b59 58%,#07552f);border-color:#b9ffd0}
     .alert-space{background:radial-gradient(circle at 35% 25%,#a6e7ff,#1878ad 58%,#10345e);border-color:#a9e5ff}
     @media(max-width:760px){.alert-shortcuts{grid-template-columns:repeat(2,minmax(0,1fr));gap:14px;margin:24px auto 30px}.alert-circle{width:clamp(125px,34vw,170px);border-width:3px;padding:8px;gap:5px}.alert-circle .alert-emoji{font-size:clamp(2rem,9vw,3rem)}.alert-circle strong{font-size:clamp(.82rem,3.3vw,1.05rem)}.alert-circle span:last-child{font-size:clamp(.65rem,2.4vw,.78rem)}}
+
+    /* Visibilité renforcée sur mobile : images plus présentes et contraste du texte */
+    .world-hero{background-color:#123b60;background-image:linear-gradient(115deg,rgba(3,13,27,.25),rgba(3,13,27,.12)),url('https://images.unsplash.com/photo-1451187580459-43490279c0fa?auto=format&fit=crop&w=1800&q=90');background-position:center;background-size:cover}
+    .discover-card{min-height:260px}
+    .discover-card:after{background:linear-gradient(0deg,rgba(3,13,27,.98) 0%,rgba(3,13,27,.55) 48%,rgba(3,13,27,.05) 100%)}
+    .discover-card h3{font-size:1.35rem}
+    @media(max-width:760px){.discover-card{min-height:225px}}
+
     @media(prefers-reduced-motion:reduce){.alert-circle{transition:none}}
 
 
@@ -262,7 +270,7 @@
       <a class="discover-card" href="./observation-monde.html" style="--card-image:url('https://images.unsplash.com/photo-1446776811953-b23d57bd21aa?auto=format&fit=crop&w=900&q=80')">
         <span class="discover-icon" aria-hidden="true">🛰️</span><h3>Terre et espace</h3><p>Observation satellite, vues de la Terre et exploration spatiale.</p><span class="discover-link">Observer la planète →</span>
       </a>
-      <a class="discover-card" href="#explorer" onclick="showMapLayer('satellite')">
+      <a class="discover-card" href="./observation-monde.html">
         <span class="discover-icon" aria-hidden="true">🌦️</span><h3>Météo et climat</h3><p>Suivez les paysages, les nuages et les grands phénomènes climatiques.</p><span class="discover-link">Voir la carte satellite →</span>
       </a>
       <a class="discover-card" href="./seismes.html" style="--card-image:url('https://images.unsplash.com/photo-1518837695005-2083093ee35b?auto=format&fit=crop&w=900&q=80')">
