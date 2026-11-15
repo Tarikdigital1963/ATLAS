@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#071426">
+<meta name="description" content="ATLAS MONDE : observatoire du trafic maritime mondial, carte satellite du détroit de Gibraltar, ports, routes commerciales et accès aux données AIS publiques.">
+<title>Trafic maritime mondial | ATLAS MONDE</title>
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
+<style>
+:root{--bg:#071426;--panel:#0d2038;--panel2:#102944;--text:#f4f8ff;--muted:#bfd0e2;--line:#31516f;--cyan:#57d8f2;--green:#5dd6a0}
+*{box-sizing:border-box}body{margin:0;background:radial-gradient(ellipse at 50% -20%,#12445b 0,#071426 55%);color:var(--text);font:16px/1.6 Arial,Helvetica,sans-serif}a{color:#91dfff}.wrap{width:min(1160px,94%);margin:auto}
+header{padding:20px 0;border-bottom:1px solid #ffffff22}.topline{display:flex;justify-content:space-between;gap:12px;align-items:center;flex-wrap:wrap}.brand{font-size:clamp(1.6rem,5vw,2.8rem);font-weight:900;margin:0}.brand span{color:var(--cyan)}.back{display:inline-block;padding:10px 15px;border:1px solid #6e8499;border-radius:12px;text-decoration:none;background:#102944;color:#fff}
+.hero{margin:24px 0 20px;padding:clamp(22px,5vw,42px);border:1px solid #287f9a;border-radius:22px;background:linear-gradient(105deg,#061a2beF,#0a3044cc),url('https://images.unsplash.com/photo-1498623116890-37e912163d5d?auto=format&fit=crop&w=1600&q=85') center/cover;box-shadow:0 18px 45px #0007}.kicker{color:#9cecff;font-weight:800;letter-spacing:.09em;text-transform:uppercase}.hero h1{font-size:clamp(2rem,6vw,3.8rem);line-height:1.08;margin:9px 0}.hero p{max-width:850px;color:#e4f5ff;font-size:1.08rem}
+.actions,.tools{display:flex;gap:10px;flex-wrap:wrap}.btn{display:inline-flex;align-items:center;justify-content:center;border:1px solid #73e5f5;border-radius:11px;padding:12px 16px;background:#087c98;color:white;font-weight:800;font-size:1rem;cursor:pointer;text-decoration:none}.btn.secondary{background:#102944;border-color:#7395b4}.btn:focus,a:focus,button:focus,select:focus{outline:3px solid #fff;outline-offset:3px}
+.notice{margin:17px 0;padding:15px 17px;border:1px solid #8b673f;background:#332817;border-radius:13px;color:#ffedcf}.info{margin:17px 0;padding:15px 17px;border:1px solid #287f9a;background:#0b2b40;border-radius:13px;color:#d9f5ff}
+h2{font-size:clamp(1.4rem,3.8vw,2rem);margin:30px 0 12px}.panel,.stat,.port,.source{background:linear-gradient(145deg,#102944,#0a1b30);border:1px solid var(--line);border-radius:15px;padding:17px}.panel{margin:16px 0}.panel-head{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap}.panel-head h2{margin:0 0 12px}.muted,.mapnote{color:var(--muted);font-size:.94rem}
+#maritimeMap{height:520px;min-height:390px;border-radius:12px;background:#102944}.map-tools{display:flex;gap:9px;flex-wrap:wrap;margin:8px 0 13px}.map-tools button{background:#102944;color:#fff;border:1px solid #7895b1;border-radius:10px;padding:10px 13px;font-size:1rem;cursor:pointer}.map-tools button.active{background:#087c98;border-color:#8deeff}
+.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin:16px 0}.stat strong{display:block;font-size:1.25rem;color:#9cecff}.stat span{color:var(--muted);font-size:.94rem}
+.port-grid,.sources{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}.port h3,.source h3{margin:0 0 6px}.port p,.source p{color:var(--muted);margin:0 0 10px}.port button{border:1px solid #68cfe5;background:#102944;color:#fff;border-radius:9px;padding:9px 12px;font-size:.95rem;font-weight:700;cursor:pointer}
+.table-wrap{overflow-x:auto}table{width:100%;border-collapse:collapse;min-width:520px}th,td{text-align:left;padding:12px;border-bottom:1px solid #294866}th{color:#a9eaff;background:#0a1b30}td{color:#e3edf7}
+.legend{display:flex;gap:12px;flex-wrap:wrap;margin:10px 0}.legend span{display:inline-flex;align-items:center;gap:7px;color:#d7e4f0;font-size:.92rem}.dot{display:inline-block;width:11px;height:11px;border-radius:50%;border:1px solid #fff8;background:#25c8e6}
+footer{padding:25px 0 35px;text-align:center;color:#aebfd1;border-top:1px solid #ffffff22;margin-top:35px}
+@media(max-width:760px){.stats,.port-grid,.sources{grid-template-columns:1fr}#maritimeMap{height:430px}.topline{align-items:flex-start}.hero{background-position:center}}
+</style>
+</head>
+<body>
+<header><div class="wrap topline"><p class="brand">ATLAS <span>MONDE</span> · MARITIME</p><a class="back" href="./index.html">← Retour à l'accueil</a></div></header>
+<main class="wrap">
+<section class="hero">
+<span class="kicker">Observatoire maritime international</span>
+<h1>Trafic maritime mondial</h1>
+<p>Explorez les grands ports, les routes maritimes et les mouvements de navires. Le détroit de Gibraltar, entre le Maroc et l'Espagne, constitue notre zone prioritaire d'observation.</p>
+<div class="actions">
+<a class="btn" href="https://www.marinetraffic.com/" target="_blank" rel="noopener noreferrer">🚢 Ouvrir la carte AIS MarineTraffic ↗</a>
+<a class="btn secondary" href="https://www.vesselfinder.com/" target="_blank" rel="noopener noreferrer">Voir VesselFinder ↗</a>
+</div>
+</section>
+<div class="info"><strong>Comment lire cette page :</strong> la carte ci-dessous est une carte géographique interactive avec imagerie satellite et repères portuaires. Elle ne prétend pas afficher les positions AIS en direct. Pour voir les navires réellement détectés, utilisez les services AIS externes. Leur couverture, leur fréquence de mise à jour et certaines fonctions dépendent de leurs réseaux et abonnements.</div>
+<section class="stats" aria-label="Périmètre de l'observatoire">
+<div class="stat"><strong>Détroit de Gibraltar</strong><span>Zone régionale prioritaire</span></div>
+<div class="stat"><strong>Maroc · Espagne</strong><span>Deux rives et ports voisins</span></div>
+<div class="stat"><strong>Monde</strong><span>Ouverture progressive aux grands ports</span></div>
+</section>
+<section class="panel">
+<div class="panel-head"><h2>🗺️ Carte du détroit de Gibraltar</h2><span class="muted">Repères géographiques et ports</span></div>
+<div class="map-tools" aria-label="Commandes de la carte">
+<button type="button" class="active" id="streetBtn">Carte classique</button>
+<button type="button" id="satBtn">Vue satellite</button>
+<button type="button" id="gibraltarBtn">Cadrer Gibraltar</button>
+<button type="button" id="worldBtn">Vue mondiale</button>
+</div>
+<div id="maritimeMap" role="application" aria-label="Carte interactive du détroit de Gibraltar et des ports maritimes"></div>
+<div class="legend"><span><i class="dot"></i> Repère portuaire</span><span>Les lignes pointillées sont des axes maritimes schématiques, pas des trajectoires AIS.</span></div>
+<p class="mapnote">Carte routière : © OpenStreetMap contributors. Imagerie : Esri World Imagery. Les images satellite sont des prises de vue disponibles, pas une vidéo en direct. Les repères indiquent des emplacements géographiques de ports, pas des positions de navires.</p>
+</section>
+<section>
+<h2>⚓ Les ports du détroit et de la région</h2>
+<div class="port-grid">
+<article class="port"><h3>🇲🇦 Tanger Med</h3><p>Grand complexe portuaire marocain, au sud du détroit.</p><button type="button" onclick="focusPort('tangermed')">Localiser sur la carte</button></article>
+<article class="port"><h3>🇪🇸 Algésiras</h3><p>Port majeur de la rive espagnole, face au nord du Maroc.</p><button type="button" onclick="focusPort('algeciras')">Localiser sur la carte</button></article>
+<article class="port"><h3>🇬🇮 Gibraltar</h3><p>Port et territoire stratégique à l'entrée de la Méditerranée.</p><button type="button" onclick="focusPort('gibraltar')">Localiser sur la carte</button></article>
+<article class="port"><h3>🇲🇦 Tanger Ville</h3><p>Port de passagers et de plaisance sur la côte méditerranéenne du détroit.</p><button type="button" onclick="focusPort('tanger')">Localiser sur la carte</button></article>
+<article class="port"><h3>🇪🇸 Tarifa</h3><p>Port de liaison maritime entre l'Espagne et le Maroc.</p><button type="button" onclick="focusPort('tarifa')">Localiser sur la carte</button></article>
+<article class="port"><h3>🇪🇸 Ceuta</h3><p>Port espagnol sur la rive sud du détroit.</p><button type="button" onclick="focusPort('ceuta')">Localiser sur la carte</button></article>
+</div>
+</section>
+<section class="panel">
+<h2>🌍 Réseau des grands ports mondiaux</h2>
+<p class="muted">Sélection de ports importants pour la lecture des échanges internationaux. Cette liste est un répertoire de repères, pas un classement de trafic actualisé.</p>
+<div class="table-wrap"><table><thead><tr><th>Région</th><th>Port</th><th>Pays</th><th>Accès cartographique</th></tr></thead><tbody>
+<tr><td>Afrique du Nord</td><td>Tanger Med</td><td>Maroc</td><td><a href="https://www.marinetraffic.com/" target="_blank" rel="noopener noreferrer">Carte AIS ↗</a></td></tr>
+<tr><td>Europe</td><td>Rotterdam</td><td>Pays-Bas</td><td><a href="https://www.marinetraffic.com/" target="_blank" rel="noopener noreferrer">Carte AIS ↗</a></td></tr>
+<tr><td>Europe</td><td>Algésiras</td><td>Espagne</td><td><a href="https://www.marinetraffic.com/" target="_blank" rel="noopener noreferrer">Carte AIS ↗</a></td></tr>
+<tr><td>Asie</td><td>Singapour</td><td>Singapour</td><td><a href="https://www.marinetraffic.com/" target="_blank" rel="noopener noreferrer">Carte AIS ↗</a></td></tr>
+<tr><td>Asie</td><td>Shanghai</td><td>Chine</td><td><a href="https://www.marinetraffic.com/" target="_blank" rel="noopener noreferrer">Carte AIS ↗</a></td></tr>
+<tr><td>Amérique du Nord</td><td>Los Angeles</td><td>États-Unis</td><td><a href="https://www.marinetraffic.com/" target="_blank" rel="noopener noreferrer">Carte AIS ↗</a></td></tr>
+</tbody></table></div>
+</section>
+<section class="panel">
+<h2>🚢 Catégories de navires à observer</h2>
+<p>Les plateformes AIS proposent des filtres par catégories selon les données reçues : cargos et porte-conteneurs, pétroliers et méthaniers, ferries et navires à passagers, pêche, remorqueurs et navires spécialisés.</p>
+<p class="notice"><strong>Navires militaires :</strong> cette rubrique ne promet pas leur localisation. Les bâtiments militaires peuvent ne pas transmettre d'AIS ou ne pas être visibles sur les plateformes publiques. ATLAS ne publie pas de suivi opérationnel ni de position supposée.</p>
+<div class="actions"><a class="btn" href="https://www.marinetraffic.com/" target="_blank" rel="noopener noreferrer">Consulter les filtres AIS ↗</a><a class="btn secondary" href="https://www.vesselfinder.com/" target="_blank" rel="noopener noreferrer">Comparer avec VesselFinder ↗</a></div>
+</section>
+<section>
+<h2>📊 Horaires, arrivées et départs</h2>
+<div class="info">Les horaires de navires et les heures estimées d'arrivée (ETA) ne sont pas renseignés ici sans flux portuaire ou AIS vérifiable. Les services externes peuvent proposer les arrivées attendues, les départs, les escales et les statistiques selon le port et le niveau d'accès.</div>
+<div class="sources">
+<article class="source"><h3>MarineTraffic · Live Map</h3><p>Positions AIS, filtres par type de navire, ports et couches de carte. La fréquence d'actualisation varie selon le service.</p><a href="https://www.marinetraffic.com/" target="_blank" rel="noopener noreferrer">Ouvrir MarineTraffic ↗</a></article>
+<article class="source"><h3>VesselFinder</h3><p>Positions AIS, informations de voyage et escales portuaires. Certaines données sont payantes ou limitées.</p><a href="https://www.vesselfinder.com/" target="_blank" rel="noopener noreferrer">Ouvrir VesselFinder ↗</a></article>
+<article class="source"><h3>EMSA · Agence européenne</h3><p>Informations institutionnelles sur la sécurité maritime et les systèmes européens de suivi des navires.</p><a href="https://www.emsa.europa.eu/" target="_blank" rel="noopener noreferrer">Ouvrir l'EMSA ↗</a></article>
+</div>
+</section>
+</main>
+<footer><div class="wrap">ATLAS MONDE · Observatoire maritime à vocation informative · Les données AIS peuvent être incomplètes ou retardées.<br><a href="./index.html">Retour à l'accueil ATLAS MONDE</a></div></footer>
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script>
+const maritimeMap=L.map('maritimeMap',{worldCopyJump:true}).setView([35.92,-5.55],8);
+const street=L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',{maxZoom:19,attribution:'© <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'}).addTo(maritimeMap);
+const satellite=L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}',{maxZoom:19,attribution:'Tiles © Esri'});
+const ports={
+ tangermed:{name:'Tanger Med · Maroc',coords:[35.88,-5.50]},
+ algeciras:{name:'Algésiras · Espagne',coords:[36.13,-5.44]},
+ gibraltar:{name:'Gibraltar',coords:[36.14,-5.35]},
+ tanger:{name:'Tanger Ville · Maroc',coords:[35.79,-5.81]},
+ tarifa:{name:'Tarifa · Espagne',coords:[36.01,-5.60]},
+ ceuta:{name:'Ceuta · Espagne',coords:[35.89,-5.31]}
+};
+const portLayer=L.layerGroup().addTo(maritimeMap);
+Object.values(ports).forEach(p=>L.marker(p.coords).addTo(portLayer).bindPopup('<strong>'+p.name+'</strong><br><span>Repère portuaire · pas une position AIS</span>'));
+const corridor=L.polyline([[35.90,-6.2],[36.0,-5.8],[36.05,-5.5],[36.0,-5.1],[35.95,-4.7]],{color:'#38d8f2',weight:3,dashArray:'8 10',opacity:.8}).addTo(maritimeMap);
+corridor.bindTooltip('Axe de passage schématique · non temps réel');
+function focusPort(id){const p=ports[id];if(!p)return;maritimeMap.setView(p.coords,12);portLayer.eachLayer(m=>{if(m.getLatLng().equals(L.latLng(p.coords)))m.openPopup()});document.getElementById('maritimeMap').scrollIntoView({behavior:'smooth',block:'center'});setTimeout(()=>maritimeMap.invalidateSize(),250)}
+document.getElementById('streetBtn').addEventListener('click',()=>{if(maritimeMap.hasLayer(satellite))maritimeMap.removeLayer(satellite);street.addTo(maritimeMap);document.getElementById('streetBtn').classList.add('active');document.getElementById('satBtn').classList.remove('active')});
+document.getElementById('satBtn').addEventListener('click',()=>{if(maritimeMap.hasLayer(street))maritimeMap.removeLayer(street);satellite.addTo(maritimeMap);document.getElementById('satBtn').classList.add('active');document.getElementById('streetBtn').classList.remove('active')});
+document.getElementById('gibraltarBtn').addEventListener('click',()=>maritimeMap.setView([35.92,-5.55],8));
+document.getElementById('worldBtn').addEventListener('click',()=>maritimeMap.setView([20,0],2));
+window.addEventListener('resize',()=>maritimeMap.invalidateSize());
+</script>
+</body>
+</html>
