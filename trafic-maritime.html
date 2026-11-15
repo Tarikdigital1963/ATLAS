@@ -39,16 +39,16 @@ footer{padding:25px 0 35px;text-align:center;color:#aebfd1;border-top:1px solid 
 <div class="info"><strong>Comment lire cette page :</strong> la carte ci-dessous est une carte géographique interactive avec imagerie satellite et repères portuaires. Elle ne prétend pas afficher les positions AIS en direct. Pour voir les navires réellement détectés, utilisez les services AIS externes. Leur couverture, leur fréquence de mise à jour et certaines fonctions dépendent de leurs réseaux et abonnements.</div>
 
 <section class="panel" id="liveAisPanel">
-<div class="panel-head"><h2>📡 Positions réelles des navires · AIS</h2><span class="muted" id="aisStatus" aria-live="polite">Connexion AIS non configurée</span></div>
+<div class="panel-head"><h2>📡 Positions réelles des navires · AIS</h2><span class="muted" id="aisStatus" aria-live="polite">Connexion AIS en cours</span></div>
 <p>Cette couche est réservée aux positions reçues d'un flux AIS. Lorsqu'une connexion sécurisée sera activée, les navires apparaîtront directement sur la carte de Gibraltar, avec les informations disponibles.</p>
 <div class="stats">
 <div class="stat"><strong id="aisVesselCount">0</strong><span>Navires reçus</span></div>
 <div class="stat"><strong id="aisLastUpdate">—</strong><span>Dernière réception</span></div>
-<div class="stat"><strong>60 s</strong><span>Fréquence de vérification du flux</span></div>
+<div class="stat"><strong>60 s</strong><span>Intervalle de rafraîchissement</span></div>
 </div>
-<div class="map-tools"><button type="button" id="aisRefreshBtn">↻ Actualiser les positions AIS</button><a class="btn secondary" href="https://aisstream.io/documentation" target="_blank" rel="noopener noreferrer">Documentation AISstream ↗</a></div>
+<div class="map-tools"><button type="button" id="aisRefreshBtn">↻ Actualiser les positions AIS</button><a class="btn secondary" href="https://openwaters.io/api/ais/" target="_blank" rel="noopener noreferrer">API Open Waters AIS ↗</a></div>
 <p class="mapnote" id="aisMessage">En attente d'une passerelle AIS sécurisée. Aucune position réelle n'est simulée ou inventée.</p>
-<p class="mapnote">Pour activer le suivi : installer un petit service serveur qui se connecte au fournisseur AIS, conserve la clé API côté serveur et expose à cette page un flux JSON sécurisé. Le navigateur ne doit jamais recevoir la clé API.</p>
+<p class="mapnote">Source : Open Waters AIS, accès anonyme gratuit sans clé. Limite appliquée : zone restreinte autour du détroit, actualisation toutes les 60 secondes. Les navires immobiles peuvent avoir une position plus ancienne.</p>
 </section>
 
 <section class="stats" aria-label="Périmètre de l'observatoire">
@@ -142,38 +142,49 @@ footer{padding:25px 0 35px;text-align:center;color:#aebfd1;border-top:1px solid 
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 <script>
 
-/* URL d'une passerelle serveur AIS. Ne jamais placer une clé API dans ce fichier public.
-   JSON attendu : { vessels: [{mmsi,name,lat,lon,type,speed,course,timestamp}] } */
-const AIS_PROXY_URL = '';
+/* Source AIS gratuite Open Waters : accès anonyme sans clé API.
+   Limite anonyme : zone de 100 degrés carrés maximum et 120 requêtes/minute.
+   On limite volontairement la première version au détroit de Gibraltar. */
+const AIS_API_URL = 'https://ais.openwaters.io/v1/vessels?bbox=35.4,-6.2,36.5,-4.5&max_age=30m&kind=vessel';
 let aisLayer = null;
 function aisText(value){return String(value ?? '').replace(/[&<>"']/g,ch=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[ch]));}
 function setAisStatus(status,message){document.getElementById('aisStatus').textContent=status;document.getElementById('aisMessage').textContent=message;}
 async function refreshAisPositions(){
  const count=document.getElementById('aisVesselCount'),last=document.getElementById('aisLastUpdate');
- if(!AIS_PROXY_URL){setAisStatus('Connexion AIS non configurée','La carte est prête à recevoir les positions réelles, mais aucune passerelle AIS sécurisée n’est encore reliée. Les repères fixes des ports ne représentent pas des navires.');return;}
- setAisStatus('Réception des données…','Interrogation de la passerelle AIS sécurisée.');
+ const button=document.getElementById('aisRefreshBtn');
+ button.disabled=true;
+ setAisStatus('Connexion à Open Waters…','Chargement des dernières positions AIS disponibles dans la zone du détroit de Gibraltar.');
  try{
-  const response=await fetch(AIS_PROXY_URL,{cache:'no-store',headers:{'Accept':'application/json'}});
+  const response=await fetch(AIS_API_URL,{cache:'no-store',headers:{'Accept':'application/geo+json, application/json'}});
   if(!response.ok)throw new Error('Réponse HTTP '+response.status);
   const payload=await response.json();
-  if(!payload||!Array.isArray(payload.vessels))throw new Error('Format JSON invalide : tableau vessels absent');
+  if(!payload||payload.type!=='FeatureCollection'||!Array.isArray(payload.features))throw new Error('Réponse GeoJSON inattendue');
   if(aisLayer)maritimeMap.removeLayer(aisLayer);
   aisLayer=L.layerGroup();
-  let valid=0;
-  payload.vessels.forEach(v=>{
-   const lat=Number(v.lat),lon=Number(v.lon);
+  let valid=0, newest=null;
+  payload.features.forEach(feature=>{
+   const coords=feature.geometry&&feature.geometry.coordinates;
+   const p=feature.properties||{};
+   if(!Array.isArray(coords)||coords.length<2)return;
+   const lon=Number(coords[0]),lat=Number(coords[1]);
    if(!Number.isFinite(lat)||!Number.isFinite(lon)||lat < -90||lat > 90||lon < -180||lon > 180)return;
-   const details=['MMSI : '+aisText(v.mmsi||'non fourni'),'Type : '+aisText(v.type||'non renseigné'),'Vitesse : '+aisText(v.speed??'non fournie')+' nd','Cap : '+aisText(v.course??'non fourni')+'°','Réception : '+aisText(v.timestamp||'non fournie')].join('<br>');
-   L.circleMarker([lat,lon],{radius:7,color:'#ffffff',weight:1,fillColor:'#ffb347',fillOpacity:.95}).bindPopup('<strong>'+aisText(v.name||'Navire sans nom')+'</strong><br>'+details).addTo(aisLayer);
+   const seen=p.seen||p.timestamp||null;
+   if(seen&&(!newest||new Date(seen)>new Date(newest)))newest=seen;
+   const details=['MMSI : '+aisText(p.mmsi||'non fourni'),'Type : '+aisText(p.type||p.kind||'non renseigné'),'Vitesse : '+aisText(p.sog??'non fournie')+' nd','Cap : '+aisText(p.cog??p.heading??'non fourni')+'°','Dernier signal : '+aisText(seen||'heure non fournie'),'Source : '+aisText(p.source||'Open Waters AIS')].join('<br>');
+   L.circleMarker([lat,lon],{radius:7,color:'#ffffff',weight:1,fillColor:'#ffb347',fillOpacity:.95}).bindPopup('<strong>'+aisText(p.name||'Navire sans nom')+'</strong><br>'+details).addTo(aisLayer);
    valid++;
   });
   aisLayer.addTo(maritimeMap);count.textContent=String(valid);
   last.textContent=new Date().toLocaleTimeString('fr-FR',{hour:'2-digit',minute:'2-digit'});
-  setAisStatus('Flux AIS connecté',valid+' position(s) AIS valide(s) reçue(s). Les données peuvent être retardées ou incomplètes.');
- }catch(error){setAisStatus('Flux AIS indisponible','La passerelle AIS ne répond pas ou renvoie des données invalides. Détail : '+error.message);}
+  setAisStatus('Source AIS connectée',valid+' position(s) réelle(s) retournée(s) dans le secteur. Les positions peuvent être retardées ou anciennes pour les navires immobiles.');
+  if(payload.truncated)setAisStatus('Flux AIS partiel',valid+' navires affichés. La source indique que le résultat est tronqué.');
+ }catch(error){
+  setAisStatus('Source AIS momentanément indisponible','Impossible de charger les positions Open Waters : '+error.message+'. Réessayez plus tard. Les repères portuaires restent disponibles.');
+ }finally{button.disabled=false;}
 }
 document.getElementById('aisRefreshBtn').addEventListener('click',refreshAisPositions);
-if(AIS_PROXY_URL){refreshAisPositions();setInterval(refreshAisPositions,60000);}
+refreshAisPositions();
+setInterval(refreshAisPositions,60000);
 
 const maritimeMap=L.map('maritimeMap',{worldCopyJump:true}).setView([35.92,-5.55],8);
 const street=L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',{maxZoom:19,attribution:'© <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'}).addTo(maritimeMap);
