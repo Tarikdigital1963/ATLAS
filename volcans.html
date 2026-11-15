@@ -82,11 +82,17 @@ async function loadWorld(){
  document.getElementById('volcanoCount').textContent=count?count.toLocaleString('fr-FR'):'Données reçues';
  document.getElementById('mapStatus').textContent=count?count+' volcans localisés':'Inventaire reçu, coordonnées non reconnues';
 }
-async function loadUSGS(){
+async function loadUSGS(notifyNew=false){
  const box=document.getElementById('usgsAlerts');
  try{
   const data=await getJson('https://volcanoes.usgs.gov/hans-public/api/volcano/getElevatedVolcanoes');
   const rows=flatten(data);document.getElementById('alertCount').textContent=rows.length;
+  const ids=rows.map(v=>String(pick(v,['volcanoNumber','vnum','volcanoCd','volcanoName','name'])||JSON.stringify(v)));
+  const old=JSON.parse(sessionStorage.getItem('atlasUSGSAlertIds')||'[]');
+  if(notifyNew&&old.length&&'Notification'in window&&Notification.permission==='granted'){
+   rows.filter((v,i)=>!old.includes(ids[i])).slice(0,3).forEach(v=>new Notification('Alerte volcanique USGS',{body:String(pick(v,['volcanoName','name','volcano_name'])||'Nouveau volcan en niveau élevé').slice(0,130)}));
+  }
+  sessionStorage.setItem('atlasUSGSAlertIds',JSON.stringify(ids));
   document.getElementById('usgsStatus').textContent='Données USGS reçues';
   box.innerHTML=rows.length?rows.map(v=>{const name=pick(v,['volcanoName','name','volcano_name'])||'Volcan';const level=pick(v,['alertLevel','alert_level','alert'])||'Niveau élevé';const color=pick(v,['colorCode','color_code','aviationColorCode'])||'';const date=pick(v,['noticeDate','updated','lastUpdate','date'])||'';return '<article class="feed-item"><h3>🌋 '+esc(name)+'</h3><p><span class="status warn">'+esc(level)+'</span> '+esc(color)+'</p><small>'+esc(date)+'</small></article>'}).join(''):'<p>Aucun volcan en niveau élevé retourné par ce service lors de cette consultation. Cela ne signifie pas qu’aucun volcan n’est actif ailleurs.</p>';
  }catch(e){document.getElementById('alertCount').textContent='—';document.getElementById('usgsStatus').textContent='Service indisponible';box.innerHTML='<p class="muted">Impossible de joindre le flux USGS maintenant. Réessayez plus tard ou consultez le site officiel.</p>'}
@@ -110,7 +116,7 @@ async function loadGlobalFeed(notifyNew=false){
 }
 async function refreshAll(notifyNew=false){
  document.getElementById('updateState').textContent='Mise à jour…';
- await Promise.allSettled([loadWorld(),loadUSGS(),loadGlobalFeed(notifyNew)]);
+ await Promise.allSettled([loadWorld(),loadUSGS(notifyNew),loadGlobalFeed(notifyNew)]);
  document.getElementById('updateState').textContent='Vérifié à '+new Date().toLocaleTimeString('fr-FR',{hour:'2-digit',minute:'2-digit'});
 }
 document.getElementById('refreshBtn').addEventListener('click',()=>refreshAll(false));
