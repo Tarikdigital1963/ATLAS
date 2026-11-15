@@ -179,6 +179,20 @@
     @media(prefers-reduced-motion:reduce){.side-menu{transition:none}}
 
     @media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}*{transition:none!important}}
+
+    /* Partage rapide ATLAS MONDE */
+    .atlas-share-wrap{position:fixed;right:16px;bottom:18px;z-index:1250;font-family:Arial,Helvetica,sans-serif}
+    .atlas-share-toggle{display:flex;align-items:center;gap:9px;border-radius:28px;padding:13px 18px;background:#087fca;border:2px solid #8bd8ff;color:#fff;font-size:1rem;font-weight:900;box-shadow:0 7px 24px rgba(0,0,0,.48)}
+    .atlas-share-toggle:focus,.atlas-share-action:focus{outline:3px solid #fff;outline-offset:3px}
+    .atlas-share-panel{display:none;position:absolute;right:0;bottom:62px;width:min(290px,calc(100vw - 32px));padding:15px;background:#0d2038;border:1px solid #5b86aa;border-radius:16px;box-shadow:0 12px 36px rgba(0,0,0,.55)}
+    .atlas-share-panel.open{display:block}
+    .atlas-share-panel h2{font-size:1.08rem;margin:0 0 10px;color:#fff}
+    .atlas-share-action{display:flex;align-items:center;gap:10px;width:100%;margin:8px 0;padding:12px 13px;border:1px solid #426987;border-radius:10px;background:#102944;color:#fff;text-decoration:none;font-size:1rem;font-weight:800;text-align:left}
+    .atlas-share-action:hover{background:#17456c}
+    .atlas-share-action .share-symbol{width:25px;text-align:center;font-size:1.2rem}
+    .atlas-share-status{min-height:1.3em;margin:8px 2px 0;color:#bde8ff;font-size:.85rem}
+    @media(max-width:540px){.atlas-share-wrap{right:12px;bottom:12px}.atlas-share-toggle{padding:12px 15px}.atlas-share-panel{bottom:58px}}
+
   </style>
 <link rel="manifest" href="./manifest.webmanifest"><link rel="icon" href="./icon-192.svg" type="image/svg+xml"><link rel="apple-touch-icon" href="./icon-192.svg"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="ATLAS MONDE">  <!-- Google Tag Manager : GTM-WKZCXML8 -->
   <script>
@@ -193,6 +207,20 @@
   <!-- Google Tag Manager (noscript) -->
   <noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-WKZCXML8"
   height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
+
+<div class="atlas-share-wrap">
+  <button class="atlas-share-toggle" id="atlasShareToggle" type="button" aria-expanded="false" aria-controls="atlasSharePanel" aria-label="Partager ATLAS MONDE">↗ <span>Partager</span></button>
+  <div class="atlas-share-panel" id="atlasSharePanel" aria-label="Options de partage">
+    <h2>Partager ATLAS MONDE</h2>
+    <button class="atlas-share-action" id="atlasNativeShare" type="button"><span class="share-symbol">📲</span>Partager avec mon téléphone</button>
+    <a class="atlas-share-action" id="atlasShareWhatsApp" href="#" target="_blank" rel="noopener noreferrer"><span class="share-symbol">🟢</span>WhatsApp</a>
+    <a class="atlas-share-action" id="atlasShareFacebook" href="#" target="_blank" rel="noopener noreferrer"><span class="share-symbol">🔵</span>Facebook</a>
+    <a class="atlas-share-action" id="atlasShareX" href="#" target="_blank" rel="noopener noreferrer"><span class="share-symbol">𝕏</span>X</a>
+    <button class="atlas-share-action" id="atlasCopyLink" type="button"><span class="share-symbol">🔗</span>Copier le lien de cette page</button>
+    <p class="atlas-share-status" id="atlasShareStatus" role="status" aria-live="polite"></p>
+  </div>
+</div>
+
 
 <button class="side-menu-toggle" id="sideMenuToggle" type="button" aria-controls="atlasSideMenu" aria-expanded="false">☰ Menu</button>
 <div class="menu-backdrop" id="menuBackdrop"></div>
@@ -456,6 +484,46 @@
 </footer>
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 <script>
+
+  // Partage natif et réseaux sociaux : le lien correspond à la page actuellement ouverte.
+  (function(){
+    const toggle=document.getElementById('atlasShareToggle');
+    const panel=document.getElementById('atlasSharePanel');
+    const status=document.getElementById('atlasShareStatus');
+    if(!toggle||!panel)return;
+    const pageUrl=window.location.href;
+    const shareTitle=document.title||'ATLAS MONDE';
+    const shareText='Découvrez ATLAS MONDE : exploration et observations de notre planète.';
+    const encodedUrl=encodeURIComponent(pageUrl);
+    const encodedText=encodeURIComponent(shareText+' '+pageUrl);
+    document.getElementById('atlasShareWhatsApp').href='https://wa.me/?text='+encodedText;
+    document.getElementById('atlasShareFacebook').href='https://www.facebook.com/sharer/sharer.php?u='+encodedUrl;
+    document.getElementById('atlasShareX').href='https://twitter.com/intent/tweet?text='+encodeURIComponent(shareText)+'&url='+encodedUrl;
+    toggle.addEventListener('click',()=>{
+      const open=!panel.classList.contains('open');
+      panel.classList.toggle('open',open);
+      toggle.setAttribute('aria-expanded',String(open));
+    });
+    document.getElementById('atlasNativeShare').addEventListener('click',async()=>{
+      if(!navigator.share){status.textContent='Le partage natif n’est pas disponible sur ce navigateur. Utilisez les réseaux sociaux ci-dessous.';return;}
+      try{await navigator.share({title:shareTitle,text:shareText,url:pageUrl});status.textContent='';}
+      catch(error){if(error.name!=='AbortError')status.textContent='Le partage n’a pas pu être ouvert.';}
+    });
+    document.getElementById('atlasCopyLink').addEventListener('click',async()=>{
+      try{
+        if(navigator.clipboard&&window.isSecureContext){await navigator.clipboard.writeText(pageUrl);}
+        else{
+          const field=document.createElement('textarea');field.value=pageUrl;field.setAttribute('readonly','');field.style.position='fixed';field.style.opacity='0';document.body.appendChild(field);field.select();
+          const copied=document.execCommand('copy');field.remove();if(!copied)throw new Error('copy failed');
+        }
+        status.textContent='Lien copié. Vous pouvez le coller dans un message.';
+      }catch(error){status.textContent='Copie impossible. Sélectionnez l’adresse dans la barre du navigateur.';}
+    });
+    document.addEventListener('keydown',event=>{
+      if(event.key==='Escape'&&panel.classList.contains('open')){panel.classList.remove('open');toggle.setAttribute('aria-expanded','false');toggle.focus();}
+    });
+  })();
+
   const menuToggle=document.getElementById('sideMenuToggle');
   const sideMenu=document.getElementById('atlasSideMenu');
   const menuBackdrop=document.getElementById('menuBackdrop');
