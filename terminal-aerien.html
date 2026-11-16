@@ -14,7 +14,7 @@ body{background:radial-gradient(ellipse at 50% 0,#17232d 0,#05090d 58%)}
 header{padding:22px 1.5%;border-bottom:2px solid #394955;background:#080e14}
 header h1{margin:0;text-align:center;font-size:clamp(1.7rem,4vw,3.2rem);letter-spacing:.07em;color:#f3f6f8}
 header p{text-align:center;margin:8px 0 0;color:#b9c5ce;font-size:1.05rem}
-main{width:99%;max-width:2200px;margin:0 auto;padding:18px 0 38px}
+main{display:flex;flex-direction:column;align-items:stretch;gap:0;width:99%;max-width:2200px;margin:0 auto;padding:18px 0 38px}\n/* Séparation stricte : terminal puis carte, chacun sur sa propre ligne */\nmain > .intro,main > .controlbar,main > .fids,main > .map-panel,main > .note{width:100%;max-width:none;min-width:0;flex:0 0 auto;float:none;clear:both;position:relative}\n.fids{display:block;margin:14px 0 0}\n.map-panel{display:block;flex-basis:auto;margin:30px 0 0;border:3px solid #52616c;clear:both}\n.map-heading{min-height:64px}\n.map-panel iframe{width:100%;display:block}
 .intro{padding:5px 1% 16px}
 .intro h2{margin:0 0 6px;font-size:clamp(1.35rem,3vw,2rem);letter-spacing:.04em}
 .intro p{margin:0;color:#c0cbd3;font-size:1rem}
