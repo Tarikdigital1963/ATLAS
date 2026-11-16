@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#05090d">
+<meta name="description" content="ATLAS MONDE - Grand tableau lumineux du terminal aérien et suivi des signaux ADS-B.">
+<title>ATLAS MONDE | Terminal aérien</title>
+<style>
+:root{color-scheme:dark;--bg:#05090d;--panel:#0a1118;--line:#34424d;--amber:#ffd45b;--green:#a8ff9c;--cyan:#8bdcff;--white:#f4f7fa}
+*{box-sizing:border-box}
+html,body{margin:0;min-height:100%;background:var(--bg);color:var(--white);font-family:Arial,Helvetica,sans-serif}
+body{background:radial-gradient(ellipse at 50% 0,#17232d 0,#05090d 58%)}
+header{padding:22px 1.5%;border-bottom:2px solid #394955;background:#080e14}
+header h1{margin:0;text-align:center;font-size:clamp(1.7rem,4vw,3.2rem);letter-spacing:.07em;color:#f3f6f8}
+header p{text-align:center;margin:8px 0 0;color:#b9c5ce;font-size:1.05rem}
+main{width:99%;max-width:2200px;margin:0 auto;padding:18px 0 38px}
+.intro{padding:5px 1% 16px}
+.intro h2{margin:0 0 6px;font-size:clamp(1.35rem,3vw,2rem);letter-spacing:.04em}
+.intro p{margin:0;color:#c0cbd3;font-size:1rem}
+.controlbar{display:grid;grid-template-columns:minmax(220px,1fr) minmax(240px,1.5fr) auto;gap:12px;align-items:end;padding:14px;background:#101820;border:1px solid #3a4b58}
+.field label{display:block;margin:0 0 7px;font-weight:800;color:#dce6ec;font-size:1rem}
+select,input,button{width:100%;min-height:52px;padding:12px 14px;border:1px solid #71818c;border-radius:3px;background:#050a0f;color:#fff;font-size:1.08rem}
+button{width:auto;min-width:150px;background:#263946;border:1px solid #a7bac7;font-weight:900;cursor:pointer}
+button:disabled{opacity:.6}
+.fids{margin-top:14px;border:2px solid #52616c;background:#020508;box-shadow:0 0 24px #000,inset 0 0 25px #000}
+.fids-top{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap;padding:15px 18px;background:#111b23;border-bottom:2px solid #52616c}
+.fids-title{font-size:clamp(1.2rem,2.8vw,2rem);font-weight:900;letter-spacing:.11em;color:var(--amber);text-shadow:0 0 9px #b58a24}
+.clock{font-size:clamp(1.2rem,2.4vw,1.8rem);font-weight:900;letter-spacing:.12em;color:var(--green);font-variant-numeric:tabular-nums;text-shadow:0 0 8px #3d9b3d}
+.fids-sub{display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap;padding:12px 18px;background:#080e13;border-bottom:1px solid #43515c;color:#d0d9df;font-size:1rem}
+.fids-sub strong{color:var(--amber)}
+.board-tabs{display:flex;gap:8px;flex-wrap:wrap;padding:12px 15px;background:#0b131a;border-bottom:1px solid #43515c}
+.board-tabs button{min-width:130px;min-height:46px;background:#1b2a34;color:#e8eef2;border-color:#586b78}
+.board-tabs button.active{background:#ffd45b;color:#101010;border-color:#ffe69a}
+.table-scroll{width:100%;height:min(68vh,760px);min-height:360px;overflow:auto;background:#020508}
+table{width:100%;min-width:1450px;border-collapse:collapse;table-layout:auto;font-variant-numeric:tabular-nums}
+thead th{position:sticky;top:0;z-index:3;padding:17px 13px;background:#202e38;color:#f5d779;text-align:left;white-space:nowrap;font-size:.96rem;letter-spacing:.07em;border-right:1px solid #53616b;border-bottom:2px solid #9a8548;text-transform:uppercase}
+tbody td{height:62px;padding:15px 13px;white-space:nowrap;font-size:1.02rem;color:#e9f0f4;border-right:1px solid #34434d;border-bottom:1px solid #34434d}
+tbody tr:nth-child(odd){background:#0b141b}
+tbody tr:nth-child(even){background:#111d26}
+tbody tr:hover{background:#263744}
+td.flight{font-weight:900;color:var(--amber);font-size:1.1rem}
+td.coord{color:#9ee4ff}
+.status{display:inline-block;padding:6px 10px;border:1px solid #6a7b85;background:#1c303b;color:#d9f6ff;font-weight:900}
+.status.sol{background:#263a20;color:#caff9c;border-color:#7ca65f}
+.status.air{background:#263a4c;color:#a9ddff;border-color:#6798bd}
+.status.low{background:#49391a;color:#ffe49a;border-color:#a98a45}
+#message{padding:14px 18px;background:#0c151d;border-top:1px solid #46545e;color:#c5d0d8;font-size:.98rem}
+.map-panel{margin:14px 0 0;border:1px solid #52616c;background:#081018}.map-heading{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap;padding:13px 16px;color:#ffdc76;background:#111b23}.map-heading a{color:#a9ddff;font-weight:900}.map-panel iframe{display:block;width:100%;height:560px;border:0;background:#05090d}.map-caption{margin:0;padding:10px 14px;color:#c4d0d8;font-size:.9rem;background:#0b141b}.note{margin:14px 2px 0;padding:14px 16px;border-left:4px solid #d7ad45;background:#111b23;color:#d4dde3;line-height:1.6}
+.note strong{color:#ffdc76}
+footer{padding:22px 1%;text-align:center;color:#b8c5ce;border-top:1px solid #384650}
+footer a{color:#a9ddff}
+@media(max-width:760px){.map-panel iframe{height:440px}.map-heading{align-items:flex-start}main{width:98%}.controlbar{grid-template-columns:1fr}.controlbar button{width:100%}.table-scroll{height:62vh;min-height:330px}.fids-top{align-items:flex-start}.board-tabs button{flex:1}.fids-sub{font-size:.92rem}}
+</style>
+</head>
+<body>
+<header><h1>✈ ATLAS MONDE · TERMINAL AÉRIEN</h1><p>Grand tableau lumineux des mouvements aériens internationaux</p></header>
+<main>
+<section class="intro"><h2>Tableau des appareils détectés</h2><p>Tableau indépendant de la carte, avec recherche, filtres et informations des appareils.</p></section>
+<section class="controlbar" aria-label="Commandes du tableau">
+<div class="field"><label for="airport">Choisir l'aéroport</label><select id="airport"></select></div>
+<div class="field"><label for="search">Rechercher un vol, une immatriculation ou un modèle</label><input id="search" type="search" placeholder="Ex. RAM, CN-R…, Airbus, Boeing"></div>
+<button id="refresh" type="button">↻ ACTUALISER</button>
+</section>
+<section class="fids" aria-label="Tableau lumineux des vols">
+<div class="fids-top"><div class="fids-title">FLIGHT INFORMATION · MOUVEMENTS EN DIRECT</div><div class="clock" id="clock">--:--:--</div></div>
+<div class="fids-sub"><span>AÉROPORT : <strong id="airportName">—</strong></span><span>APPAREILS AFFICHÉS : <strong id="count">0</strong></span><span>MISE À JOUR : <strong id="updated">—</strong></span></div>
+
+<div class="board-tabs"><button type="button" class="active" data-filter="all">TOUS LES APPAREILS</button><button type="button" data-filter="air">EN VOL</button><button type="button" data-filter="ground">AU SOL</button><a id="departures" target="_blank" rel="noopener noreferrer" style="display:flex;align-items:center;padding:8px 15px;color:#fff;background:#263946;border:1px solid #71818c;text-decoration:none;font-weight:900">DÉPARTS OFFICIELS ↗</a><a id="arrivals" target="_blank" rel="noopener noreferrer" style="display:flex;align-items:center;padding:8px 15px;color:#fff;background:#263946;border:1px solid #71818c;text-decoration:none;font-weight:900">ARRIVÉES OFFICIELLES ↗</a></div>
+<div class="table-scroll"><table>
+<thead><tr><th>N° / INDICATIF DE VOL</th><th>COMPAGNIE / OPÉRATEUR</th><th>IMMATRICULATION</th><th>CONSTRUCTEUR / MODÈLE</th><th>ALTITUDE</th><th>VITESSE</th><th>CAP</th><th>COORDONNÉE LATITUDE</th><th>COORDONNÉE LONGITUDE</th><th>CODE SQUAWK</th><th>ÉTAT OBSERVÉ</th></tr></thead>
+<tbody id="rows"><tr><td colspan="11" style="text-align:center">Connexion au réseau aérien…</td></tr></tbody>
+</table></div>
+<div id="message" role="status" aria-live="polite">Préparation du tableau de données…</div>
+</section>
+<section class="map-panel" aria-label="Carte aérienne indépendante"><div class="map-heading"><strong>CARTE AÉRIENNE · POSITIONS ADS-B EN DIRECT</strong><a href="https://adsb.lol/" target="_blank" rel="noopener noreferrer">OUVRIR EN PLEIN ÉCRAN ↗</a></div><iframe title="Carte publique ADSB.lol des aéronefs détectés" src="https://adsb.lol/" loading="lazy" referrerpolicy="strict-origin-when-cross-origin"></iframe><p class="map-caption">Carte indépendante du tableau des vols, fournie par ADSB.lol. Si l'affichage intégré est bloqué, utilisez « Ouvrir en plein écran ».</p></section>
+<p class="note"><strong>À propos des données :</strong> le tableau affiche les signaux ADS-B réellement reçus, avec les coordonnées lorsque la source les transmet. Ces signaux ne donnent pas toujours les horaires commerciaux, les portes d'embarquement ou la destination confirmée. Les boutons « Départs officiels » et « Arrivées officielles » ouvrent les tableaux FlightAware de l'aéroport sélectionné. Aucune heure ni destination n'est inventée.</p>
+</main>
+<footer>ATLAS MONDE · Source des positions : <a href="https://adsb.lol/" target="_blank" rel="noopener noreferrer">ADSB.lol</a> · Données ouvertes · <a href="./trafic-aerien.html">Carte du trafic aérien</a> · <a href="./index.html">Retour à l'accueil</a></footer>
+<script>
+const airports=[
+{country:"Maroc",city:"Casablanca",name:"Mohammed V",iata:"CMN",icao:"GMMN",lat:33.3675,lon:-7.58997},
+{country:"Algérie",city:"Alger",name:"Houari-Boumédiène",iata:"ALG",icao:"DAAG",lat:36.691,lon:3.215},
+{country:"Tunisie",city:"Tunis",name:"Tunis-Carthage",iata:"TUN",icao:"DTTA",lat:36.851,lon:10.227},
+{country:"Égypte",city:"Le Caire",name:"Cairo International",iata:"CAI",icao:"HECA",lat:30.1219,lon:31.4056},
+{country:"Sénégal",city:"Dakar",name:"Blaise-Diagne",iata:"DSS",icao:"GOBD",lat:14.67,lon:-17.073},
+{country:"Côte d’Ivoire",city:"Abidjan",name:"Félix-Houphouët-Boigny",iata:"ABJ",icao:"DIAP",lat:5.261,lon:-3.926},
+{country:"Afrique du Sud",city:"Johannesbourg",name:"O. R. Tambo",iata:"JNB",icao:"FAOR",lat:-26.139,lon:28.246},
+{country:"France",city:"Paris",name:"Charles-de-Gaulle",iata:"CDG",icao:"LFPG",lat:49.0097,lon:2.5479},
+{country:"Espagne",city:"Madrid",name:"Barajas",iata:"MAD",icao:"LEMD",lat:40.4983,lon:-3.5676},
+{country:"Allemagne",city:"Francfort",name:"Frankfurt Airport",iata:"FRA",icao:"EDDF",lat:50.0379,lon:8.5622},
+{country:"Royaume-Uni",city:"Londres",name:"Heathrow",iata:"LHR",icao:"EGLL",lat:51.47,lon:-0.4543},
+{country:"Italie",city:"Rome",name:"Fiumicino",iata:"FCO",icao:"LIRF",lat:41.8003,lon:12.2389},
+{country:"Pays-Bas",city:"Amsterdam",name:"Schiphol",iata:"AMS",icao:"EHAM",lat:52.3086,lon:4.7639},
+{country:"États-Unis",city:"New York",name:"John F. Kennedy",iata:"JFK",icao:"KJFK",lat:40.6413,lon:-73.7781},
+{country:"Canada",city:"Toronto",name:"Pearson",iata:"YYZ",icao:"CYYZ",lat:43.6777,lon:-79.6248},
+{country:"Brésil",city:"São Paulo",name:"Guarulhos",iata:"GRU",icao:"SBGR",lat:-23.4356,lon:-46.4731},
+{country:"Arabie saoudite",city:"Riyad",name:"King Khalid",iata:"RUH",icao:"OERK",lat:24.9576,lon:46.6988},
+{country:"Émirats arabes unis",city:"Dubaï",name:"Dubai International",iata:"DXB",icao:"OMDB",lat:25.2532,lon:55.3657},
+{country:"Turquie",city:"Istanbul",name:"Istanbul Airport",iata:"IST",icao:"LTFM",lat:41.2753,lon:28.7519},
+{country:"Chine",city:"Pékin",name:"Beijing Capital",iata:"PEK",icao:"ZBAA",lat:40.0799,lon:116.6031}
+];
+const $=id=>document.getElementById(id), airportSelect=$("airport"), rows=$("rows");
+airports.forEach((a,i)=>{const o=document.createElement("option");o.value=i;o.textContent=a.city+" · "+a.country+" ("+a.iata+")";airportSelect.appendChild(o)});
+let aircraft=[],filterMode="all";
+// URL du relais à renseigner après son déploiement Cloudflare.
+const ADSB_RELAY_URL="";
+const safe=v=>String(v??"—").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+function modelName(t){const x=String(t||"").toUpperCase();if(!x)return"Non transmis";if(x.startsWith("A"))return"Airbus "+x;if(x.startsWith("B"))return"Boeing "+x;if(x.startsWith("E"))return"Embraer "+x;if(x.startsWith("ATR"))return"ATR "+x;if(x.startsWith("CRJ"))return"Bombardier "+x;return x}
+function render(){
+ const q=$("search").value.trim().toLowerCase();
+ const list=aircraft.filter(a=>{
+  const isGround=a.alt_baro==="ground"||a.gs===0;
+  const modeOK=filterMode==="all"||(filterMode==="ground"&&isGround)||(filterMode==="air"&&!isGround);
+  return modeOK&&[a.flight,a.r,a.t,a.hex,a.squawk].join(" ").toLowerCase().includes(q);
+ });
+ $("count").textContent=list.length;
+ rows.innerHTML=list.length?list.slice(0,250).map(a=>{
+  const ground=a.alt_baro==="ground"||a.gs===0;
+  const alt=ground?"AU SOL":(typeof a.alt_baro==="number"?Math.round(a.alt_baro).toLocaleString("fr-FR")+" ft":"—");
+  const low=!ground&&typeof a.alt_baro==="number"&&a.alt_baro<5000;
+  const state=ground?'<span class="status sol">AU SOL</span>':low?'<span class="status low">ALTITUDE BASSE</span>':'<span class="status air">EN VOL / SIGNAL REÇU</span>';
+  const lat=Number.isFinite(a.lat)?a.lat.toFixed(5):"—",lon=Number.isFinite(a.lon)?a.lon.toFixed(5):"—";
+  const flight=String(a.flight||"").trim()||a.hex||"Non identifié";
+  const airline=(flight.match(/^[A-Z0-9]{2,3}/)||[])[0]||"Non identifiée";
+  return '<tr><td class="flight">'+safe(flight)+'</td><td>'+safe(airline)+'</td><td>'+safe(a.r||"—")+'</td><td>'+safe(modelName(a.t||a.type))+'</td><td>'+safe(alt)+'</td><td>'+safe(a.gs!=null?Math.round(a.gs)+" kt":"—")+'</td><td>'+safe(a.track!=null?Math.round(a.track)+"°":"—")+'</td><td class="coord">'+lat+'</td><td class="coord">'+lon+'</td><td>'+safe(a.squawk||"—")+'</td><td>'+state+'</td></tr>';
+ }).join(""):'<tr><td colspan="11" style="text-align:center;padding:30px;color:#c6d1d9">Aucun appareil correspondant dans les signaux reçus actuellement.</td></tr>';
+}
+async function refresh(){
+ const a=airports[Number(airportSelect.value)||0],btn=$("refresh");
+ $("airportName").textContent=a.name+" · "+a.iata+" / "+a.icao;
+ $("departures").href="https://www.flightaware.com/live/airport/"+a.icao+"/departures";
+ $("arrivals").href="https://www.flightaware.com/live/airport/"+a.icao+"/arrivals";
+ btn.disabled=true;$("message").textContent="Lecture des signaux ADS-B autour de "+a.city+"…";
+ rows.innerHTML='<tr><td colspan="11" style="text-align:center;padding:30px">Chargement des appareils…</td></tr>';
+ try{
+  const directUrl="https://api.adsb.lol/v2/lat/"+a.lat+"/lon/"+a.lon+"/dist/80";
+  const url=ADSB_RELAY_URL?ADSB_RELAY_URL.replace(/\/$/,"")+"?lat="+encodeURIComponent(a.lat)+"&lon="+encodeURIComponent(a.lon)+"&dist=80":directUrl;
+  const res=await fetch(url,{cache:"no-store",headers:{"Accept":"application/json"},credentials:"omit"});
+  if(!res.ok)throw new Error("Réponse serveur "+res.status);
+  const data=await res.json();aircraft=Array.isArray(data.ac)?data.ac:[];
+  render();
+  const now=new Date().toLocaleTimeString("fr-FR");
+  $("updated").textContent=now;
+  $("message").textContent=aircraft.length+" appareil(s) transmis par ADSB.lol dans le rayon de couverture demandé. Actualisation automatique toutes les 5 minutes.";
+ }catch(err){
+  aircraft=[];render();
+  $("message").textContent="La source ADS-B.lol ne peut pas être lue depuis cette page ("+err.message+"). Le relais serveur doit être déployé et son URL renseignée pour alimenter le tableau. La carte publique reste disponible ci-dessus.";
+ }
+ btn.disabled=false;
+}
+$("refresh").addEventListener("click",refresh);
+airportSelect.addEventListener("change",refresh);
+$("search").addEventListener("input",render);
+document.querySelectorAll("[data-filter]").forEach(b=>b.addEventListener("click",()=>{filterMode=b.dataset.filter;document.querySelectorAll("[data-filter]").forEach(x=>x.classList.toggle("active",x===b));render()}));
+function tick(){$("clock").textContent=new Date().toLocaleTimeString("fr-FR",{hour:"2-digit",minute:"2-digit",second:"2-digit"})}
+tick();setInterval(tick,1000);refresh();setInterval(refresh,300000);
+</script>
+</body>
+</html>
