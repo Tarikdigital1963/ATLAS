@@ -141,13 +141,24 @@ async function refresh(){
  rows.innerHTML='<tr><td colspan="11" style="text-align:center;padding:30px">Chargement des appareils…</td></tr>';
  try{
   const target="https://api.adsb.lol/v2/lat/"+a.lat+"/lon/"+a.lon+"/dist/80";
-  const res=await fetch(target,{cache:"no-store",headers:{"Accept":"application/json"}});
-  if(!res.ok)throw new Error("Réponse serveur "+res.status);
-  const data=await res.json();aircraft=Array.isArray(data.ac)?data.ac:[];
+  // Même flux ADS-B que la carte, avec relais CORS de secours pour les navigateurs mobiles.
+  const sources=[target,"https://proxy.cors.dev/"+target];
+  let data=null,lastError=null,sourceUsed="";
+  for(const url of sources){
+   try{
+    const res=await fetch(url,{cache:"no-store",headers:{"Accept":"application/json"}});
+    if(!res.ok)throw new Error("Réponse serveur "+res.status);
+    const payload=await res.json();
+    if(!payload||!Array.isArray(payload.ac))throw new Error("Format ADS-B inattendu");
+    data=payload;sourceUsed=url;break;
+   }catch(error){lastError=error}
+  }
+  if(!data)throw lastError||new Error("Flux ADS-B indisponible");
+  aircraft=data.ac;
   render();
   const now=new Date().toLocaleTimeString("fr-FR");
   $("updated").textContent=now;
-  $("message").textContent=aircraft.length+" appareil(s) transmis par ADSB.lol dans le rayon de couverture demandé. Actualisation automatique toutes les 5 minutes.";
+  $("message").textContent=aircraft.length+" appareil(s) reçus du flux ADS-B partagé avec la carte ("+(sourceUsed===target?"source directe":"relais de secours") +"). Actualisation automatique toutes les 5 minutes.";
  }catch(err){
   aircraft=[];render();
   $("updated").textContent="—";
