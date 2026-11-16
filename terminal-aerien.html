@@ -110,8 +110,7 @@ const airports=[
 const $=id=>document.getElementById(id), airportSelect=$("airport"), rows=$("rows");
 airports.forEach((a,i)=>{const o=document.createElement("option");o.value=i;o.textContent=a.city+" · "+a.country+" ("+a.iata+")";airportSelect.appendChild(o)});
 let aircraft=[],filterMode="all";
-// URL du relais à renseigner après son déploiement Cloudflare.
-const ADSB_RELAY_URL="";
+// Source publique ADS-B.lol : lecture directe, comme sur la carte d'accueil ATLAS.
 const safe=v=>String(v??"—").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
 function modelName(t){const x=String(t||"").toUpperCase();if(!x)return"Non transmis";if(x.startsWith("A"))return"Airbus "+x;if(x.startsWith("B"))return"Boeing "+x;if(x.startsWith("E"))return"Embraer "+x;if(x.startsWith("ATR"))return"ATR "+x;if(x.startsWith("CRJ"))return"Bombardier "+x;return x}
 function render(){
@@ -142,8 +141,7 @@ async function refresh(){
  rows.innerHTML='<tr><td colspan="11" style="text-align:center;padding:30px">Chargement des appareils…</td></tr>';
  try{
   const target="https://api.adsb.lol/v2/lat/"+a.lat+"/lon/"+a.lon+"/dist/80";
-  const url=ADSB_RELAY_URL?ADSB_RELAY_URL.replace(/\/$/,"")+"?lat="+encodeURIComponent(a.lat)+"&lon="+encodeURIComponent(a.lon)+"&dist=80":"https://proxy.cors.dev/"+target;
-  const res=await fetch(url,{cache:"no-store",headers:{"Accept":"application/json"}});
+  const res=await fetch(target,{cache:"no-store",headers:{"Accept":"application/json"}});
   if(!res.ok)throw new Error("Réponse serveur "+res.status);
   const data=await res.json();aircraft=Array.isArray(data.ac)?data.ac:[];
   render();
@@ -151,10 +149,12 @@ async function refresh(){
   $("updated").textContent=now;
   $("message").textContent=aircraft.length+" appareil(s) transmis par ADSB.lol dans le rayon de couverture demandé. Actualisation automatique toutes les 5 minutes.";
  }catch(err){
-  aircraft=[];render();updateAircraftMap([],a);
-  $("message").textContent="La source ADS-B.lol ne peut pas être lue depuis cette page ("+err.message+"). Les données et marqueurs seront rétablis dès que le flux ADS-B répondra.";
+  aircraft=[];render();
+  $("updated").textContent="—";
+  $("message").textContent="Flux ADS-B temporairement indisponible ("+err.message+"). Vérifiez la connexion puis relancez l’actualisation. La carte aérienne indépendante ci-dessous reste inchangée.";
+ }finally{
+  btn.disabled=false;
  }
- btn.disabled=false;
 }
 $("refresh").addEventListener("click",refresh);
 airportSelect.addEventListener("change",refresh);
