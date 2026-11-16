@@ -73,6 +73,9 @@
     <p>Une grande image animée issue du satellite météorologique GOES-19 : nuages, océans et systèmes météorologiques. La séquence est actualisée par NOAA environ toutes les dix minutes, ce n’est pas une vidéo instantanée.</p>
     <div class="camera-feed">
       <iframe title="NOAA GOES-19 : images satellitaires animées de la Terre" src="https://www.goes.noaa.gov/fulldisk_band.php?band=GEOCOLOR&amp;length=12&amp;sat=G19" loading="lazy" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
+      <div class="actions" style="padding:12px">
+        <a class="action" href="https://www.goes.noaa.gov/" target="_blank" rel="noopener noreferrer">Ouvrir les images NOAA directement</a>
+      </div>
       <div class="camera-caption"><span class="live-dot" aria-hidden="true"></span> IMAGE SATELLITAIRE ACTUALISÉE · NOAA GOES-19 · ENVIRON 10 MINUTES</div>
     </div>
     <p class="small">Crédit : CIRA / NOAA. La vue couvre le disque terrestre observé par GOES-19. Les images nocturnes combinent des données infrarouges et certaines lumières urbaines sont issues d’une base statique.</p>
@@ -93,6 +96,9 @@
     <p>Regardez directement le flux vidéo public de la NASA depuis la Station spatiale internationale. Selon les périodes, la caméra montre la Terre depuis l’extérieur ou des vues intérieures de la station.</p>
     <div class="camera-feed">
       <iframe title="Flux vidéo officiel NASA depuis la Station spatiale internationale" src="https://www.youtube-nocookie.com/embed/M3HKLzjvKPc?rel=0&amp;modestbranding=1" loading="lazy" referrerpolicy="strict-origin-when-cross-origin" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe>
+      <div class="actions" style="padding:12px">
+        <a class="action" href="https://www.youtube.com/@NASA" target="_blank" rel="noopener noreferrer">Ouvrir les vidéos NASA directement</a>
+      </div>
       <div class="camera-caption"><span class="live-dot" aria-hidden="true"></span> CAMÉRA NASA · STATION SPATIALE INTERNATIONALE</div>
     </div>
     <p class="small">Le flux peut afficher un écran bleu ou noir lors d’une perte de signal, pendant la nuit orbitale ou lorsque la caméra n’est pas disponible. La diffusion est fournie par la NASA sur YouTube.</p>
@@ -102,15 +108,32 @@
     </div>
   </section>
 
-  <section class="section" aria-labelledby="camera-title">
-    <span class="pill">CAMÉRAS PUBLIQUES · CARTE INTERACTIVE</span>
-    <h2 id="camera-title">📷 Caméras publiques dans le monde</h2>
-    <p>La carte ci-dessous affiche les webcams publiques répertoriées par Windy. Touchez un symbole de caméra sur la carte pour afficher l’aperçu disponible et les informations de diffusion.</p>
-    <div class="camera-feed">
-      <iframe title="Carte interactive Windy des webcams publiques dans le monde" src="https://embed.windy.com/embed2.html?lat=25&amp;lon=0&amp;detailLat=25&amp;detailLon=0&amp;width=650&amp;height=500&amp;zoom=2&amp;level=surface&amp;overlay=webcams&amp;product=ecmwf&amp;menu=&amp;message=true&amp;marker=&amp;calendar=now&amp;pressure=&amp;type=map&amp;location=coordinates&amp;detail=&amp;metricWind=default&amp;metricTemp=default" loading="lazy" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
-      <div class="camera-caption"><span class="live-dot" aria-hidden="true"></span> CARTE DES WEBCAMS PUBLIQUES · WINDY</div>
+  <section class="section" aria-labelledby="windy-title">
+    <span class="pill">CARTE MÉTÉO INTERACTIVE · WINDY</span>
+    <h2 id="windy-title">🌬️ Carte météo mondiale Windy</h2>
+    <p>Carte météo Windy intégrée avec les commandes de navigation et le choix des couches. Si l’intégration ne se charge pas dans votre navigateur, utilisez le bouton pour ouvrir Windy directement.</p>
+    <div class="frame-wrap">
+      <iframe title="Carte météo mondiale Windy" src="https://embed.windy.com/embed.html?type=map&amp;location=coordinates&amp;metricRain=default&amp;metricTemp=default&amp;metricWind=default&amp;zoom=2&amp;overlay=wind&amp;product=ecmwf&amp;level=surface&amp;lat=25&amp;lon=0" loading="lazy" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
     </div>
-    <p class="small">Les webcams dépendent de leurs propriétaires et peuvent diffuser une image fixe actualisée, une séquence accélérée ou une vidéo. Seules les caméras publiquement proposées par leurs diffuseurs sont présentées. Les caméras privées et protégées ne sont pas accessibles.</p>
+    <div class="actions">
+      <a class="action" href="https://www.windy.com/" target="_blank" rel="noopener noreferrer">Ouvrir la carte météo Windy</a>
+    </div>
+  </section>
+
+  <section class="section" aria-labelledby="camera-title">
+    <span class="pill">CAMÉRAS PUBLIQUES · ACCÈS DIRECT</span>
+    <h2 id="camera-title">📷 Caméras publiques dans le monde</h2>
+    <p>La couche webcams de l’ancien cadre intégré ne garantit pas l’affichage des caméras ni l’ouverture de leurs fiches. Pour rendre les caméras réellement cliquables, ouvrez la carte officielle Windy : touchez un symbole de caméra sur cette carte pour afficher son aperçu, son emplacement et les informations de diffusion.</p>
+    <div class="card">
+      <div class="symbol">🌐</div>
+      <h3>Carte mondiale des caméras Windy</h3>
+      <p>Accès à la carte officielle des webcams publiques. Les symboles de caméra sont sélectionnables directement sur la carte Windy.</p>
+      <div class="actions">
+        <a class="action green" href="https://www.windy.com/webcams" target="_blank" rel="noopener noreferrer">📷 Ouvrir et choisir une caméra</a>
+        <a class="action" href="https://embed.windy.com/config/webcam" target="_blank" rel="noopener noreferrer">Voir les options d’intégration Windy</a>
+      </div>
+    </div>
+    <p class="small">Webcams fournies par Windy.com et leurs opérateurs. Certaines caméras affichent une image actualisée plutôt qu’une vidéo continue. Leur disponibilité dépend de l’opérateur. Les caméras privées ou protégées ne sont pas accessibles.</p>
   </section>
 
   <section class="section" aria-labelledby="limits-title">
