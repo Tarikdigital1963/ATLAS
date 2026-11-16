@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="theme-color" content="#05090d">
 <meta name="description" content="ATLAS MONDE - Tableau des vols et carte aérienne indépendante alimentée par les signaux ADS-B.">
-<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
+
 <title>ATLAS MONDE | Terminal aérien</title>
 <style>
 :root{color-scheme:dark;--bg:#05090d;--panel:#0a1118;--line:#34424d;--amber:#ffd45b;--green:#a8ff9c;--cyan:#8bdcff;--white:#f4f7fa}
@@ -21,7 +21,7 @@ main > .intro,main > .controlbar,main > .fids,main > .map-panel,main > .note{wid
 .fids{display:block;margin:14px 0 0}
 .map-panel{display:block;flex-basis:auto;margin:30px 0 0;border:3px solid #52616c;clear:both}
 .map-heading{min-height:64px}
-.map-panel #aircraftMap{width:100%;height:clamp(420px,65vh,720px);min-height:360px;display:block;background:#102333}
+.map-panel iframe{width:100%;display:block}
 .intro{padding:5px 1% 16px}
 .intro h2{margin:0 0 6px;font-size:clamp(1.35rem,3vw,2rem);letter-spacing:.04em}
 .intro p{margin:0;color:#c0cbd3;font-size:1rem}
@@ -53,11 +53,11 @@ td.coord{color:#9ee4ff}
 .status.air{background:#263a4c;color:#a9ddff;border-color:#6798bd}
 .status.low{background:#49391a;color:#ffe49a;border-color:#a98a45}
 #message{padding:14px 18px;background:#0c151d;border-top:1px solid #46545e;color:#c5d0d8;font-size:.98rem}
-.map-panel{margin:28px 0 0;border:2px solid #52616c;background:#081018;isolation:isolate;clear:both}.map-heading{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap;padding:15px 16px;color:#ffdc76;background:#111b23;border-bottom:1px solid #52616c}.map-caption{margin:0;padding:12px 14px;color:#c4d0d8;font-size:.9rem;background:#0b141b;border-top:1px solid #52616c}.map-panel .leaflet-container{font:inherit}.map-panel .leaflet-control-layers,.map-panel .leaflet-bar a{background:#0a1118;color:#fff;border-color:#52616c}.note{margin:14px 2px 0;padding:14px 16px;border-left:4px solid #d7ad45;background:#111b23;color:#d4dde3;line-height:1.6}
+.map-panel{margin:28px 0 0;border:2px solid #52616c;background:#081018;clear:both}.map-heading{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap;padding:15px 16px;color:#ffdc76;background:#111b23;border-bottom:1px solid #52616c}.map-heading a{color:#a9ddff;font-weight:900}.map-panel iframe{display:block;width:100%;height:560px;border:0;background:#05090d}.map-caption{margin:0;padding:12px 14px;color:#c4d0d8;font-size:.9rem;background:#0b141b;border-top:1px solid #52616c}.note{margin:14px 2px 0;padding:14px 16px;border-left:4px solid #d7ad45;background:#111b23;color:#d4dde3;line-height:1.6}
 .note strong{color:#ffdc76}
 footer{padding:22px 1%;text-align:center;color:#b8c5ce;border-top:1px solid #384650}
 footer a{color:#a9ddff}
-@media(max-width:760px){.map-panel #aircraftMap{height:52vh;min-height:360px}.map-heading{align-items:flex-start}main{width:98%}.controlbar{grid-template-columns:1fr}.controlbar button{width:100%}.table-scroll{height:auto;min-height:110px;max-height:45vh;overflow:auto}.fids-top{align-items:flex-start}.board-tabs button{flex:1}.fids-sub{font-size:.92rem}}
+@media(max-width:760px){.map-panel iframe{height:440px}.map-heading{align-items:flex-start}main{width:98%}.controlbar{grid-template-columns:1fr}.controlbar button{width:100%}.table-scroll{height:auto;min-height:110px;max-height:45vh;overflow:auto}.fids-top{align-items:flex-start}.board-tabs button{flex:1}.fids-sub{font-size:.92rem}}
 </style>
 </head>
 <body>
@@ -80,11 +80,10 @@ footer a{color:#a9ddff}
 </table></div>
 <div id="message" role="status" aria-live="polite">Préparation du tableau de données…</div>
 </section>
-<section class="map-panel" aria-label="Carte aérienne indépendante"><div class="map-heading"><strong>CARTE AÉRIENNE · POSITIONS ADS-B EN DIRECT</strong><span id="mapAircraftCount">En attente des signaux ADS-B</span></div><div id="aircraftMap" role="application" aria-label="Carte interactive indépendante des avions détectés"></div><p class="map-caption">Carte ATLAS indépendante du tableau : les marqueurs représentent les appareils reçus par ADSB.lol autour de l’aéroport sélectionné. Sélectionnez un avion pour consulter son indicatif et ses données disponibles. Fond cartographique Esri / OpenStreetMap.</p></section>
+<section class="map-panel" aria-label="Carte aérienne indépendante"><div class="map-heading"><strong>CARTE AÉRIENNE · POSITIONS ADS-B EN DIRECT</strong><a href="https://adsb.lol/" target="_blank" rel="noopener noreferrer">OUVRIR EN PLEIN ÉCRAN ↗</a></div><iframe title="Carte publique ADSB.lol des aéronefs détectés" src="https://adsb.lol/" loading="lazy" referrerpolicy="strict-origin-when-cross-origin"></iframe><p class="map-caption">Carte aérienne originale ADSB.lol, restaurée et indépendante du tableau des vols.</p></section>
 <p class="note"><strong>À propos des données :</strong> le tableau affiche les signaux ADS-B réellement reçus, avec les coordonnées lorsque la source les transmet. Ces signaux ne donnent pas toujours les horaires commerciaux, les portes d'embarquement ou la destination confirmée. Les boutons « Départs officiels » et « Arrivées officielles » ouvrent les tableaux FlightAware de l'aéroport sélectionné. Aucune heure ni destination n'est inventée.</p>
 </main>
 <footer>ATLAS MONDE · Source des positions : <a href="https://adsb.lol/" target="_blank" rel="noopener noreferrer">ADSB.lol</a> · Données ouvertes · <a href="./trafic-aerien.html">Carte du trafic aérien</a> · <a href="./index.html">Retour à l'accueil</a></footer>
-<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 <script>
 const airports=[
 {country:"Maroc",city:"Casablanca",name:"Mohammed V",iata:"CMN",icao:"GMMN",lat:33.3675,lon:-7.58997},
@@ -109,27 +108,6 @@ const airports=[
 {country:"Chine",city:"Pékin",name:"Beijing Capital",iata:"PEK",icao:"ZBAA",lat:40.0799,lon:116.6031}
 ];
 const $=id=>document.getElementById(id), airportSelect=$("airport"), rows=$("rows");
-const aircraftMap=L.map("aircraftMap",{scrollWheelZoom:true,worldCopyJump:true}).setView([20,0],2);
-const roadTiles=L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",{maxZoom:19,attribution:"© OpenStreetMap contributors"});
-const satelliteTiles=L.tileLayer("https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{x}/{y}",{maxZoom:18,attribution:"Tiles © Esri"});
-roadTiles.addTo(aircraftMap);
-L.control.layers({"Carte routière":roadTiles,"Satellite":satelliteTiles},null,{collapsed:true}).addTo(aircraftMap);
-const aircraftMarkers=L.layerGroup().addTo(aircraftMap);
-function updateAircraftMap(list,airport){
- aircraftMarkers.clearLayers();let plotted=0;
- list.forEach(a=>{
-  const lat=Number(a.lat),lon=Number(a.lon);if(!Number.isFinite(lat)||!Number.isFinite(lon))return;
-  const flight=safe(String(a.flight||a.hex||"Appareil non identifié").trim());
-  const registration=safe(a.r||"Non transmise"),model=safe(modelName(a.t||a.type));
-  const altitude=a.alt_baro==="ground"?"Au sol":(typeof a.alt_baro==="number"?Math.round(a.alt_baro).toLocaleString("fr-FR")+" ft":"Non transmise");
-  const speed=a.gs!=null?Math.round(a.gs)+" kt":"Non transmise";
-  L.circleMarker([lat,lon],{radius:6,color:"#ffffff",weight:1.5,fillColor:"#35b8ff",fillOpacity:.95})
-   .bindPopup("<strong>"+flight+"</strong><br>Immatriculation : "+registration+"<br>Modèle : "+model+"<br>Altitude : "+altitude+"<br>Vitesse : "+speed)
-   .addTo(aircraftMarkers);plotted++;
- });
- $("mapAircraftCount").textContent=plotted+" position(s) affichée(s)";
- if(airport)aircraftMap.setView([airport.lat,airport.lon],Math.max(aircraftMap.getZoom(),6));
-}
 airports.forEach((a,i)=>{const o=document.createElement("option");o.value=i;o.textContent=a.city+" · "+a.country+" ("+a.iata+")";airportSelect.appendChild(o)});
 let aircraft=[],filterMode="all";
 // URL du relais à renseigner après son déploiement Cloudflare.
@@ -163,9 +141,9 @@ async function refresh(){
  btn.disabled=true;$("message").textContent="Lecture des signaux ADS-B autour de "+a.city+"…";
  rows.innerHTML='<tr><td colspan="11" style="text-align:center;padding:30px">Chargement des appareils…</td></tr>';
  try{
-  const directUrl="https://api.adsb.lol/v2/lat/"+a.lat+"/lon/"+a.lon+"/dist/80";
-  const url=ADSB_RELAY_URL?ADSB_RELAY_URL.replace(/\/$/,"")+"?lat="+encodeURIComponent(a.lat)+"&lon="+encodeURIComponent(a.lon)+"&dist=80":directUrl;
-  const res=await fetch(url,{cache:"no-store",headers:{"Accept":"application/json"},credentials:"omit"});
+  const target="https://api.adsb.lol/v2/lat/"+a.lat+"/lon/"+a.lon+"/dist/80";
+  const url=ADSB_RELAY_URL?ADSB_RELAY_URL.replace(/\/$/,"")+"?lat="+encodeURIComponent(a.lat)+"&lon="+encodeURIComponent(a.lon)+"&dist=80":"https://proxy.cors.dev/"+target;
+  const res=await fetch(url,{cache:"no-store",headers:{"Accept":"application/json"}});
   if(!res.ok)throw new Error("Réponse serveur "+res.status);
   const data=await res.json();aircraft=Array.isArray(data.ac)?data.ac:[];
   render();updateAircraftMap(aircraft,a);setTimeout(()=>aircraftMap.invalidateSize(),100);
