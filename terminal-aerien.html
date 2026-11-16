@@ -58,7 +58,15 @@ td.coord{color:#9ee4ff}
 footer{padding:22px 1%;text-align:center;color:#b8c5ce;border-top:1px solid #384650}
 footer a{color:#a9ddff}
 @media(max-width:760px){.map-panel iframe{height:440px}.map-heading{align-items:flex-start}main{width:98%}.controlbar{grid-template-columns:1fr}.controlbar button{width:100%}.table-scroll{height:auto;min-height:110px;max-height:45vh;overflow:auto}.fids-top{align-items:flex-start}.board-tabs button{flex:1}.fids-sub{font-size:.92rem}}
+/* Mode intégré à l’accueil : le tableau reste interactif, la carte complète reste sur sa page dédiée. */
+html.embed header,html.embed .map-panel,html.embed .note,html.embed footer{display:none!important}
+html.embed main{width:100%;max-width:none;margin:0;padding:8px;}
+html.embed .intro{padding:2px 4px 8px}
+html.embed .fids{margin-top:6px}
+html.embed .table-scroll{height:390px;min-height:260px;max-height:390px}
+@media(max-width:760px){html.embed .table-scroll{height:340px;min-height:230px;max-height:340px}html.embed .controlbar{padding:9px;gap:8px}html.embed select,html.embed input,html.embed button{min-height:44px;font-size:1rem}}
 </style>
+<script>if(new URLSearchParams(location.search).has("embed"))document.documentElement.classList.add("embed");</script>
 </head>
 <body>
 <header><h1>✈ ATLAS MONDE · TERMINAL AÉRIEN</h1><p>Grand tableau lumineux des mouvements aériens internationaux</p></header>
@@ -87,6 +95,18 @@ footer a{color:#a9ddff}
 <script>
 const airports=[
 {country:"Maroc",city:"Casablanca",name:"Mohammed V",iata:"CMN",icao:"GMMN",lat:33.3675,lon:-7.58997},
+{country:"Maroc",city:"Marrakech",name:"Ménara",iata:"RAK",icao:"GMMX",lat:31.6069,lon:-8.0363},
+{country:"Maroc",city:"Rabat",name:"Salé",iata:"RBA",icao:"GMME",lat:34.0515,lon:-6.7515},
+{country:"Maroc",city:"Tanger",name:"Ibn Battouta",iata:"TNG",icao:"GMTT",lat:35.7269,lon:-5.9169},
+{country:"Maroc",city:"Agadir",name:"Al Massira",iata:"AGA",icao:"GMAD",lat:30.325,lon:-9.4131},
+{country:"Maroc",city:"Fès",name:"Saïss",iata:"FEZ",icao:"GMFF",lat:33.9273,lon:-4.9779},
+{country:"Maroc",city:"Laâyoune",name:"Hassan Ier",iata:"EUN",icao:"GMML",lat:27.1517,lon:-13.2192},
+{country:"Maroc",city:"Oujda",name:"Angads",iata:"OUD",icao:"GMFO",lat:34.7872,lon:-1.9239},
+{country:"Maroc",city:"Nador",name:"El Aroui",iata:"NDR",icao:"GMFN",lat:34.9888,lon:-3.0282},
+{country:"Maroc",city:"Essaouira",name:"Mogador",iata:"ESU",icao:"GMMI",lat:31.3975,lon:-9.6817},
+{country:"Maroc",city:"Ouarzazate",name:"Ouarzazate",iata:"OZZ",icao:"GMMZ",lat:30.9391,lon:-6.9094},
+{country:"Maroc",city:"Dakhla",name:"Dakhla",iata:"VIL",icao:"GMMH",lat:23.7183,lon:-15.932},
+{country:"Maroc",city:"Béni Mellal",name:"Béni Mellal",iata:"BEM",icao:"GMMD",lat:32.4019,lon:-6.3159},
 {country:"Algérie",city:"Alger",name:"Houari-Boumédiène",iata:"ALG",icao:"DAAG",lat:36.691,lon:3.215},
 {country:"Tunisie",city:"Tunis",name:"Tunis-Carthage",iata:"TUN",icao:"DTTA",lat:36.851,lon:10.227},
 {country:"Égypte",city:"Le Caire",name:"Cairo International",iata:"CAI",icao:"HECA",lat:30.1219,lon:31.4056},
