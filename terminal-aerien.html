@@ -56,7 +56,7 @@ footer a{color:#a9ddff}
 <body>
 <header><h1>✈ ATLAS MONDE · TERMINAL AÉRIEN</h1><p>Grand tableau lumineux des mouvements aériens internationaux</p></header>
 <main>
-<section class="intro"><h2>Tableau général des appareils détectés</h2><p>Un seul grand tableau continu, avec quadrillage, colonnes fixes et défilement comme un panneau d'aéroport.</p></section>
+<section class="intro"><h2>Tableau des appareils détectés</h2><p>Tableau indépendant de la carte, avec recherche, filtres et informations des appareils.</p></section>
 <section class="controlbar" aria-label="Commandes du tableau">
 <div class="field"><label for="airport">Choisir l'aéroport</label><select id="airport"></select></div>
 <div class="field"><label for="search">Rechercher un vol, une immatriculation ou un modèle</label><input id="search" type="search" placeholder="Ex. RAM, CN-R…, Airbus, Boeing"></div>
@@ -65,7 +65,7 @@ footer a{color:#a9ddff}
 <section class="fids" aria-label="Tableau lumineux des vols">
 <div class="fids-top"><div class="fids-title">FLIGHT INFORMATION · MOUVEMENTS EN DIRECT</div><div class="clock" id="clock">--:--:--</div></div>
 <div class="fids-sub"><span>AÉROPORT : <strong id="airportName">—</strong></span><span>APPAREILS AFFICHÉS : <strong id="count">0</strong></span><span>MISE À JOUR : <strong id="updated">—</strong></span></div>
-<div class="map-panel"><div class="map-heading"><strong>CARTE AÉRIENNE MONDIALE · ADS-B EN DIRECT</strong><a href="https://adsb.lol/" target="_blank" rel="noopener noreferrer">OUVRIR EN PLEIN ÉCRAN ↗</a></div><iframe title="Carte publique ADSB.lol des aéronefs détectés" src="https://adsb.lol/" loading="lazy" referrerpolicy="strict-origin-when-cross-origin"></iframe><p class="map-caption">Carte fournie directement par ADSB.lol. Si l'affichage intégré est bloqué, utilisez le bouton « Ouvrir en plein écran ».</p></div>
+
 <div class="board-tabs"><button type="button" class="active" data-filter="all">TOUS LES APPAREILS</button><button type="button" data-filter="air">EN VOL</button><button type="button" data-filter="ground">AU SOL</button><a id="departures" target="_blank" rel="noopener noreferrer" style="display:flex;align-items:center;padding:8px 15px;color:#fff;background:#263946;border:1px solid #71818c;text-decoration:none;font-weight:900">DÉPARTS OFFICIELS ↗</a><a id="arrivals" target="_blank" rel="noopener noreferrer" style="display:flex;align-items:center;padding:8px 15px;color:#fff;background:#263946;border:1px solid #71818c;text-decoration:none;font-weight:900">ARRIVÉES OFFICIELLES ↗</a></div>
 <div class="table-scroll"><table>
 <thead><tr><th>N° / INDICATIF DE VOL</th><th>COMPAGNIE / OPÉRATEUR</th><th>IMMATRICULATION</th><th>CONSTRUCTEUR / MODÈLE</th><th>ALTITUDE</th><th>VITESSE</th><th>CAP</th><th>COORDONNÉE LATITUDE</th><th>COORDONNÉE LONGITUDE</th><th>CODE SQUAWK</th><th>ÉTAT OBSERVÉ</th></tr></thead>
@@ -73,6 +73,7 @@ footer a{color:#a9ddff}
 </table></div>
 <div id="message" role="status" aria-live="polite">Préparation du tableau de données…</div>
 </section>
+<section class="map-panel" aria-label="Carte aérienne indépendante"><div class="map-heading"><strong>CARTE AÉRIENNE · POSITIONS ADS-B EN DIRECT</strong><a href="https://adsb.lol/" target="_blank" rel="noopener noreferrer">OUVRIR EN PLEIN ÉCRAN ↗</a></div><iframe title="Carte publique ADSB.lol des aéronefs détectés" src="https://adsb.lol/" loading="lazy" referrerpolicy="strict-origin-when-cross-origin"></iframe><p class="map-caption">Carte indépendante du tableau des vols, fournie par ADSB.lol. Si l'affichage intégré est bloqué, utilisez « Ouvrir en plein écran ».</p></section>
 <p class="note"><strong>À propos des données :</strong> le tableau affiche les signaux ADS-B réellement reçus, avec les coordonnées lorsque la source les transmet. Ces signaux ne donnent pas toujours les horaires commerciaux, les portes d'embarquement ou la destination confirmée. Les boutons « Départs officiels » et « Arrivées officielles » ouvrent les tableaux FlightAware de l'aéroport sélectionné. Aucune heure ni destination n'est inventée.</p>
 </main>
 <footer>ATLAS MONDE · Source des positions : <a href="https://adsb.lol/" target="_blank" rel="noopener noreferrer">ADSB.lol</a> · Données ouvertes · <a href="./trafic-aerien.html">Carte du trafic aérien</a> · <a href="./index.html">Retour à l'accueil</a></footer>
