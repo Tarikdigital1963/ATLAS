@@ -21,7 +21,19 @@ footer{text-align:center;padding:22px;color:#b5c7d9;border-top:1px solid #294866
 .aircraft-pin{font-size:22px;line-height:24px;text-shadow:0 1px 5px #000;transform-origin:center}
 .leaflet-control-layers,.leaflet-bar a{background:#0d2038!important;color:#fff!important;border-color:#45617c!important}
 @media(max-width:760px){.stats{grid-template-columns:repeat(2,1fr)}.grid-two{grid-template-columns:1fr}.airport-list{grid-template-columns:1fr}#flightMap{min-height:350px;height:58vh}}
+
+/* Mode intégré à l’accueil : affiche les commandes, les statistiques et le vrai tableau ADS-B. */
+html.embed header,html.embed footer,html.embed .intro,html.embed .map-tools,html.embed #flightMap,html.embed .note,html.embed main>.panel:last-child{display:none!important}
+html.embed main{padding:8px 0;margin:0}
+html.embed .panel{margin:6px 0;padding:10px;border-radius:12px}
+html.embed .grid-two{grid-template-columns:1fr;gap:0}
+html.embed .grid-two .subpanel:nth-child(2){display:none!important}
+html.embed .grid-two .subpanel{padding:10px}
+html.embed .table-wrap{max-height:330px;overflow:auto}
+html.embed table{min-width:500px}
+@media(max-width:760px){html.embed .stats{grid-template-columns:repeat(2,1fr)}html.embed .table-wrap{max-height:300px}}
 </style>
+<script>if(new URLSearchParams(location.search).has("embed"))document.documentElement.classList.add("embed");</script>
 </head>
 <body>
 <header><div class="wrap brand"><h1>✈ ATLAS MONDE · TRAFIC AÉRIEN</h1><p>Surveillance informative des aéronefs détectés par les réseaux ADS-B</p></div></header>
@@ -30,7 +42,7 @@ footer{text-align:center;padding:22px;color:#b5c7d9;border-top:1px solid #294866
 <section class="panel">
 <div class="toolbar">
 <div class="field"><label for="regionSelect">Pays ou région de surveillance</label><select id="regionSelect">
-<option value="35.7,-5.9,250">Maroc · détroit de Gibraltar</option><option value="31,-7,250">Maroc · centre</option><option value="48,5,250">Europe occidentale</option><option value="51,0,250">Royaume-Uni</option><option value="40,-3,250">Espagne</option><option value="48,2,250">France</option><option value="52,10,250">Allemagne</option><option value="41,12,250">Italie</option><option value="39,22,250">Grèce</option><option value="30,31,250">Égypte</option><option value="25,45,250">Arabie saoudite</option><option value="25,55,250">Émirats arabes unis</option><option value="35,139,250">Japon</option><option value="31,121,250">Chine orientale</option><option value="40,-74,250">États-Unis · New York</option><option value="34,-118,250">États-Unis · Los Angeles</option><option value="-23,-46,250">Brésil</option>
+<option value="35.7,-5.9,250">Maroc · détroit de Gibraltar</option><option value="31,-7,250">Maroc · centre</option><option value="35.7,-5.9,80">Maroc · Tanger (TNG)</option><option value="33.3675,-7.58997,80">Maroc · Casablanca (CMN)</option><option value="31.6069,-8.0363,80">Maroc · Marrakech (RAK)</option><option value="34.0515,-6.7515,80">Maroc · Rabat (RBA)</option><option value="30.325,-9.4131,80">Maroc · Agadir (AGA)</option><option value="33.9273,-4.9779,80">Maroc · Fès (FEZ)</option><option value="27.1517,-13.2192,80">Maroc · Laâyoune (EUN)</option><option value="34.7872,-1.9239,80">Maroc · Oujda (OUD)</option><option value="34.9888,-3.0282,80">Maroc · Nador (NDR)</option><option value="31.3975,-9.6817,80">Maroc · Essaouira (ESU)</option><option value="30.9391,-6.9094,80">Maroc · Ouarzazate (OZZ)</option><option value="23.7183,-15.932,80">Maroc · Dakhla (VIL)</option><option value="32.4019,-6.3159,80">Maroc · Béni Mellal (BEM)</option><option value="48,5,250">Europe occidentale</option><option value="51,0,250">Royaume-Uni</option><option value="40,-3,250">Espagne</option><option value="48,2,250">France</option><option value="52,10,250">Allemagne</option><option value="41,12,250">Italie</option><option value="39,22,250">Grèce</option><option value="30,31,250">Égypte</option><option value="25,45,250">Arabie saoudite</option><option value="25,55,250">Émirats arabes unis</option><option value="35,139,250">Japon</option><option value="31,121,250">Chine orientale</option><option value="40,-74,250">États-Unis · New York</option><option value="34,-118,250">États-Unis · Los Angeles</option><option value="-23,-46,250">Brésil</option>
 </select></div>
 <div class="field"><label for="aircraftMode">Type d'appareils</label><select id="aircraftMode"><option value="all">Tous les appareils détectés</option><option value="civil">Aviation civile (hors militaires identifiés)</option><option value="mil">Appareils signalés comme militaires</option></select></div>
 <button id="refreshFlights" type="button">↻ Actualiser</button>
@@ -61,6 +73,7 @@ footer{text-align:center;padding:22px;color:#b5c7d9;border-top:1px solid #294866
 <script>
 const airports=[
 {name:'Casablanca Mohammed V',code:'CMN',country:'Maroc',lat:33.3675,lon:-7.58997},{name:'Marrakech Menara',code:'RAK',country:'Maroc',lat:31.6069,lon:-8.0363},{name:'Rabat-Salé',code:'RBA',country:'Maroc',lat:34.0515,lon:-6.7515},{name:'Tanger Ibn Battouta',code:'TNG',country:'Maroc',lat:35.7269,lon:-5.9169},
+{name:'Agadir Al Massira',code:'AGA',country:'Maroc',lat:30.325,lon:-9.4131},{name:'Fès Saïss',code:'FEZ',country:'Maroc',lat:33.9273,lon:-4.9779},{name:'Laâyoune Hassan Ier',code:'EUN',country:'Maroc',lat:27.1517,lon:-13.2192},{name:'Oujda Angads',code:'OUD',country:'Maroc',lat:34.7872,lon:-1.9239},{name:'Nador El Aroui',code:'NDR',country:'Maroc',lat:34.9888,lon:-3.0282},{name:'Essaouira Mogador',code:'ESU',country:'Maroc',lat:31.3975,lon:-9.6817},{name:'Ouarzazate',code:'OZZ',country:'Maroc',lat:30.9391,lon:-6.9094},{name:'Dakhla',code:'VIL',country:'Maroc',lat:23.7183,lon:-15.932},{name:'Béni Mellal',code:'BEM',country:'Maroc',lat:32.4019,lon:-6.3159},
 {name:'Paris Charles-de-Gaulle',code:'CDG',country:'France',lat:49.0097,lon:2.5479},{name:'London Heathrow',code:'LHR',country:'Royaume-Uni',lat:51.47,lon:-0.4543},{name:'Madrid-Barajas',code:'MAD',country:'Espagne',lat:40.4983,lon:-3.5676},{name:'Amsterdam Schiphol',code:'AMS',country:'Pays-Bas',lat:52.3086,lon:4.7639},
 {name:'Frankfurt',code:'FRA',country:'Allemagne',lat:50.0379,lon:8.5622},{name:'Rome Fiumicino',code:'FCO',country:'Italie',lat:41.8003,lon:12.2389},{name:'Istanbul',code:'IST',country:'Turquie',lat:41.2753,lon:28.7519},{name:'Dubai',code:'DXB',country:'Émirats arabes unis',lat:25.2532,lon:55.3657},
 {name:'Doha Hamad',code:'DOH',country:'Qatar',lat:25.2731,lon:51.6081},{name:'Cairo',code:'CAI',country:'Égypte',lat:30.1219,lon:31.4056},{name:'New York JFK',code:'JFK',country:'États-Unis',lat:40.6413,lon:-73.7781},{name:'Los Angeles',code:'LAX',country:'États-Unis',lat:33.9416,lon:-118.4085},
@@ -72,6 +85,7 @@ const satellite=L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/service
 const topo=L.tileLayer('https://{s}.tile.opentopomap.org/{z}/{x}/{y}.png',{maxZoom:17,attribution:'© OpenTopoMap · © OpenStreetMap contributors'});
 const planeLayer=L.layerGroup().addTo(map),airportLayer=L.layerGroup().addTo(map);
 airports.forEach(a=>L.circleMarker([a.lat,a.lon],{radius:5,color:'#fff',weight:1,fillColor:'#38bdf8',fillOpacity:.95}).bindPopup('<b>'+a.name+'</b><br>'+a.code+' · '+a.country).addTo(airportLayer));
+document.getElementById('airportCount').textContent=String(airports.length);
 document.getElementById('airportList').innerHTML=airports.map(a=>'<div class="airport"><b>'+a.code+' · '+a.name+'</b><small>'+a.country+'</small></div>').join('');
 const safe=v=>String(v??'—').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 let lastAircraft=[];
