@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="theme-color" content="#060b12">
-<meta name="description" content="ATLAS MONDE - Terminal aérien Home Cinéma, mouvements et signaux ADS-B observés autour de Casablanca.">
+<meta name="description" content="ATLAS MONDE - Terminal aérien Home Cinéma, mouvements et signaux ADS-B autour de l’aéroport sélectionné.">
 <title>ATLAS MONDE | Terminal Home Cinéma</title>
 <style>
 :root{
@@ -121,7 +121,7 @@ html.embed .table-scroll{height:390px;min-height:250px;max-height:390px}
   <section class="hero">
     <div>
       <div class="hero-title">TABLEAU DES ARRIVÉES ET DÉPARTS</div>
-      <div class="hero-sub">Appareils observés autour de Casablanca Mohammed V · données radio ADS-B et itinéraires publiés lorsqu’ils sont disponibles</div>
+      <div class="hero-sub">Appareils observés autour de l’aéroport sélectionné · données radio ADS-B et itinéraires publiés lorsqu’ils sont disponibles</div>
     </div>
     <div class="location">MAROC · CASABLANCA CMN / GMMN · RAYON 250 KM</div>
   </section>
@@ -195,7 +195,7 @@ html.embed .table-scroll{height:390px;min-height:250px;max-height:390px}
 
   <p class="note">
     <strong>Lecture des informations :</strong> les positions, l’altitude, la vitesse et l’état proviennent des signaux ADS-B reçus. Les villes, pays, compagnies et itinéraires sont ajoutés uniquement lorsqu’une correspondance est publiée dans la base de routes. « Arrivée CMN » ou « Départ CMN » indique la destination ou l’origine associée à l’indicatif, et ne constitue pas une confirmation du contrôle aérien ni un horaire officiel. Une donnée absente reste indiquée comme non renseignée.
-    Le rayon de 250 km est converti en environ 135 milles nautiques pour l’interrogation ADS-B.
+    Le radar interroge un rayon d’environ 250 km (135 milles nautiques) autour de l’aéroport sélectionné. La sélection d’une destination change réellement le centre de réception.
   </p>
 </main>
 <footer>
@@ -449,7 +449,7 @@ html.embed .table-scroll{height:390px;min-height:250px;max-height:390px}
     }
     button.disabled=true;
     $('status').className='';
-    $('status').textContent='Réception des signaux ADS-B autour de Casablanca…';
+    $('status').textContent='Réception des signaux ADS-B autour de '+activeCenter.city+' ('+activeCenter.iata+')…';
     try{
       const response=await fetch(aircraftUrl(),{cache:'no-store',headers:{'Accept':'application/json'}});
       if(!response.ok){
@@ -466,7 +466,7 @@ html.embed .table-scroll{height:390px;min-height:250px;max-height:390px}
       $('updated').textContent=new Date(lastSuccess).toLocaleTimeString('fr-FR');
       render();
       $('status').className='ok';
-      $('status').textContent=aircraft.length+' appareil(s) transmis par le flux ADS-B dans la zone de 250 km. Recherche des villes et pays connus en cours. Actualisation prévue toutes les 10 minutes.';
+      $('status').textContent=aircraft.length+' appareil(s) transmis par le flux ADS-B autour de '+activeCenter.city+' dans un rayon de 250 km. Recherche des villes et pays connus en cours. Actualisation prévue toutes les 10 minutes.';
       enrichRoutes();
     }catch(error){
       if(error.status===429){
