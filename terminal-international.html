@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#05090d">
+<meta name="description" content="ATLAS MONDE - Grand tableau international des vols commerciaux observés en direct par ADS-B.">
+<title>ATLAS MONDE | Terminal international</title>
+<style>
+:root{color-scheme:dark;--bg:#05090d;--panel:#0b1219;--line:#40515e;--amber:#ffd45b;--green:#a8ff9c;--cyan:#8bdcff;--white:#f4f7fa;--muted:#c0ccd5}
+*{box-sizing:border-box}
+html,body{margin:0;min-height:100%;background:var(--bg);color:var(--white);font-family:Arial,Helvetica,sans-serif}
+body{background:radial-gradient(ellipse at 50% 0,#182b39 0,#05090d 62%)}
+header{padding:22px 1.5% 18px;border-bottom:2px solid #43535e;background:#080e14}
+header h1{margin:0;text-align:center;font-size:clamp(1.8rem,5vw,4rem);letter-spacing:.08em;color:#f4f7fa}
+header p{text-align:center;margin:8px 0 0;color:#c4d0d8;font-size:clamp(.95rem,2vw,1.15rem)}
+main{width:99%;max-width:2400px;margin:auto;padding:14px 0 28px}
+.topline{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;padding:10px 14px;background:#0d171f;border:1px solid #3b4d59}
+.clock{font-size:clamp(1.2rem,3vw,2rem);font-weight:900;letter-spacing:.12em;color:var(--green);font-variant-numeric:tabular-nums}
+.live{color:#a8ff9c;font-weight:900;letter-spacing:.08em}
+.live:before{content:"";display:inline-block;width:10px;height:10px;border-radius:50%;background:#65ef78;box-shadow:0 0 12px #65ef78;margin-right:9px}
+.controls{display:grid;grid-template-columns:minmax(220px,1fr) auto auto auto;gap:10px;align-items:center;padding:13px;background:#101a22;border:1px solid #40515e;border-top:0}
+input,button{min-height:50px;padding:12px 14px;border:1px solid #71818c;border-radius:4px;background:#050a0f;color:#fff;font-size:1.04rem}
+input{width:100%;min-width:0}
+button{font-weight:900;cursor:pointer;background:#263946}
+button:hover,button:focus,input:focus{outline:3px solid #8bdcff;outline-offset:2px}
+button.active{background:var(--amber);color:#101010;border-color:#fff0ad}
+.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:1px;background:#455762;border:1px solid #455762;border-top:0}
+.stat{padding:11px 14px;background:#0a1219;text-align:center}
+.stat span{display:block;color:#bdcbd5;font-size:.88rem;text-transform:uppercase;letter-spacing:.07em}
+.stat strong{display:block;margin-top:4px;font-size:clamp(1.25rem,2.7vw,2rem);color:var(--amber);font-variant-numeric:tabular-nums}
+.board{margin-top:14px;border:3px solid #52616c;background:#020508;box-shadow:0 0 24px #000,inset 0 0 25px #000}
+.board-title{display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap;padding:14px 17px;background:#111b23;border-bottom:2px solid #52616c}
+.board-title strong{font-size:clamp(1.05rem,2.5vw,1.7rem);letter-spacing:.1em;color:var(--amber)}
+.board-title span{color:#d0d9df}
+.table-scroll{width:100%;height:min(67vh,780px);min-height:380px;overflow:auto;background:#020508}
+table{width:100%;min-width:1500px;border-collapse:collapse;table-layout:auto;font-variant-numeric:tabular-nums}
+thead th{position:sticky;top:0;z-index:3;padding:16px 12px;background:#202e38;color:#f5d779;text-align:left;white-space:nowrap;font-size:.92rem;letter-spacing:.06em;border-right:1px solid #53616b;border-bottom:2px solid #9a8548;text-transform:uppercase}
+tbody td{height:58px;padding:13px 12px;white-space:nowrap;font-size:1rem;color:#e9f0f4;border-right:1px solid #34434d;border-bottom:1px solid #34434d}
+tbody tr:nth-child(odd){background:#0b141b}
+tbody tr:nth-child(even){background:#111d26}
+tbody tr:hover{background:#263744}
+td.flight{font-weight:900;color:var(--amber);font-size:1.08rem}
+td.coord{color:#9ee4ff}
+.state{display:inline-block;padding:5px 9px;border:1px solid #6a7b85;background:#1c303b;color:#d9f6ff;font-weight:900}
+.state.ground{background:#263a20;color:#caff9c;border-color:#7ca65f}
+.state.air{background:#263a4c;color:#a9ddff;border-color:#6798bd}
+.state.climb{background:#24442f;color:#b9ffc5;border-color:#65a978}
+.state.descend{background:#49391a;color:#ffe49a;border-color:#a98a45}
+#message{padding:13px 16px;background:#0c151d;border-top:1px solid #46545e;color:#c5d0d8;font-size:.96rem;line-height:1.5}
+.note{margin:14px 2px 0;padding:13px 15px;border-left:4px solid #d7ad45;background:#111b23;color:#d4dde3;line-height:1.55}
+.note strong{color:#ffdc76}
+.actions{display:flex;justify-content:center;gap:10px;flex-wrap:wrap;margin:15px 0}
+.actions a{display:inline-flex;align-items:center;justify-content:center;min-height:46px;padding:10px 16px;background:#17354b;border:1px solid #79caff;color:#eaf7ff;text-decoration:none;font-weight:900}
+.actions a:focus{outline:3px solid #fff;outline-offset:3px}
+footer{padding:20px 1%;text-align:center;color:#b8c5ce;border-top:1px solid #384650}
+footer a{color:#a9ddff}
+@media(max-width:760px){.controls{grid-template-columns:1fr 1fr}.controls input{grid-column:1/-1}.controls button{width:100%;min-width:0}.stats{grid-template-columns:repeat(2,1fr)}.table-scroll{height:62vh;min-height:350px}main{width:98%}.board-title{align-items:flex-start}}
+@media(max-width:430px){.controls{grid-template-columns:1fr}.controls input{grid-column:auto}.stat{padding:9px 5px}}
+:fullscreen body{background:#05090d}
+</style>
+</head>
+<body>
+<header>
+<h1>✈ ATLAS MONDE · TERMINAL INTERNATIONAL</h1>
+<p>Grand écran mondial des vols commerciaux observés par les réseaux ADS-B</p>
+</header>
+<main>
+<div class="topline"><span class="live">FLUX AÉRIEN CIVIL · DONNÉES OBSERVÉES</span><span class="clock" id="clock">--:--:-- UTC</span></div>
+<section class="controls" aria-label="Commandes du tableau">
+<input id="search" type="search" placeholder="Rechercher un vol, une compagnie ou un pays…" aria-label="Rechercher dans les vols">
+<button type="button" class="active" data-filter="all">TOUS</button>
+<button type="button" data-filter="air">EN VOL</button>
+<button type="button" data-filter="ground">AU SOL</button>
+<button type="button" id="refresh">↻ ACTUALISER</button>
+<button type="button" id="fullscreen">⛶ PLEIN ÉCRAN</button>
+</section>
+<section class="stats" aria-label="Statistiques du flux">
+<div class="stat"><span>Vols commerciaux affichés</span><strong id="count">—</strong></div>
+<div class="stat"><span>En vol</span><strong id="airCount">—</strong></div>
+<div class="stat"><span>Au sol</span><strong id="groundCount">—</strong></div>
+<div class="stat"><span>Dernière réception UTC</span><strong id="updated">—</strong></div>
+</section>
+<section class="board" aria-label="Tableau international des vols">
+<div class="board-title"><strong>FLIGHT INFORMATION · WORLDWIDE</strong><span id="coverage">Connexion au réseau mondial…</span></div>
+<div class="table-scroll">
+<table>
+<thead><tr><th>VOL / INDICATIF</th><th>COMPAGNIE IDENTIFIÉE</th><th>PAYS D'ORIGINE DU SIGNAL</th><th>IMMATRICULATION</th><th>TYPE D'AVION</th><th>ALTITUDE</th><th>VITESSE</th><th>CAP</th><th>VARIATION VERTICALE</th><th>LATITUDE</th><th>LONGITUDE</th><th>ÉTAT OBSERVÉ</th><th>DERNIER SIGNAL UTC</th></tr></thead>
+<tbody id="rows"><tr><td colspan="13" style="text-align:center;padding:30px">Connexion au réseau aérien mondial…</td></tr></tbody>
+</table>
+</div>
+<div id="message" role="status" aria-live="polite">Chargement des positions transmises par les transpondeurs. Les données absentes ne seront pas inventées.</div>
+</section>
+<div class="actions">
+<a href="./terminal-aerien.html">Terminal par aéroport · arrivées et départs officiels ↗</a>
+<a href="./trafic-aerien.html">Carte du trafic aérien ↗</a>
+<a href="./index.html">Retour à ATLAS MONDE</a>
+</div>
+<p class="note"><strong>Lecture correcte des données :</strong> ce grand tableau mondial affiche les vols commerciaux dont l'indicatif correspond à une compagnie reconnue et dont le signal est reçu par OpenSky. « En vol » et « au sol » décrivent l'état ADS-B observé, pas une arrivée ou un départ confirmé à un aéroport. Les horaires, portes, destinations et retards commerciaux ne sont pas fournis de façon universelle par ce flux. Pour les horaires d'un aéroport précis, utilisez le Terminal par aéroport. Les appareils militaires ne sont pas suivis dans cette page.</p>
+</main>
+<footer>ATLAS MONDE · Positions ADS-B : <a href="https://opensky-network.org/" target="_blank" rel="noopener noreferrer">OpenSky Network</a> · <a href="https://openskynetwork.github.io/opensky-api/rest.html" target="_blank" rel="noopener noreferrer">Documentation API</a> · Actualisation automatique prévue toutes les 15 minutes · <a href="./index.html">Accueil</a></footer>
+<script>
+const airlines={
+ RAM:"Royal Air Maroc",AFR:"Air France",BAW:"British Airways",DLH:"Lufthansa",UAE:"Emirates",QTR:"Qatar Airways",ETD:"Etihad Airways",THY:"Turkish Airlines",KLM:"KLM",IBE:"Iberia",VLG:"Vueling",RYR:"Ryanair",EZY:"easyJet",WZZ:"Wizz Air",SAS:"Scandinavian Airlines",FIN:"Finnair",LOT:"LOT Polish Airlines",TAP:"TAP Air Portugal",AZA:"ITA Airways",SWR:"Swiss",AUA:"Austrian Airlines",SIA:"Singapore Airlines",CPA:"Cathay Pacific",CCA:"Air China",CES:"China Eastern",CSN:"China Southern",ANA:"All Nippon Airways",JAL:"Japan Airlines",KAL:"Korean Air",AAR:"Asiana Airlines",THA:"Thai Airways",MAS:"Malaysia Airlines",GIA:"Garuda Indonesia",QFA:"Qantas",ANZ:"Air New Zealand",ACA:"Air Canada",WJA:"WestJet",UAL:"United Airlines",AAL:"American Airlines",DAL:"Delta Air Lines",SWA:"Southwest Airlines",JBU:"JetBlue",FDX:"FedEx",UPS:"UPS Airlines",CLX:"Cargolux",ETH:"Ethiopian Airlines",SAA:"South African Airways",KQA:"Kenya Airways",MSR:"EgyptAir",TAR:"Tunisair",DAH:"Air Algérie",TUI:"TUI Airways",BEL:"Brussels Airlines",ITY:"Air Italy"
+};
+const $=id=>document.getElementById(id);
+const safe=v=>String(v??"—").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":'&#39;'}[c]));
+let aircraft=[],filterMode="all",lastDataTime=0,loading=false;
+function airlineFor(callsign){const code=String(callsign||"").trim().toUpperCase().slice(0,3);return airlines[code]?{code,name:airlines[code]}:null}
+function render(){
+ const q=$("search").value.trim().toLowerCase();
+ const list=aircraft.filter(a=>{
+  const ground=a[8]===true;
+  const modeOK=filterMode==="all"||(filterMode==="ground"&&ground)||(filterMode==="air"&&!ground);
+  return modeOK&&[a[1],a[2],a[0],a[17]?.toString()].join(" ").toLowerCase().includes(q);
+ });
+ $("count").textContent=list.length.toLocaleString("fr-FR");
+ $("airCount").textContent=list.filter(a=>a[8]!==true).length.toLocaleString("fr-FR");
+ $("groundCount").textContent=list.filter(a=>a[8]===true).length.toLocaleString("fr-FR");
+ $("rows").innerHTML=list.length?list.slice(0,600).map(a=>{
+  const call=String(a[1]||"").trim(),carrier=airlineFor(call);
+  const altitude=typeof a[7]==="number"?Math.round(a[7]*3.28084).toLocaleString("fr-FR")+" ft":"—";
+  const speed=typeof a[9]==="number"?Math.round(a[9]*1.94384)+" kt":"—";
+  const heading=typeof a[10]==="number"?Math.round(a[10])+"°":"—";
+  const vertical=typeof a[11]==="number"?(a[11]>0?"+":"")+Math.round(a[11]*196.85)+" ft/min":"—";
+  const lat=typeof a[6]==="number"?a[6].toFixed(4):"—",lon=typeof a[5]==="number"?a[5].toFixed(4):"—";
+  const ground=a[8]===true,climb=!ground&&typeof a[11]==="number"&&a[11]>1,descend=!ground&&typeof a[11]==="number"&&a[11]<-1;
+  const state=ground?'<span class="state ground">AU SOL</span>':climb?'<span class="state climb">MONTÉE</span>':descend?'<span class="state descend">DESCENTE</span>':'<span class="state air">EN VOL</span>';
+  const stamp=typeof a[4]==="number"?new Date(a[4]*1000).toISOString().slice(11,19):"—";
+  return '<tr><td class="flight">'+safe(call||a[0])+'</td><td>'+safe(carrier?carrier.name:"Compagnie non identifiée")+'</td><td>'+safe(a[2])+'</td><td>'+safe("—")+'</td><td>'+safe("—")+'</td><td>'+altitude+'</td><td>'+speed+'</td><td>'+heading+'</td><td>'+vertical+'</td><td class="coord">'+lat+'</td><td class="coord">'+lon+'</td><td>'+state+'</td><td>'+stamp+'</td></tr>';
+ }).join(""):'<tr><td colspan="13" style="text-align:center;padding:30px;color:#c6d1d9">Aucun vol commercial reconnu ne correspond au filtre. Le flux peut être temporairement indisponible ou la couverture limitée.</td></tr>';
+}
+async function refresh(){
+ if(loading)return;loading=true;$("refresh").disabled=true;$("coverage").textContent="Actualisation du flux mondial…";
+ $("message").textContent="Interrogation du réseau OpenSky. Le tableau conserve les données réelles reçues et n'invente aucun horaire.";
+ const target="https://opensky-network.org/api/states/all?extended=1";
+ let payload=null,lastError=null,usedProxy=false;
+ for(const url of [target,"https://proxy.cors.dev/"+target]){
+  try{
+   const res=await fetch(url,{cache:"no-store",headers:{"Accept":"application/json"},signal:AbortSignal.timeout(25000)});
+   if(!res.ok)throw new Error("HTTP "+res.status);
+   const data=await res.json();
+   if(!data||!Array.isArray(data.states))throw new Error("Réponse mondiale invalide");
+   payload=data;usedProxy=url!==target;break;
+  }catch(e){lastError=e}
+ }
+ if(payload){
+  const all=payload.states;
+  // Ne conserver que les indicatifs de compagnies civiles connues : aucun filtre ni affichage de flotte militaire.
+  aircraft=all.filter(a=>Array.isArray(a)&&airlineFor(a[1])&&typeof a[5]==="number"&&typeof a[6]==="number");
+  aircraft.sort((a,b)=>(b[4]||0)-(a[4]||0));
+  lastDataTime=payload.time||Math.floor(Date.now()/1000);
+  render();
+  const now=new Date().toLocaleTimeString("fr-FR",{timeZone:"UTC",hour:"2-digit",minute:"2-digit",second:"2-digit",hour12:false});
+  $("updated").textContent=now+" UTC";
+  $("coverage").textContent=aircraft.length.toLocaleString("fr-FR")+" vols commerciaux reconnus · réseau mondial";
+  $("message").textContent=aircraft.length.toLocaleString("fr-FR")+" appareils commerciaux avec position reçue. Source OpenSky"+(usedProxy?" via relais de connexion":" directe")+". Les données représentent le dernier état transmis, pas un horaire de vol.";
+ }else{
+  $("coverage").textContent="Flux momentanément indisponible";
+  $("message").textContent="Impossible de récupérer le flux mondial : "+(lastError?.message||"erreur réseau")+". Réessayez plus tard. La page et les autres modules ATLAS restent indépendants.";
+ }
+ $("refresh").disabled=false;loading=false;
+}
+function tick(){
+ $("clock").textContent=new Date().toLocaleTimeString("fr-FR",{timeZone:"UTC",hour:"2-digit",minute:"2-digit",second:"2-digit",hour12:false})+" UTC";
+}
+tick();setInterval(tick,1000);
+$("refresh").addEventListener("click",refresh);
+$("search").addEventListener("input",render);
+document.querySelectorAll("[data-filter]").forEach(b=>b.addEventListener("click",()=>{filterMode=b.dataset.filter;document.querySelectorAll("[data-filter]").forEach(x=>x.classList.toggle("active",x===b));render()}));
+$("fullscreen").addEventListener("click",async()=>{try{if(!document.fullscreenElement)await document.documentElement.requestFullscreen();else await document.exitFullscreen()}catch(e){$("message").textContent="Le plein écran n'est pas disponible dans ce navigateur."}});
+refresh();
+// OpenSky anonyme dispose d'un quota limité : intervalle prudent de 15 minutes pour le flux mondial.
+setInterval(refresh,900000);
+</script>
+</body>
+</html>
