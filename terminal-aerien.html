@@ -333,7 +333,9 @@ html.embed .table-scroll{height:390px;min-height:250px;max-height:390px}
         const selectedMatch=selectedAirport&&[
           selectedAirport.city,selectedAirport.country,selectedAirport.iata,selectedAirport.icao,selectedAirport.name
         ].filter(Boolean).some(term=>item.text.includes(String(term).toLowerCase()));
-        if(selectedAirport?!selectedMatch:!item.text.includes(query))return false;
+        const routeKnown=!!(item.r&&(item.r.origin||item.r.destination));
+        // Ne pas masquer les appareils dont la base d'itinéraires ne connaît pas encore la destination.
+        if(selectedAirport?(!selectedMatch&&routeKnown):!item.text.includes(query))return false;
       }
       if(activeFilter==='arrivals'&&item.move.key!=='arrivals')return false;
       if(activeFilter==='departures'&&item.move.key!=='departures')return false;
