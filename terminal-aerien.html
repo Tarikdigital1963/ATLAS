@@ -206,12 +206,10 @@ html.embed .table-scroll{height:390px;min-height:250px;max-height:390px}
 <script>
 (function(){
   'use strict';
-  const CENTER={lat:33.3675,lon:-7.58997,icao:'GMMN',iata:'CMN'};
+  const DEFAULT_CENTER={lat:33.3675,lon:-7.58997,icao:'GMMN',iata:'CMN',city:'Casablanca',country:'Maroc'};
   const RADIUS_NM=135;
-  const AIRCRAFT_URL='https://api.adsb.lol/v2/lat/'+CENTER.lat+'/lon/'+CENTER.lon+'/dist/'+RADIUS_NM;
-  const PROXY_URL='https://proxy.cors.dev/'+AIRCRAFT_URL;
-  const AIRCRAFT_CACHE_KEY='atlas_cmn_adsb_snapshot_v2';
   const ROUTE_CACHE_PREFIX='atlas_cmn_route_v2_';
+  const RATE_LIMIT_KEY='atlas_adsb_rate_pause_until_v1';
   const ROUTE_CACHE_TTL=6*60*60*1000;
   const MISSING_ROUTE_TTL=30*60*1000;
   const POLL_INTERVAL=10*60*1000;
@@ -219,8 +217,22 @@ html.embed .table-scroll{height:390px;min-height:250px;max-height:390px}
   let aircraft=[];
   let activeFilter='all';
   let lastSuccess=0;
-  let pauseUntil=0;
+  let pauseUntil=Number(storageGet(RATE_LIMIT_KEY))||0;
   let routeBusy=false;
+  let activeCenter={...DEFAULT_CENTER};
+  function aircraftCacheKey(){return 'atlas_adsb_snapshot_'+activeCenter.icao+'_v3';}
+  function aircraftUrl(){
+    const url='https://api.adsb.lol/v2/lat/'+activeCenter.lat+'/lon/'+activeCenter.lon+'/dist/'+RADIUS_NM;
+    return 'https://proxy.cors.dev/'+url;
+  }
+  function updateCenterLabels(){
+    const label=activeCenter.city+' · '+activeCenter.country+' · '+activeCenter.iata+' / '+activeCenter.icao;
+    document.querySelector('.location').textContent=label+' · RAYON 250 KM';
+    document.querySelector('.board-name').textContent='FLIGHT INFORMATION · '+activeCenter.city.toLocaleUpperCase('fr');
+    document.querySelectorAll('.board-info strong')[0].textContent=activeCenter.city+' · '+activeCenter.iata+' / '+activeCenter.icao;
+    document.querySelectorAll('[data-filter="arrivals"]')[0].textContent='ARRIVÉES '+activeCenter.iata;
+    document.querySelectorAll('[data-filter="departures"]')[0].textContent='DÉPARTS '+activeCenter.iata;
+  }
 
   function safe(value){
     return String(value===null||value===undefined||value===''?'—':value)
@@ -270,8 +282,8 @@ html.embed .table-scroll{height:390px;min-height:250px;max-height:390px}
     const r=flightRoute(route);
     const from=r&&r.origin&&String(r.origin.icao_code||'').toUpperCase();
     const to=r&&r.destination&&String(r.destination.icao_code||'').toUpperCase();
-    if(from===CENTER.icao)return {key:'departures',label:'DÉPART CMN',className:'dep'};
-    if(to===CENTER.icao)return {key:'arrivals',label:'ARRIVÉE CMN',className:'arr'};
+    if(from===activeCenter.icao)return {key:'departures',label:'DÉPART '+activeCenter.iata,className:'dep'};
+    if(to===activeCenter.icao)return {key:'arrivals',label:'ARRIVÉE '+activeCenter.iata,className:'arr'};
     if(from||to)return {key:'other',label:'AUTRE ROUTE',className:'other'};
     return {key:'unknown',label:'NON IDENTIFIÉ',className:'other'};
   }
@@ -329,14 +341,9 @@ html.embed .table-scroll{height:390px;min-height:250px;max-height:390px}
       ].join(' ').toLowerCase();
       return {a,route,r,move,text};
     }).filter(item=>{
-      if(query){
-        const selectedMatch=selectedAirport&&[
-          selectedAirport.city,selectedAirport.country,selectedAirport.iata,selectedAirport.icao,selectedAirport.name
-        ].filter(Boolean).some(term=>item.text.includes(String(term).toLowerCase()));
-        const routeKnown=!!(item.r&&(item.r.origin||item.r.destination));
-        // Ne pas masquer les appareils dont la base d'itinéraires ne connaît pas encore la destination.
-        if(selectedAirport?(!selectedMatch&&routeKnown):!item.text.includes(query))return false;
-      }
+      // Un aéroport choisi devient le centre du radar : on affiche tous les appareils reçus dans sa zone.
+      // Une saisie libre reste un filtre textuel sur les données de la zone active.
+      if(query&&!selectedAirport&&!item.text.includes(query))return false;
       if(activeFilter==='arrivals'&&item.move.key!=='arrivals')return false;
       if(activeFilter==='departures'&&item.move.key!=='departures')return false;
       if(activeFilter==='air'&&isGround(item.a))return false;
@@ -417,11 +424,11 @@ html.embed .table-scroll{height:390px;min-height:250px;max-height:390px}
     }finally{routeBusy=false;}
   }
   function saveSnapshot(list){
-    const snapshot={savedAt:Date.now(),aircraft:list};
-    storageSet(AIRCRAFT_CACHE_KEY,JSON.stringify(snapshot));
+    const snapshot={savedAt:Date.now(),center:activeCenter,aircraft:list};
+    storageSet(aircraftCacheKey(),JSON.stringify(snapshot));
   }
   function restoreSnapshot(){
-    const raw=storageGet(AIRCRAFT_CACHE_KEY);
+    const raw=storageGet(aircraftCacheKey());
     if(!raw)return false;
     try{
       const snapshot=JSON.parse(raw);
@@ -444,7 +451,7 @@ html.embed .table-scroll{height:390px;min-height:250px;max-height:390px}
     $('status').className='';
     $('status').textContent='Réception des signaux ADS-B autour de Casablanca…';
     try{
-      const response=await fetch(PROXY_URL,{cache:'no-store',headers:{'Accept':'application/json'}});
+      const response=await fetch(aircraftUrl(),{cache:'no-store',headers:{'Accept':'application/json'}});
       if(!response.ok){
         const err=new Error('HTTP '+response.status);
         err.status=response.status;
@@ -465,10 +472,11 @@ html.embed .table-scroll{height:390px;min-height:250px;max-height:390px}
       if(error.status===429){
         const seconds=Number(error.retryAfter);
         pauseUntil=Date.now()+Math.max(15*60*1000,Number.isFinite(seconds)&&seconds>0?seconds*1000:0);
+        storageSet(RATE_LIMIT_KEY,String(pauseUntil));
       }
       if(!aircraft.length)restoreSnapshot();
       $('status').className='error';
-      $('status').textContent='Données en direct indisponibles ('+error.message+'). '+(aircraft.length?'Les dernières données valides restent affichées. ':'Aucune donnée précédente n’est enregistrée. ')+(error.status===429?'La source a limité les requêtes (429) : le terminal marque une pause pour éviter de répéter le blocage.':'Réessayez plus tard.');
+      $('status').textContent='Données en direct indisponibles ('+error.message+'). '+(aircraft.length?'Les dernières données valides restent affichées. ':'Aucune donnée précédente n’est enregistrée. ')+(error.status===429?'La source a limité les requêtes (429). Pause enregistrée jusqu’à '+new Date(pauseUntil).toLocaleTimeString('fr-FR')+'.':'Réessayez plus tard.');
     }finally{
       button.disabled=false;
     }
@@ -477,43 +485,43 @@ html.embed .table-scroll{height:390px;min-height:250px;max-height:390px}
     $('clock').textContent=new Date().toLocaleTimeString('fr-FR',{hour:'2-digit',minute:'2-digit',second:'2-digit'});
   }
   const AIRPORTS=[
-    {city:'Casablanca',country:'Maroc',iata:'CMN',icao:'GMMN',name:'Mohammed V'},
-    {city:'Tanger',country:'Maroc',iata:'TNG',icao:'GMTT',name:'Ibn Battouta'},
-    {city:'Marrakech',country:'Maroc',iata:'RAK',icao:'GMMX',name:'Ménara'},
-    {city:'Fès',country:'Maroc',iata:'FEZ',icao:'GMFF',name:'Saïss'},
-    {city:'Agadir',country:'Maroc',iata:'AGA',icao:'GMAD',name:'Al Massira'},
-    {city:'Rabat',country:'Maroc',iata:'RBA',icao:'GMME',name:'Salé'},
-    {city:'Oujda',country:'Maroc',iata:'OUD',icao:'GMFO',name:'Angads'},
-    {city:'Paris',country:'France',iata:'CDG',icao:'LFPG',name:'Charles-de-Gaulle'},
-    {city:'Paris',country:'France',iata:'ORY',icao:'LFPO',name:'Orly'},
-    {city:'Lyon',country:'France',iata:'LYS',icao:'LFLL',name:'Saint-Exupéry'},
-    {city:'Marseille',country:'France',iata:'MRS',icao:'LFML',name:'Provence'},
-    {city:'Nice',country:'France',iata:'NCE',icao:'LFMN',name:'Côte d’Azur'},
-    {city:'Toulouse',country:'France',iata:'TLS',icao:'LFBO',name:'Blagnac'},
-    {city:'Madrid',country:'Espagne',iata:'MAD',icao:'LEMD',name:'Barajas'},
-    {city:'Barcelone',country:'Espagne',iata:'BCN',icao:'LEBL',name:'El Prat'},
-    {city:'Málaga',country:'Espagne',iata:'AGP',icao:'LEMG',name:'Costa del Sol'},
-    {city:'Genève',country:'Suisse',iata:'GVA',icao:'LSGG',name:'Aéroport international'},
-    {city:'Zurich',country:'Suisse',iata:'ZRH',icao:'LSZH',name:'Aéroport de Zurich'},
-    {city:'Londres',country:'Royaume-Uni',iata:'LHR',icao:'EGLL',name:'Heathrow'},
-    {city:'Londres',country:'Royaume-Uni',iata:'LGW',icao:'EGKK',name:'Gatwick'},
-    {city:'Manchester',country:'Royaume-Uni',iata:'MAN',icao:'EGCC',name:'Manchester Airport'},
-    {city:'New York',country:'États-Unis',iata:'JFK',icao:'KJFK',name:'John F. Kennedy'},
-    {city:'Newark',country:'États-Unis',iata:'EWR',icao:'KEWR',name:'Liberty'},
-    {city:'Miami',country:'États-Unis',iata:'MIA',icao:'KMIA',name:'International'},
-    {city:'Los Angeles',country:'États-Unis',iata:'LAX',icao:'KLAX',name:'International'},
-    {city:'Chicago',country:'États-Unis',iata:'ORD',icao:'KORD',name:'O’Hare'},
-    {city:'Washington',country:'États-Unis',iata:'IAD',icao:'KIAD',name:'Dulles'},
-    {city:'Istanbul',country:'Turquie',iata:'IST',icao:'LTFM',name:'Istanbul Airport'},
-    {city:'Dubaï',country:'Émirats arabes unis',iata:'DXB',icao:'OMDB',name:'International'},
-    {city:'Doha',country:'Qatar',iata:'DOH',icao:'OTHH',name:'Hamad International'},
-    {city:'Le Caire',country:'Égypte',iata:'CAI',icao:'HECA',name:'International'},
-    {city:'Lisbonne',country:'Portugal',iata:'LIS',icao:'LPPT',name:'Humberto Delgado'},
-    {city:'Francfort',country:'Allemagne',iata:'FRA',icao:'EDDF',name:'Frankfurt Airport'},
-    {city:'Amsterdam',country:'Pays-Bas',iata:'AMS',icao:'EHAM',name:'Schiphol'},
-    {city:'Bruxelles',country:'Belgique',iata:'BRU',icao:'EBBR',name:'Zaventem'},
-    {city:'Rome',country:'Italie',iata:'FCO',icao:'LIRF',name:'Fiumicino'},
-    {city:'Dakar',country:'Sénégal',iata:'DSS',icao:'GOBD',name:'Blaise-Diagne'}
+    {city:'Casablanca',country:'Maroc',iata:'CMN',icao:'GMMN',name:'Mohammed V',lat:33.3675,lon:-7.58997},
+    {city:'Tanger',country:'Maroc',iata:'TNG',icao:'GMTT',name:'Ibn Battouta',lat:35.7269,lon:-5.9169},
+    {city:'Marrakech',country:'Maroc',iata:'RAK',icao:'GMMX',name:'Ménara',lat:31.6069,lon:-8.0363},
+    {city:'Fès',country:'Maroc',iata:'FEZ',icao:'GMFF',name:'Saïss',lat:33.9273,lon:-4.978},
+    {city:'Agadir',country:'Maroc',iata:'AGA',icao:'GMAD',name:'Al Massira',lat:30.325,lon:-9.4131},
+    {city:'Rabat',country:'Maroc',iata:'RBA',icao:'GMME',name:'Salé',lat:34.0515,lon:-6.7515},
+    {city:'Oujda',country:'Maroc',iata:'OUD',icao:'GMFO',name:'Angads',lat:34.7872,lon:-1.92399},
+    {city:'Paris',country:'France',iata:'CDG',icao:'LFPG',name:'Charles-de-Gaulle',lat:49.0097,lon:2.5479},
+    {city:'Paris',country:'France',iata:'ORY',icao:'LFPO',name:'Orly',lat:48.7262,lon:2.3652},
+    {city:'Lyon',country:'France',iata:'LYS',icao:'LFLL',name:'Saint-Exupéry',lat:45.7256,lon:5.0811},
+    {city:'Marseille',country:'France',iata:'MRS',icao:'LFML',name:'Provence',lat:43.4393,lon:5.2214},
+    {city:'Nice',country:'France',iata:'NCE',icao:'LFMN',name:'Côte d’Azur',lat:43.6584,lon:7.2159},
+    {city:'Toulouse',country:'France',iata:'TLS',icao:'LFBO',name:'Blagnac',lat:43.6293,lon:1.3638},
+    {city:'Madrid',country:'Espagne',iata:'MAD',icao:'LEMD',name:'Barajas',lat:40.4983,lon:-3.5676},
+    {city:'Barcelone',country:'Espagne',iata:'BCN',icao:'LEBL',name:'El Prat',lat:41.2974,lon:2.0833},
+    {city:'Málaga',country:'Espagne',iata:'AGP',icao:'LEMG',name:'Costa del Sol',lat:36.6749,lon:-4.4991},
+    {city:'Genève',country:'Suisse',iata:'GVA',icao:'LSGG',name:'Aéroport international',lat:46.2381,lon:6.10895},
+    {city:'Zurich',country:'Suisse',iata:'ZRH',icao:'LSZH',name:'Aéroport de Zurich',lat:47.4581,lon:8.5555},
+    {city:'Londres',country:'Royaume-Uni',iata:'LHR',icao:'EGLL',name:'Heathrow',lat:51.47,lon:-0.4543},
+    {city:'Londres',country:'Royaume-Uni',iata:'LGW',icao:'EGKK',name:'Gatwick',lat:51.1537,lon:-0.1821},
+    {city:'Manchester',country:'Royaume-Uni',iata:'MAN',icao:'EGCC',name:'Manchester Airport',lat:53.3537,lon:-2.275},
+    {city:'New York',country:'États-Unis',iata:'JFK',icao:'KJFK',name:'John F. Kennedy',lat:40.6413,lon:-73.7781},
+    {city:'Newark',country:'États-Unis',iata:'EWR',icao:'KEWR',name:'Liberty',lat:40.6895,lon:-74.1745},
+    {city:'Miami',country:'États-Unis',iata:'MIA',icao:'KMIA',name:'International',lat:25.7959,lon:-80.287},
+    {city:'Los Angeles',country:'États-Unis',iata:'LAX',icao:'KLAX',name:'International',lat:33.9416,lon:-118.4085},
+    {city:'Chicago',country:'États-Unis',iata:'ORD',icao:'KORD',name:'O’Hare',lat:41.9742,lon:-87.9073},
+    {city:'Washington',country:'États-Unis',iata:'IAD',icao:'KIAD',name:'Dulles',lat:38.9531,lon:-77.4565},
+    {city:'Istanbul',country:'Turquie',iata:'IST',icao:'LTFM',name:'Istanbul Airport',lat:41.2753,lon:28.7519},
+    {city:'Dubaï',country:'Émirats arabes unis',iata:'DXB',icao:'OMDB',name:'International',lat:25.2532,lon:55.3657},
+    {city:'Doha',country:'Qatar',iata:'DOH',icao:'OTHH',name:'Hamad International',lat:25.2731,lon:51.6081},
+    {city:'Le Caire',country:'Égypte',iata:'CAI',icao:'HECA',name:'International',lat:30.1219,lon:31.4056},
+    {city:'Lisbonne',country:'Portugal',iata:'LIS',icao:'LPPT',name:'Humberto Delgado',lat:38.7742,lon:-9.1342},
+    {city:'Francfort',country:'Allemagne',iata:'FRA',icao:'EDDF',name:'Frankfurt Airport',lat:50.0379,lon:8.5622},
+    {city:'Amsterdam',country:'Pays-Bas',iata:'AMS',icao:'EHAM',name:'Schiphol',lat:52.3105,lon:4.7683},
+    {city:'Bruxelles',country:'Belgique',iata:'BRU',icao:'EBBR',name:'Zaventem',lat:50.901,lon:4.4844},
+    {city:'Rome',country:'Italie',iata:'FCO',icao:'LIRF',name:'Fiumicino',lat:41.8003,lon:12.2389},
+    {city:'Dakar',country:'Sénégal',iata:'DSS',icao:'GOBD',name:'Blaise-Diagne',lat:14.67,lon:-17.0733}
   ];
   let selectedAirport=null;
   const suggestionBox=$('airportSuggestions');
@@ -546,8 +554,15 @@ html.embed .table-scroll{height:390px;min-height:250px;max-height:390px}
     selectedAirport=AIRPORTS[Number(option.dataset.airportIndex)]||null;
     if(!selectedAirport)return;
     $('search').value=selectedAirport.city+' · '+selectedAirport.country+' ('+selectedAirport.iata+')';
-    hideAirportSuggestions();
+    activeCenter={lat:selectedAirport.lat,lon:selectedAirport.lon,icao:selectedAirport.icao,iata:selectedAirport.iata,city:selectedAirport.city,country:selectedAirport.country};
+    updateCenterLabels();
+    aircraft=[];
+    lastSuccess=0;
+    $('updated').textContent='EN ATTENTE';
     render();
+    restoreSnapshot();
+    hideAirportSuggestions();
+    refresh();
   });
   $('search').addEventListener('keydown',event=>{
     if(event.key==='Escape')hideAirportSuggestions();
@@ -562,6 +577,7 @@ html.embed .table-scroll{height:390px;min-height:250px;max-height:390px}
       render();
     });
   });
+  updateCenterLabels();
   tick();
   setInterval(tick,1000);
   restoreSnapshot();
