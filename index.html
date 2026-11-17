@@ -613,7 +613,7 @@
   async function refreshAviationHome(){
     const status=document.getElementById('aviationHomeStatus');
     try{
-      const target='https://api.adsb.lol/v2/lat/20/lon/0/dist/250';
+      const target='https://api.adsb.lol/v2/lat/33.3675/lon/-7.58997/dist/250';
       let payload=null,lastError=null;
       // Connexion directe puis relais de secours pour les navigateurs mobiles (CORS).
       for(const url of [target,'https://proxy.cors.dev/'+target]){
