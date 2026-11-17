@@ -30,6 +30,13 @@ header{padding:22px 2% 18px;text-align:center;background:linear-gradient(180deg,
 .field label{display:block;margin:0 0 7px;color:#dce7ef;font-size:.95rem;font-weight:800}
 input,button{min-height:48px;padding:11px 14px;border:1px solid #62788b;border-radius:5px;background:#050b12;color:#fff;font-size:1rem}
 input{width:100%}
+.search-wrap{position:relative}
+.airport-suggestions{position:absolute;top:calc(100% + 5px);left:0;right:0;z-index:20;max-height:340px;overflow:auto;background:#07111b;border:2px solid #8bdcff;border-radius:6px;box-shadow:0 12px 30px #000d}
+.airport-suggestions[hidden]{display:none}
+.airport-suggestions .suggestion-heading{padding:10px 13px;color:#ffe18a;font-size:.82rem;font-weight:900;letter-spacing:.06em;background:#172838;border-bottom:1px solid #45596a}
+.airport-suggestions button{display:block;width:100%;min-height:48px;padding:9px 13px;text-align:left;border:0;border-bottom:1px solid #293c4c;border-radius:0;background:#0b1824;color:#f5f8fb;font-size:.95rem}
+.airport-suggestions button:hover,.airport-suggestions button:focus{background:#24435a;outline:2px solid #8bdcff;outline-offset:-2px}
+.airport-suggestions button small{display:block;margin-top:3px;color:#b8c7d3;font-size:.78rem;font-weight:500}
 button{cursor:pointer;font-weight:900;letter-spacing:.03em}
 button.primary{background:#263d50;border-color:#9eb3c3;color:#fff;min-width:150px}
 button:disabled{opacity:.55;cursor:wait}
@@ -122,7 +129,10 @@ html.embed .table-scroll{height:390px;min-height:250px;max-height:390px}
   <section class="controls" aria-label="Commandes du terminal">
     <div class="field">
       <label for="search">Rechercher un vol, un avion, une ville ou un pays</label>
-      <input id="search" type="search" placeholder="Ex. RAM, CN-R…, Airbus, Madrid, France">
+      <div class="search-wrap">
+        <input id="search" type="search" autocomplete="off" aria-controls="airportSuggestions" aria-expanded="false" aria-autocomplete="list" placeholder="Cliquez pour choisir un aéroport ou saisissez une destination">
+        <div id="airportSuggestions" class="airport-suggestions" role="listbox" aria-label="Aéroports et destinations proposés" hidden></div>
+      </div>
     </div>
     <button id="refresh" class="primary" type="button">↻ ACTUALISER</button>
     <div class="external-links">
@@ -305,11 +315,26 @@ html.embed .table-scroll{height:390px;min-height:250px;max-height:390px}
         r&&r.origin&&(r.origin.municipality||''),
         r&&r.origin&&(r.origin.country_name||''),
         r&&r.destination&&(r.destination.municipality||''),
-        r&&r.destination&&(r.destination.country_name||'')
+        r&&r.destination&&(r.destination.city||''),
+        r&&r.destination&&(r.destination.country_name||''),
+        r&&r.destination&&(r.destination.country||''),
+        r&&r.destination&&(r.destination.iata_code||''),
+        r&&r.destination&&(r.destination.icao_code||''),
+        r&&r.destination&&(r.destination.name||''),
+        r&&r.origin&&(r.origin.city||''),
+        r&&r.origin&&(r.origin.country||''),
+        r&&r.origin&&(r.origin.iata_code||''),
+        r&&r.origin&&(r.origin.icao_code||''),
+        r&&r.origin&&(r.origin.name||'')
       ].join(' ').toLowerCase();
       return {a,route,r,move,text};
     }).filter(item=>{
-      if(query&&!item.text.includes(query))return false;
+      if(query){
+        const selectedMatch=selectedAirport&&[
+          selectedAirport.city,selectedAirport.country,selectedAirport.iata,selectedAirport.icao,selectedAirport.name
+        ].filter(Boolean).some(term=>item.text.includes(String(term).toLowerCase()));
+        if(selectedAirport?!selectedMatch:!item.text.includes(query))return false;
+      }
       if(activeFilter==='arrivals'&&item.move.key!=='arrivals')return false;
       if(activeFilter==='departures'&&item.move.key!=='departures')return false;
       if(activeFilter==='air'&&isGround(item.a))return false;
@@ -449,8 +474,85 @@ html.embed .table-scroll{height:390px;min-height:250px;max-height:390px}
   function tick(){
     $('clock').textContent=new Date().toLocaleTimeString('fr-FR',{hour:'2-digit',minute:'2-digit',second:'2-digit'});
   }
+  const AIRPORTS=[
+    {city:'Casablanca',country:'Maroc',iata:'CMN',icao:'GMMN',name:'Mohammed V'},
+    {city:'Tanger',country:'Maroc',iata:'TNG',icao:'GMTT',name:'Ibn Battouta'},
+    {city:'Marrakech',country:'Maroc',iata:'RAK',icao:'GMMX',name:'Ménara'},
+    {city:'Fès',country:'Maroc',iata:'FEZ',icao:'GMFF',name:'Saïss'},
+    {city:'Agadir',country:'Maroc',iata:'AGA',icao:'GMAD',name:'Al Massira'},
+    {city:'Rabat',country:'Maroc',iata:'RBA',icao:'GMME',name:'Salé'},
+    {city:'Oujda',country:'Maroc',iata:'OUD',icao:'GMFO',name:'Angads'},
+    {city:'Paris',country:'France',iata:'CDG',icao:'LFPG',name:'Charles-de-Gaulle'},
+    {city:'Paris',country:'France',iata:'ORY',icao:'LFPO',name:'Orly'},
+    {city:'Lyon',country:'France',iata:'LYS',icao:'LFLL',name:'Saint-Exupéry'},
+    {city:'Marseille',country:'France',iata:'MRS',icao:'LFML',name:'Provence'},
+    {city:'Nice',country:'France',iata:'NCE',icao:'LFMN',name:'Côte d’Azur'},
+    {city:'Toulouse',country:'France',iata:'TLS',icao:'LFBO',name:'Blagnac'},
+    {city:'Madrid',country:'Espagne',iata:'MAD',icao:'LEMD',name:'Barajas'},
+    {city:'Barcelone',country:'Espagne',iata:'BCN',icao:'LEBL',name:'El Prat'},
+    {city:'Málaga',country:'Espagne',iata:'AGP',icao:'LEMG',name:'Costa del Sol'},
+    {city:'Genève',country:'Suisse',iata:'GVA',icao:'LSGG',name:'Aéroport international'},
+    {city:'Zurich',country:'Suisse',iata:'ZRH',icao:'LSZH',name:'Aéroport de Zurich'},
+    {city:'Londres',country:'Royaume-Uni',iata:'LHR',icao:'EGLL',name:'Heathrow'},
+    {city:'Londres',country:'Royaume-Uni',iata:'LGW',icao:'EGKK',name:'Gatwick'},
+    {city:'Manchester',country:'Royaume-Uni',iata:'MAN',icao:'EGCC',name:'Manchester Airport'},
+    {city:'New York',country:'États-Unis',iata:'JFK',icao:'KJFK',name:'John F. Kennedy'},
+    {city:'Newark',country:'États-Unis',iata:'EWR',icao:'KEWR',name:'Liberty'},
+    {city:'Miami',country:'États-Unis',iata:'MIA',icao:'KMIA',name:'International'},
+    {city:'Los Angeles',country:'États-Unis',iata:'LAX',icao:'KLAX',name:'International'},
+    {city:'Chicago',country:'États-Unis',iata:'ORD',icao:'KORD',name:'O’Hare'},
+    {city:'Washington',country:'États-Unis',iata:'IAD',icao:'KIAD',name:'Dulles'},
+    {city:'Istanbul',country:'Turquie',iata:'IST',icao:'LTFM',name:'Istanbul Airport'},
+    {city:'Dubaï',country:'Émirats arabes unis',iata:'DXB',icao:'OMDB',name:'International'},
+    {city:'Doha',country:'Qatar',iata:'DOH',icao:'OTHH',name:'Hamad International'},
+    {city:'Le Caire',country:'Égypte',iata:'CAI',icao:'HECA',name:'International'},
+    {city:'Lisbonne',country:'Portugal',iata:'LIS',icao:'LPPT',name:'Humberto Delgado'},
+    {city:'Francfort',country:'Allemagne',iata:'FRA',icao:'EDDF',name:'Frankfurt Airport'},
+    {city:'Amsterdam',country:'Pays-Bas',iata:'AMS',icao:'EHAM',name:'Schiphol'},
+    {city:'Bruxelles',country:'Belgique',iata:'BRU',icao:'EBBR',name:'Zaventem'},
+    {city:'Rome',country:'Italie',iata:'FCO',icao:'LIRF',name:'Fiumicino'},
+    {city:'Dakar',country:'Sénégal',iata:'DSS',icao:'GOBD',name:'Blaise-Diagne'}
+  ];
+  let selectedAirport=null;
+  const suggestionBox=$('airportSuggestions');
+  function showAirportSuggestions(){
+    const q=$('search').value.trim().toLocaleLowerCase('fr');
+    const matches=AIRPORTS.filter(a=>!q||[a.city,a.country,a.iata,a.icao,a.name].join(' ').toLocaleLowerCase('fr').includes(q)).slice(0,18);
+    suggestionBox.innerHTML='<div class="suggestion-heading">'+(q?'DESTINATIONS CORRESPONDANTES':'DESTINATIONS ET GRANDS AÉROPORTS')+'</div>'+
+      (matches.length?matches.map((a,i)=>'<button type="button" role="option" data-airport-index="'+AIRPORTS.indexOf(a)+'" aria-selected="false">'+
+      safe(a.city)+' · '+safe(a.country)+'<small>'+safe(a.iata)+' / '+safe(a.icao)+' · '+safe(a.name)+'</small></button>').join(''):
+      '<div class="suggestion-heading">Aucune destination dans la liste. Vous pouvez saisir votre recherche.</div>');
+    suggestionBox.hidden=false;
+    $('search').setAttribute('aria-expanded','true');
+  }
+  function hideAirportSuggestions(){
+    suggestionBox.hidden=true;
+    $('search').setAttribute('aria-expanded','false');
+  }
   $('refresh').addEventListener('click',refresh);
-  $('search').addEventListener('input',render);
+  $('search').addEventListener('focus',showAirportSuggestions);
+  $('search').addEventListener('click',showAirportSuggestions);
+  $('search').addEventListener('input',()=>{
+    selectedAirport=null;
+    showAirportSuggestions();
+    render();
+  });
+  suggestionBox.addEventListener('mousedown',event=>event.preventDefault());
+  suggestionBox.addEventListener('click',event=>{
+    const option=event.target.closest('[data-airport-index]');
+    if(!option)return;
+    selectedAirport=AIRPORTS[Number(option.dataset.airportIndex)]||null;
+    if(!selectedAirport)return;
+    $('search').value=selectedAirport.city+' · '+selectedAirport.country+' ('+selectedAirport.iata+')';
+    hideAirportSuggestions();
+    render();
+  });
+  $('search').addEventListener('keydown',event=>{
+    if(event.key==='Escape')hideAirportSuggestions();
+  });
+  document.addEventListener('click',event=>{
+    if(!event.target.closest('.search-wrap'))hideAirportSuggestions();
+  });
   document.querySelectorAll('[data-filter]').forEach(button=>{
     button.addEventListener('click',()=>{
       activeFilter=button.dataset.filter;
