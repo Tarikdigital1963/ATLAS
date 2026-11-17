@@ -160,7 +160,7 @@ async function refresh(){
  btn.disabled=true;$("message").textContent="Lecture des signaux ADS-B autour de "+a.city+"…";
  rows.innerHTML='<tr><td colspan="11" style="text-align:center;padding:30px">Chargement des appareils…</td></tr>';
  try{
-  const target="https://api.adsb.lol/v2/lat/"+a.lat+"/lon/"+a.lon+"/dist/80";
+  const target="https://api.adsb.lol/v2/lat/"+a.lat+"/lon/"+a.lon+"/dist/250";
   // Même flux ADS-B que la carte, avec relais CORS de secours pour les navigateurs mobiles.
   const sources=[target,"https://proxy.cors.dev/"+target];
   let data=null,lastError=null,sourceUsed="";
