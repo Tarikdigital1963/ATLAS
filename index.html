@@ -613,9 +613,20 @@
   async function refreshAviationHome(){
     const status=document.getElementById('aviationHomeStatus');
     try{
-      const response=await fetch('https://api.adsb.lol/v2/lat/20/lon/0/dist/2500',{cache:'no-store',headers:{'Accept':'application/json'}});
-      if(!response.ok)throw new Error('HTTP '+response.status);
-      const payload=await response.json(),aircraft=Array.isArray(payload.ac)?payload.ac:[];
+      const target='https://api.adsb.lol/v2/lat/20/lon/0/dist/2500';
+      let payload=null,lastError=null;
+      // Connexion directe puis relais de secours pour les navigateurs mobiles (CORS).
+      for(const url of [target,'https://proxy.cors.dev/'+target]){
+        try{
+          const response=await fetch(url,{cache:'no-store',headers:{'Accept':'application/json'}});
+          if(!response.ok)throw new Error('HTTP '+response.status);
+          const data=await response.json();
+          if(!data||!Array.isArray(data.ac))throw new Error('Format ADS-B inattendu');
+          payload=data;break;
+        }catch(error){lastError=error;}
+      }
+      if(!payload)throw lastError||new Error('Flux ADS-B indisponible');
+      const aircraft=payload.ac;
       aviationHomeLayer.clearLayers();let count=0;
       aircraft.forEach(a=>{
         const lat=Number(a.lat),lon=Number(a.lon);
