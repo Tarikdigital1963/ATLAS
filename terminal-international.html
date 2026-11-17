@@ -127,8 +127,8 @@ function render(){
   const ground=a[8]===true,climb=!ground&&typeof a[11]==="number"&&a[11]>1,descend=!ground&&typeof a[11]==="number"&&a[11]<-1;
   const state=ground?'<span class="state ground">AU SOL</span>':climb?'<span class="state climb">MONTÉE</span>':descend?'<span class="state descend">DESCENTE</span>':'<span class="state air">EN VOL</span>';
   const stamp=typeof a[4]==="number"?new Date(a[4]*1000).toISOString().slice(11,19):"—";
-  return '<tr><td class="flight">'+safe(call||a[0])+'</td><td>'+safe(carrier?carrier.name:"Compagnie non identifiée")+'</td><td>'+safe(a[2])+'</td><td>'+safe("—")+'</td><td>'+safe("—")+'</td><td>'+altitude+'</td><td>'+speed+'</td><td>'+heading+'</td><td>'+vertical+'</td><td class="coord">'+lat+'</td><td class="coord">'+lon+'</td><td>'+state+'</td><td>'+stamp+'</td></tr>';
- }).join(""):'<tr><td colspan="13" style="text-align:center;padding:30px;color:#c6d1d9">Aucun vol commercial reconnu ne correspond au filtre. Le flux peut être temporairement indisponible ou la couverture limitée.</td></tr>';
+  return '<tr><td class="flight">'+safe(call||a[0])+'</td><td>'+safe(carrier?carrier.name:"Compagnie non identifiée")+'</td><td>'+safe(a[2])+'</td><td>'+altitude+'</td><td>'+speed+'</td><td>'+heading+'</td><td>'+vertical+'</td><td class="coord">'+lat+'</td><td class="coord">'+lon+'</td><td>'+state+'</td><td>'+stamp+'</td></tr>';
+ }).join(""):'<tr><td colspan="11" style="text-align:center;padding:30px;color:#c6d1d9">Aucun vol commercial reconnu ne correspond au filtre. Le flux peut être temporairement indisponible ou la couverture limitée.</td></tr>';
 }
 async function refresh(){
  if(loading)return;loading=true;$("refresh").disabled=true;$("coverage").textContent="Actualisation du flux mondial…";
