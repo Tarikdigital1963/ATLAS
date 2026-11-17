@@ -87,7 +87,22 @@ footer a{color:#9bdbff}
  .board-head{align-items:flex-start}.board-info{font-size:.82rem}
  .table-scroll{height:55vh;min-height:300px}
 }
+
+/* Affichage compact lorsque le terminal est intégré à l'accueil ATLAS. */
+html.embed header,html.embed footer,html.embed .hero,html.embed .note,html.embed .external-links{display:none!important}
+html.embed body{padding-bottom:0}
+html.embed .wrap{width:100%;max-width:none}
+html.embed .controls{grid-template-columns:minmax(180px,1fr) auto;margin-bottom:7px;padding:8px}
+html.embed .metrics{margin:7px 0;gap:7px}
+html.embed .metric{min-height:65px;padding:8px 10px}
+html.embed .metric span{font-size:.7rem}
+html.embed .metric strong{font-size:1.35rem}
+html.embed .table-scroll{height:390px;min-height:250px;max-height:390px}
+@media(max-width:850px){html.embed .controls{grid-template-columns:1fr auto}html.embed .field{grid-column:auto}}
+@media(max-width:520px){html.embed .controls{grid-template-columns:1fr}html.embed .table-scroll{height:340px;min-height:220px;max-height:340px}}
+
 </style>
+<script>if(new URLSearchParams(location.search).has('embed'))document.documentElement.classList.add('embed');</script>
 </head>
 <body>
 <div class="topline"></div>
