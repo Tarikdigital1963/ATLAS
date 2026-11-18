@@ -219,6 +219,27 @@
     .aviation-live-note{text-align:center;color:#bcd1e3;font-size:.9rem;margin:10px 4px 0}
     @media(max-width:760px){.aviation-live-home{padding:10px;margin:16px auto 26px;border-radius:15px}.aviation-embed-title{align-items:flex-start;padding:12px}.aviation-embed-title a{width:100%}.aviation-embed-card iframe{height:680px}.aviation-embed-card:nth-of-type(2) iframe{height:650px}}
 
+
+    /* Première section d'accueil : télévision de préparation internationale */
+    .prep-home{margin:22px auto 30px;padding:clamp(15px,3vw,28px);background:linear-gradient(135deg,#102e4b,#071827 72%);border:1px solid #4b7898;border-radius:22px;box-shadow:0 18px 48px rgba(0,0,0,.38)}
+    .prep-home-head{text-align:center;max-width:850px;margin:0 auto 16px}
+    .prep-kicker{color:#9bdcff;font-size:.88rem;font-weight:900;letter-spacing:.12em}
+    .prep-home-head h2{font-size:clamp(1.65rem,4vw,2.65rem);margin:8px 0;color:#fff}
+    .prep-home-head p,.prep-home-note{color:#c6d9ea}
+    .prep-home-head p{margin:0}
+    .prep-home-screen{max-width:920px;margin:18px auto 8px;background:#000;border:1px solid #527391;border-radius:14px;overflow:hidden}
+    .prep-home-screen iframe{display:block;width:100%;aspect-ratio:16/9;border:0}
+    .prep-home-note{text-align:center;font-size:.9rem;margin:10px 0}
+    .prep-home-actions{display:flex;justify-content:center;gap:10px;flex-wrap:wrap;margin-top:15px}
+    .prep-home-actions a{display:inline-flex;align-items:center;justify-content:center;padding:12px 17px;border-radius:10px;background:#087fca;border:1px solid #8bd8ff;color:#fff;text-decoration:none;font-weight:900}
+    .prep-home-actions a.prep-secondary{background:#102944;border-color:#527391}
+    .prep-home-actions a:focus{outline:3px solid #fff;outline-offset:3px}
+    .home-second-title{text-align:center;margin:36px auto 20px;padding:20px 14px;border-top:1px solid #315879;border-bottom:1px solid #315879}
+    .home-second-title span{color:#9bdcff;font-size:.85rem;font-weight:900;letter-spacing:.15em}
+    .home-second-title h2{font-size:clamp(1.45rem,3.5vw,2.15rem);margin:5px 0}
+    .home-second-title p{color:#c3d5e7;margin:0}
+    @media(max-width:600px){.prep-home{padding:12px;margin:15px auto 22px;border-radius:15px}.prep-home-actions a{width:100%}.home-second-title{margin:26px auto 14px;padding:16px 8px}}
+
 </style>
 <link rel="manifest" href="./manifest.webmanifest"><link rel="icon" href="./icon-192.svg" type="image/svg+xml"><link rel="apple-touch-icon" href="./icon-192.svg"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="ATLAS MONDE">  <!-- Google Tag Manager : GTM-WKZCXML8 -->
   <script>
@@ -295,6 +316,28 @@
     <h2>Le monde à portée de carte</h2>
     <p>Un espace consacré à la cartographie, à la géolocalisation et à la découverte des territoires.</p>
   </section>
+
+  <section class="prep-home" aria-labelledby="prep-home-title">
+    <div class="prep-home-head">
+      <span class="prep-kicker">📺 ATLAS MONDE · CHAÎNE INTERNATIONALE</span>
+      <h2 id="prep-home-title">PRÉPARATION & AUTONOMIE</h2>
+      <p>Votre espace vidéo pour apprendre à anticiper les urgences, protéger vos proches et mieux réagir partout dans le monde.</p>
+    </div>
+    <div class="prep-home-screen">
+      <iframe src="https://www.youtube-nocookie.com/embed/Hep6E2ih-sw?rel=0" title="Vidéo de formation à la préparation aux urgences" loading="lazy" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
+    </div>
+    <p class="prep-home-note">Programme pédagogique officiel du Center for Domestic Preparedness. Les directs sont accessibles lorsqu'un diffuseur officiel est effectivement en émission.</p>
+    <div class="prep-home-actions">
+      <a href="./preparation-tv.html">📺 Ouvrir la chaîne Home Cinéma</a>
+      <a class="prep-secondary" href="https://www.youtube.com/user/FEMA/live" target="_blank" rel="noopener noreferrer">🔴 Accès LIVE FEMA</a>
+    </div>
+  </section>
+
+  <div class="home-second-title">
+    <span>DEUXIÈME ESPACE</span>
+    <h2>🌍 Explorer et surveiller la planète</h2>
+    <p>Cartes, observations, phénomènes naturels et grands mouvements du monde.</p>
+  </div>
 
 
 
