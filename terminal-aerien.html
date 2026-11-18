@@ -599,7 +599,7 @@ html.embed .table-scroll{height:390px;min-height:250px;max-height:390px}
       const response=await fetch('https://davidmegginson.github.io/ourairports-data/airports.csv',{cache:'no-store'});
       if(!response.ok)throw new Error('HTTP '+response.status);
       const csv=await response.text();
-      const lines=csv.split(/\\r?\\n/);
+      const lines=csv.split(String.fromCharCode(10));
       const headers=parseCSVLine(lines.shift()||'');
       const idx=Object.fromEntries(headers.map((h,i)=>[h,i]));
       const names=new Intl.DisplayNames(['fr'],{type:'region'});
