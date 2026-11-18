@@ -207,7 +207,7 @@ html.embed .table-scroll{height:390px;min-height:250px;max-height:390px}
   <section class="military-board" aria-label="Appareils signalés comme militaires">
     <div class="military-head">
       <div class="military-title">✦ APPAREILS SIGNALÉS COMME MILITAIRES <span class="military-count" id="militaryCount">0</span></div>
-      <div class="military-sub">Détection complémentaire dans les signaux ADS-B reçus autour de l’aéroport sélectionné. Seuls les appareils marqués comme militaires par la base de données sont affichés.</div>
+      <div class="military-sub">Détection complémentaire dans les signaux ADS-B reçus dans la zone ou les zones sélectionnées. Seuls les appareils marqués comme militaires par la base de données sont affichés.</div>
     </div>
     <div class="military-scroll">
       <table>
@@ -222,7 +222,7 @@ html.embed .table-scroll{height:390px;min-height:250px;max-height:390px}
 
   <p class="note">
     <strong>Lecture des informations :</strong> les positions, l’altitude, la vitesse et l’état proviennent des signaux ADS-B reçus. Les villes, pays, compagnies et itinéraires sont ajoutés uniquement lorsqu’une correspondance est publiée dans la base de routes. « Arrivée CMN » ou « Départ CMN » indique la destination ou l’origine associée à l’indicatif, et ne constitue pas une confirmation du contrôle aérien ni un horaire officiel. Une donnée absente reste indiquée comme non renseignée.
-    Le radar interroge un rayon d’environ 250 km (135 milles nautiques) autour de l’aéroport sélectionné. La sélection d’une destination change réellement le centre de réception.
+    Le mode aéroport interroge un rayon d’environ 250 km autour du point sélectionné. Le mode pays agrège les appareils reçus autour de plusieurs aéroports répartis sur le territoire; la couverture reste partielle et dépend des récepteurs ADS-B disponibles.
   </p>
 </main>
 <footer>
@@ -234,7 +234,7 @@ html.embed .table-scroll{height:390px;min-height:250px;max-height:390px}
 (function(){
   'use strict';
   const DEFAULT_CENTER={lat:33.3675,lon:-7.58997,icao:'GMMN',iata:'CMN',city:'Casablanca',country:'Maroc'};
-  const RADIUS_NM=135;
+  const RADIUS_NM=135; // Chaque point couvre environ 250 km; le mode pays agrège jusqu'à 4 zones distinctes.
   const ROUTE_CACHE_PREFIX='atlas_cmn_route_v2_';
   const RATE_LIMIT_KEY='atlas_adsb_rate_pause_until_v1';
   const ROUTE_CACHE_TTL=6*60*60*1000;
@@ -247,18 +247,29 @@ html.embed .table-scroll{height:390px;min-height:250px;max-height:390px}
   let pauseUntil=Number(storageGet(RATE_LIMIT_KEY))||0;
   let routeBusy=false;
   let activeCenter={...DEFAULT_CENTER};
-  function aircraftCacheKey(){return 'atlas_adsb_snapshot_'+activeCenter.icao+'_v3';}
-  function aircraftUrl(){
-    const url='https://api.adsb.lol/v2/lat/'+activeCenter.lat+'/lon/'+activeCenter.lon+'/dist/'+RADIUS_NM;
+  let activeCountry=null;
+  let countryCenters=[];
+  function aircraftCacheKey(){return 'atlas_adsb_snapshot_'+(activeCountry?activeCountry.code:activeCenter.icao)+'_v4';}
+  function aircraftUrl(center=activeCenter){
+    const url='https://api.adsb.lol/v2/lat/'+center.lat+'/lon/'+center.lon+'/dist/'+RADIUS_NM;
     return 'https://proxy.cors.dev/'+url;
   }
   function updateCenterLabels(){
-    const label=activeCenter.city+' · '+activeCenter.country+' · '+activeCenter.iata+' / '+activeCenter.icao;
-    document.querySelector('.location').textContent=label+' · RAYON 250 KM';
-    document.querySelector('.board-name').textContent='FLIGHT INFORMATION · '+activeCenter.city.toLocaleUpperCase('fr');
-    document.querySelectorAll('.board-info strong')[0].textContent=activeCenter.city+' · '+activeCenter.iata+' / '+activeCenter.icao;
-    document.querySelectorAll('[data-filter="arrivals"]')[0].textContent='ARRIVÉES '+activeCenter.iata;
-    document.querySelectorAll('[data-filter="departures"]')[0].textContent='DÉPARTS '+activeCenter.iata;
+    if(activeCountry){
+      const label=activeCountry.name+' · '+countryCenters.length+' ZONES';
+      document.querySelector('.location').textContent=label+' · COUVERTURE MULTIZONE';
+      document.querySelector('.board-name').textContent='FLIGHT INFORMATION · '+activeCountry.name.toLocaleUpperCase('fr');
+      document.querySelectorAll('.board-info strong')[0].textContent=activeCountry.name+' · '+countryCenters.length+' zones interrogées';
+      document.querySelectorAll('[data-filter="arrivals"]')[0].textContent='ARRIVÉES PAYS';
+      document.querySelectorAll('[data-filter="departures"]')[0].textContent='DÉPARTS PAYS';
+    }else{
+      const label=activeCenter.city+' · '+activeCenter.country+' · '+activeCenter.iata+' / '+activeCenter.icao;
+      document.querySelector('.location').textContent=label+' · RAYON 250 KM';
+      document.querySelector('.board-name').textContent='FLIGHT INFORMATION · '+activeCenter.city.toLocaleUpperCase('fr');
+      document.querySelectorAll('.board-info strong')[0].textContent=activeCenter.city+' · '+activeCenter.iata+' / '+activeCenter.icao;
+      document.querySelectorAll('[data-filter="arrivals"]')[0].textContent='ARRIVÉES '+activeCenter.iata;
+      document.querySelectorAll('[data-filter="departures"]')[0].textContent='DÉPARTS '+activeCenter.iata;
+    }
   }
 
   function safe(value){
@@ -497,6 +508,16 @@ html.embed .table-scroll{height:390px;min-height:250px;max-height:390px}
       return true;
     }catch(e){return false;}
   }
+  async function fetchAircraftAt(center){
+    const response=await fetch(aircraftUrl(center),{cache:'no-store',headers:{'Accept':'application/json'}});
+    if(!response.ok){
+      const err=new Error('HTTP '+response.status);err.status=response.status;
+      err.retryAfter=response.headers.get('Retry-After');throw err;
+    }
+    const payload=await response.json();
+    if(!payload||!Array.isArray(payload.ac))throw new Error('Format ADS-B inattendu');
+    return payload.ac;
+  }
   async function refresh(){
     const button=$('refresh');
     if(Date.now()<pauseUntil){
@@ -508,22 +529,22 @@ html.embed .table-scroll{height:390px;min-height:250px;max-height:390px}
     $('status').className='';
     $('status').textContent='Réception des signaux ADS-B autour de '+activeCenter.city+' ('+activeCenter.iata+')…';
     try{
-      const response=await fetch(aircraftUrl(),{cache:'no-store',headers:{'Accept':'application/json'}});
-      if(!response.ok){
-        const err=new Error('HTTP '+response.status);
-        err.status=response.status;
-        err.retryAfter=response.headers.get('Retry-After');
-        throw err;
+      const centers=activeCountry?countryCenters:[activeCenter];
+      const combined=new Map();
+      for(let i=0;i<centers.length;i++){
+        $('status').textContent=activeCountry
+          ?'Scan de '+activeCountry.name+' · zone '+(i+1)+'/'+centers.length+' ('+centers[i].city+')…'
+          :'Réception ADS-B autour de '+activeCenter.city+'…';
+        const batch=await fetchAircraftAt(centers[i]);
+        batch.forEach(a=>{if(a.hex)combined.set(String(a.hex).toLowerCase(),a);});
       }
-      const payload=await response.json();
-      if(!payload||!Array.isArray(payload.ac))throw new Error('Format de données inattendu');
-      aircraft=payload.ac;
+      aircraft=Array.from(combined.values());
       lastSuccess=Date.now();
       saveSnapshot(aircraft);
       $('updated').textContent=new Date(lastSuccess).toLocaleTimeString('fr-FR');
       render();
       $('status').className='ok';
-      $('status').textContent=aircraft.length+' appareil(s) transmis par le flux ADS-B autour de '+activeCenter.city+' dans un rayon de 250 km. Recherche des villes et pays connus en cours. Actualisation prévue toutes les 10 minutes.';
+      $('status').textContent=aircraft.length+' appareils uniques reçus · '+(activeCountry?centers.length+' zones ADS-B couvertes pour '+activeCountry.name:'rayon de 250 km autour de '+activeCenter.city)+'. Actualisation prévue toutes les 10 minutes.';
       enrichRoutes();
     }catch(error){
       if(error.status===429){
@@ -639,15 +660,47 @@ html.embed .table-scroll{height:390px;min-height:250px;max-height:390px}
   const suggestionBox=$('airportSuggestions');
   function showAirportSuggestions(){
     const q=$('search').value.trim().toLocaleLowerCase('fr');
+    const countries=new Map();
+    AIRPORTS.forEach(a=>{
+      const code=a.countryCode||a.country;
+      if(!code)return;
+      if(!countries.has(code))countries.set(code,{code,name:a.country,count:0});
+      countries.get(code).count++;
+    });
+    const countryMatches=Array.from(countries.values()).filter(c=>!q||[c.name,c.code].join(' ').toLocaleLowerCase('fr').includes(q))
+      .sort((a,b)=>a.name.localeCompare(b.name,'fr')).slice(0,10);
     const matches=AIRPORTS.filter(a=>!q||[a.city,a.country,a.countryCode,a.continent,a.iata,a.icao,a.name,a.keywords].join(' ').toLocaleLowerCase('fr').includes(q))
-      .sort((a,b)=>({large_airport:0,medium_airport:1,small_airport:2}[a.type]??3)-({large_airport:0,medium_airport:1,small_airport:2}[b.type]??3)||a.city.localeCompare(b.city,'fr'))
-      .slice(0,18);
-    suggestionBox.innerHTML='<div class="suggestion-heading">'+(q?'DESTINATIONS CORRESPONDANTES':'DESTINATIONS ET GRANDS AÉROPORTS')+'</div>'+
-      (matches.length?matches.map((a,i)=>'<button type="button" role="option" data-airport-index="'+AIRPORTS.indexOf(a)+'" aria-selected="false">'+
-      safe(a.city)+' · '+safe(a.country)+'<small>'+safe(a.iata)+' / '+safe(a.icao)+' · '+safe(a.name)+(a.continent?' · '+safe(a.continent):'')+'</small></button>').join(''):
-      '<div class="suggestion-heading">Aucune destination dans la liste. Vous pouvez saisir votre recherche.</div>');
+      .sort((a,b)=>({large_airport:0,medium_airport:1,small_airport:2}[a.type]??3)-({large_airport:0,medium_airport:1,small_airport:2}[b.type]??3)||a.city.localeCompare(b.city,'fr')).slice(0,12);
+    suggestionBox.innerHTML=(countryMatches.length?'<div class="suggestion-heading">PAYS · SCAN MULTIZONE</div>'+countryMatches.map(c=>'<button type="button" role="option" data-country-code="'+safe(c.code)+'">'+safe(c.name)+'<small>Scanner plusieurs zones · '+c.count+' aéroports répertoriés</small></button>').join(''):'')+
+      '<div class="suggestion-heading">'+(q?'AÉROPORTS CORRESPONDANTS':'AÉROPORTS')+'</div>'+
+      (matches.length?matches.map(a=>'<button type="button" role="option" data-airport-index="'+AIRPORTS.indexOf(a)+'">'+safe(a.city)+' · '+safe(a.country)+'<small>'+safe(a.iata)+' / '+safe(a.icao)+' · '+safe(a.name)+'</small></button>').join(''):'<div class="suggestion-heading">Aucun aéroport correspondant.</div>');
     suggestionBox.hidden=false;
     $('search').setAttribute('aria-expanded','true');
+  }
+  function chooseCountry(code){
+    const airports=AIRPORTS.filter(a=>(a.countryCode||a.country)===code&&a.lat!==undefined&&a.lon!==undefined);
+    if(!airports.length)return;
+    const rank=a=>a.type==='large_airport'?0:a.type==='medium_airport'?1:2;
+    const sorted=airports.slice().sort((a,b)=>rank(a)-rank(b));
+    const selected=[sorted[0]];
+    while(selected.length<Math.min(4,sorted.length)){
+      let best=null,bestDistance=-1;
+      sorted.forEach(candidate=>{
+        if(selected.includes(candidate))return;
+        const distance=Math.min(...selected.map(p=>Math.pow(candidate.lat-p.lat,2)+Math.pow((candidate.lon-p.lon)*Math.cos(candidate.lat*Math.PI/180),2)));
+        if(distance>bestDistance){bestDistance=distance;best=candidate;}
+      });
+      if(!best)break;
+      selected.push(best);
+    }
+    countryCenters=selected.map(a=>({lat:a.lat,lon:a.lon,icao:a.icao||a.iata,iata:a.iata,city:a.city,country:a.country}));
+    activeCountry={code,name:sorted[0].country};
+    activeCenter=countryCenters[0];
+    selectedAirport=null;
+    $('search').value=activeCountry.name;
+    updateCenterLabels();
+    aircraft=[];lastSuccess=0;$('updated').textContent='EN ATTENTE';
+    render();hideAirportSuggestions();refresh();
   }
   function hideAirportSuggestions(){
     suggestionBox.hidden=true;
@@ -663,10 +716,13 @@ html.embed .table-scroll{height:390px;min-height:250px;max-height:390px}
   });
   suggestionBox.addEventListener('mousedown',event=>event.preventDefault());
   suggestionBox.addEventListener('click',event=>{
+    const countryOption=event.target.closest('[data-country-code]');
+    if(countryOption){chooseCountry(countryOption.dataset.countryCode);return;}
     const option=event.target.closest('[data-airport-index]');
     if(!option)return;
     selectedAirport=AIRPORTS[Number(option.dataset.airportIndex)]||null;
     if(!selectedAirport)return;
+    activeCountry=null;countryCenters=[];
     $('search').value=selectedAirport.city+' · '+selectedAirport.country+' ('+selectedAirport.iata+')';
     activeCenter={lat:selectedAirport.lat,lon:selectedAirport.lon,icao:selectedAirport.icao,iata:selectedAirport.iata,city:selectedAirport.city,country:selectedAirport.country};
     updateCenterLabels();
