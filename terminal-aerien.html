@@ -615,8 +615,11 @@ html.embed .table-scroll{height:390px;min-height:250px;max-height:390px}
         const countryCode=get('iso_country');
         let country=countryCode;
         try{country=names.of(countryCode)||countryCode;}catch(e){}
+        const continentNames={NA:'Amérique du Nord',SA:'Amérique du Sud',EU:'Europe',AF:'Afrique',AS:'Asie',OC:'Océanie',AN:'Antarctique'};
         world.push({
-          city:get('municipality')||get('name'),country,iata,
+          city:get('municipality')||get('name'),country,countryCode,
+          continent:continentNames[get('continent')]||get('continent'),
+          keywords:get('keywords'),type,iata,
           icao:get('icao_code')||get('ident'),name:get('name'),
           lat,lon
         });
@@ -636,10 +639,12 @@ html.embed .table-scroll{height:390px;min-height:250px;max-height:390px}
   const suggestionBox=$('airportSuggestions');
   function showAirportSuggestions(){
     const q=$('search').value.trim().toLocaleLowerCase('fr');
-    const matches=AIRPORTS.filter(a=>!q||[a.city,a.country,a.iata,a.icao,a.name].join(' ').toLocaleLowerCase('fr').includes(q)).slice(0,18);
+    const matches=AIRPORTS.filter(a=>!q||[a.city,a.country,a.countryCode,a.continent,a.iata,a.icao,a.name,a.keywords].join(' ').toLocaleLowerCase('fr').includes(q))
+      .sort((a,b)=>({large_airport:0,medium_airport:1,small_airport:2}[a.type]??3)-({large_airport:0,medium_airport:1,small_airport:2}[b.type]??3)||a.city.localeCompare(b.city,'fr'))
+      .slice(0,18);
     suggestionBox.innerHTML='<div class="suggestion-heading">'+(q?'DESTINATIONS CORRESPONDANTES':'DESTINATIONS ET GRANDS AÉROPORTS')+'</div>'+
       (matches.length?matches.map((a,i)=>'<button type="button" role="option" data-airport-index="'+AIRPORTS.indexOf(a)+'" aria-selected="false">'+
-      safe(a.city)+' · '+safe(a.country)+'<small>'+safe(a.iata)+' / '+safe(a.icao)+' · '+safe(a.name)+'</small></button>').join(''):
+      safe(a.city)+' · '+safe(a.country)+'<small>'+safe(a.iata)+' / '+safe(a.icao)+' · '+safe(a.name)+(a.continent?' · '+safe(a.continent):'')+'</small></button>').join(''):
       '<div class="suggestion-heading">Aucune destination dans la liste. Vous pouvez saisir votre recherche.</div>');
     suggestionBox.hidden=false;
     $('search').setAttribute('aria-expanded','true');
