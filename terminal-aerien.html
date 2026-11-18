@@ -345,7 +345,7 @@ html.embed .table-scroll{height:390px;min-height:250px;max-height:390px}
   }
   function isMilitary(a){
     // ADSB.lol utilise le bit 1 de dbFlags pour signaler les appareils militaires.
-    return (Number(a.dbFlags)||0 & 1) === 1;
+    return ((Number(a.dbFlags)||0) & 1) === 1;
   }
   function renderMilitary(){
     const list=aircraft.filter(isMilitary);
