@@ -411,7 +411,7 @@ html.embed .table-scroll{height:390px;min-height:250px;max-height:390px}
     }).filter(item=>{
       // Un aéroport choisi devient le centre du radar : on affiche tous les appareils reçus dans sa zone.
       // Une saisie libre reste un filtre textuel sur les données de la zone active.
-      if(query&&!selectedAirport&&!item.text.includes(query))return false;
+      if(query&&!selectedAirport&&!activeCountry&&!item.text.includes(query))return false;
       if(activeFilter==='arrivals'&&item.move.key!=='arrivals')return false;
       if(activeFilter==='departures'&&item.move.key!=='departures')return false;
       if(activeFilter==='air'&&isGround(item.a))return false;
@@ -667,11 +667,15 @@ html.embed .table-scroll{height:390px;min-height:250px;max-height:390px}
       if(!countries.has(code))countries.set(code,{code,name:a.country,count:0});
       countries.get(code).count++;
     });
+    const continentMap=new Map();
+    AIRPORTS.forEach(a=>{if(a.continent&&!continentMap.has(a.continent))continentMap.set(a.continent,a.continent);});
+    const continentMatches=Array.from(continentMap.values()).filter(name=>!q||name.toLocaleLowerCase('fr').includes(q)).sort((a,b)=>a.localeCompare(b,'fr'));
     const countryMatches=Array.from(countries.values()).filter(c=>!q||[c.name,c.code].join(' ').toLocaleLowerCase('fr').includes(q))
       .sort((a,b)=>a.name.localeCompare(b.name,'fr')).slice(0,10);
     const matches=AIRPORTS.filter(a=>!q||[a.city,a.country,a.countryCode,a.continent,a.iata,a.icao,a.name,a.keywords].join(' ').toLocaleLowerCase('fr').includes(q))
       .sort((a,b)=>({large_airport:0,medium_airport:1,small_airport:2}[a.type]??3)-({large_airport:0,medium_airport:1,small_airport:2}[b.type]??3)||a.city.localeCompare(b.city,'fr')).slice(0,12);
-    suggestionBox.innerHTML=(countryMatches.length?'<div class="suggestion-heading">PAYS · SCAN MULTIZONE</div>'+countryMatches.map(c=>'<button type="button" role="option" data-country-code="'+safe(c.code)+'">'+safe(c.name)+'<small>Scanner plusieurs zones · '+c.count+' aéroports répertoriés</small></button>').join(''):'')+
+    suggestionBox.innerHTML=(continentMatches.length?'<div class="suggestion-heading">CONTINENTS · SCAN MULTIZONE</div>'+continentMatches.map(name=>'<button type="button" role="option" data-continent-name="'+safe(name)+'">'+safe(name)+'<small>Scanner plusieurs zones sur le continent</small></button>').join(''):'')+
+      (countryMatches.length?'<div class="suggestion-heading">PAYS · SCAN MULTIZONE</div>'+countryMatches.map(c=>'<button type="button" role="option" data-country-code="'+safe(c.code)+'">'+safe(c.name)+'<small>Scanner plusieurs zones · '+c.count+' aéroports répertoriés</small></button>').join(''):'')+
       '<div class="suggestion-heading">'+(q?'AÉROPORTS CORRESPONDANTS':'AÉROPORTS')+'</div>'+
       (matches.length?matches.map(a=>'<button type="button" role="option" data-airport-index="'+AIRPORTS.indexOf(a)+'">'+safe(a.city)+' · '+safe(a.country)+'<small>'+safe(a.iata)+' / '+safe(a.icao)+' · '+safe(a.name)+'</small></button>').join(''):'<div class="suggestion-heading">Aucun aéroport correspondant.</div>');
     suggestionBox.hidden=false;
@@ -702,6 +706,31 @@ html.embed .table-scroll{height:390px;min-height:250px;max-height:390px}
     aircraft=[];lastSuccess=0;$('updated').textContent='EN ATTENTE';
     render();hideAirportSuggestions();refresh();
   }
+  function chooseContinent(name){
+    const airports=AIRPORTS.filter(a=>a.continent===name&&Number.isFinite(a.lat)&&Number.isFinite(a.lon));
+    if(!airports.length)return;
+    const rank=a=>a.type==='large_airport'?0:a.type==='medium_airport'?1:2;
+    const sorted=airports.slice().sort((a,b)=>rank(a)-rank(b));
+    const selected=[sorted[0]];
+    while(selected.length<Math.min(4,sorted.length)){
+      let best=null,bestDistance=-1;
+      sorted.forEach(candidate=>{
+        if(selected.includes(candidate))return;
+        const distance=Math.min(...selected.map(p=>Math.pow(candidate.lat-p.lat,2)+Math.pow((candidate.lon-p.lon)*Math.cos(candidate.lat*Math.PI/180),2)));
+        if(distance>bestDistance){bestDistance=distance;best=candidate;}
+      });
+      if(!best)break;
+      selected.push(best);
+    }
+    countryCenters=selected.map(a=>({lat:a.lat,lon:a.lon,icao:a.icao||a.iata,iata:a.iata,city:a.city,country:a.country}));
+    activeCountry={code:'CONT-'+name,name,kind:'continent'};
+    activeCenter=countryCenters[0];
+    selectedAirport=null;
+    $('search').value=name;
+    updateCenterLabels();
+    aircraft=[];lastSuccess=0;$('updated').textContent='EN ATTENTE';
+    render();hideAirportSuggestions();refresh();
+  }
   function hideAirportSuggestions(){
     suggestionBox.hidden=true;
     $('search').setAttribute('aria-expanded','false');
@@ -718,6 +747,8 @@ html.embed .table-scroll{height:390px;min-height:250px;max-height:390px}
   });
   suggestionBox.addEventListener('mousedown',event=>event.preventDefault());
   suggestionBox.addEventListener('click',event=>{
+    const continentOption=event.target.closest('[data-continent-name]');
+    if(continentOption){chooseContinent(continentOption.dataset.continentName);return;}
     const countryOption=event.target.closest('[data-country-code]');
     if(countryOption){chooseCountry(countryOption.dataset.countryCode);return;}
     const option=event.target.closest('[data-airport-index]');
