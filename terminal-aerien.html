@@ -711,6 +711,8 @@ html.embed .table-scroll{height:390px;min-height:250px;max-height:390px}
   $('search').addEventListener('click',showAirportSuggestions);
   $('search').addEventListener('input',()=>{
     selectedAirport=null;
+    activeCountry=null;countryCenters=[];
+    updateCenterLabels();
     showAirportSuggestions();
     render();
   });
