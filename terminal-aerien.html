@@ -74,6 +74,17 @@ td.coord{color:var(--cyan)}
 .tag.air{background:#19364e;border-color:#5c94bd;color:#b6e4ff}
 .tag.ground{background:#263c21;border-color:#7aa15e;color:#d0ffb5}
 .tag.unknown{background:#34343a;border-color:#75757e;color:#e1e1e6}
+
+/* Tableau complémentaire des appareils signalés comme militaires */
+.military-board{margin:16px 0 0;border:2px solid #765b3a;background:#080d13;border-radius:7px;overflow:hidden}
+.military-head{padding:13px 16px;background:linear-gradient(90deg,#302516,#151b20);border-bottom:1px solid #806744}
+.military-title{color:#ffd58a;font-size:clamp(1rem,2.2vw,1.35rem);font-weight:900;letter-spacing:.08em}
+.military-sub{margin-top:5px;color:#c7d0d8;font-size:.88rem;line-height:1.45}
+.military-scroll{width:100%;max-height:300px;overflow:auto}
+.military-scroll table{min-width:900px}
+.military-empty{padding:18px;color:#cbd7df;text-align:center;line-height:1.5}
+.military-count{display:inline-block;margin-left:8px;padding:4px 8px;background:#594326;color:#ffe3ad;border-radius:4px;font-size:.9rem}
+
 #status{padding:13px 16px;background:#0a141e;border-top:1px solid #405364;color:#d4e0e9;line-height:1.5;font-size:.92rem}
 #status.error{color:#ffd0a1}
 #status.ok{color:#c7ffd0}
@@ -191,6 +202,22 @@ html.embed .table-scroll{height:390px;min-height:250px;max-height:390px}
       </table>
     </div>
     <div id="status" role="status" aria-live="polite">Initialisation du terminal et de la réception ADS-B…</div>
+  </section>
+
+  <section class="military-board" aria-label="Appareils signalés comme militaires">
+    <div class="military-head">
+      <div class="military-title">✦ APPAREILS SIGNALÉS COMME MILITAIRES <span class="military-count" id="militaryCount">0</span></div>
+      <div class="military-sub">Détection complémentaire dans les signaux ADS-B reçus autour de l’aéroport sélectionné. Seuls les appareils marqués comme militaires par la base de données sont affichés.</div>
+    </div>
+    <div class="military-scroll">
+      <table>
+        <thead><tr>
+          <th>INDICATIF / HEX</th><th>TYPE D’APPAREIL</th><th>IMMATRICULATION</th>
+          <th>ALTITUDE</th><th>VITESSE</th><th>CAP</th><th>LATITUDE</th><th>LONGITUDE</th><th>ÉTAT</th>
+        </tr></thead>
+        <tbody id="militaryRows"><tr><td colspan="9" class="military-empty">En attente des données ADS-B…</td></tr></tbody>
+      </table>
+    </div>
   </section>
 
   <p class="note">
@@ -316,7 +343,37 @@ html.embed .table-scroll{height:390px;min-height:250px;max-height:390px}
     const prefix=String(a.flight||'').trim().toUpperCase().slice(0,3);
     return prefix||'Non identifiée';
   }
+  function isMilitary(a){
+    // ADSB.lol utilise le bit 1 de dbFlags pour signaler les appareils militaires.
+    return (Number(a.dbFlags)||0 & 1) === 1;
+  }
+  function renderMilitary(){
+    const list=aircraft.filter(isMilitary);
+    $('militaryCount').textContent=String(list.length);
+    if(!list.length){
+      $('militaryRows').innerHTML='<tr><td colspan="9" class="military-empty">Aucun appareil signalé comme militaire dans les données ADS-B reçues pour cette zone. Cela ne signifie pas qu’aucun appareil militaire ne s’y trouve.</td></tr>';
+      return;
+    }
+    $('militaryRows').innerHTML=list.slice(0,100).map(a=>{
+      const callsign=String(a.flight||'').trim()||a.hex||'Non identifié';
+      const lat=Number.isFinite(Number(a.lat))?Number(a.lat).toFixed(5):'—';
+      const lon=Number.isFinite(Number(a.lon))?Number(a.lon).toFixed(5):'—';
+      return '<tr>'+
+        '<td class="flight">'+safe(callsign)+'<small>'+safe(a.hex||'')+'</small></td>'+
+        '<td>'+safe(aircraftName(a))+'</td>'+
+        '<td>'+safe(a.r||'—')+'</td>'+
+        '<td>'+safe(altitude(a))+'</td>'+
+        '<td>'+safe(speed(a))+'</td>'+
+        '<td>'+safe(heading(a))+'</td>'+
+        '<td class="coord">'+safe(lat)+'</td>'+
+        '<td class="coord">'+safe(lon)+'</td>'+
+        '<td>'+statusTag(a)+'</td>'+
+      '</tr>';
+    }).join('');
+  }
+
   function render(){
+    renderMilitary();
     const query=$('search').value.trim().toLowerCase();
     const prepared=aircraft.map(a=>{
       const route=routeFor(a);
