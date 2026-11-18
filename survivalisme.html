@@ -14,6 +14,15 @@ header{padding:18px 0;border-bottom:1px solid #54232e}.back,.btn{display:inline-
 .guide{background:#160a10;border:1px solid #71313d;border-radius:15px;overflow:hidden}.guide div{padding:16px}.guide p{margin:0 0 8px}.guide .duration{color:#ffb8c2;font-weight:900;font-size:.88rem;letter-spacing:.06em}
 .note{font-size:.92rem;color:#d4b8bf}footer{border-top:1px solid #54232e;padding:22px 0 32px;text-align:center;color:#c9aeb5;font-size:.92rem}
 @media(max-width:850px){.channel-grid,.guide-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}@media(max-width:620px){.grid,.channel-grid,.guide-grid{grid-template-columns:1fr}.btn{width:100%}.hero,.section{padding:15px}.channel img,.guide img{height:190px}}
+
+.image-link{display:block;position:relative;overflow:hidden;cursor:pointer;outline-offset:-4px}
+.image-link img{transition:transform .2s ease,filter .2s ease}
+.image-link:after{content:"▶ OUVRIR";position:absolute;right:12px;bottom:12px;background:rgba(10,5,8,.88);color:#fff;border:1px solid #ffb8c2;border-radius:8px;padding:7px 11px;font-size:.82rem;font-weight:900;letter-spacing:.04em}
+.image-link:hover img,.image-link:focus img{transform:scale(1.045);filter:brightness(1.15)}
+.image-link:focus{outline:3px solid #fff}
+.channel,.guide{cursor:default}
+.player{position:relative}
+.player iframe{cursor:pointer}
 </style></head>
 <body><header><div class="wrap"><a class="back" href="./index.html">← Retour à l’accueil ATLAS MONDE</a></div></header>
 <main class="wrap"><div class="brand"><small>ATLAS MONDE · CHAÎNE FRANCOPHONE</small><h1>🎒 SURVIVALISME</h1><p>Préparation pratique · résilience · autonomie du quotidien</p></div>
